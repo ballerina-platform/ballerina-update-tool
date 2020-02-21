@@ -80,7 +80,6 @@ then
 
     export BALLERINA_HOME
     $BALLERINA_HOME/bin/./ballerina "$@"
-    echo $?
     exit $?
 fi
 
