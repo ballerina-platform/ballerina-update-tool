@@ -1,0 +1,9 @@
+NAME
+       ballerina-dist-clean - Clean available distributions except active distribution.
+
+SYNOPSIS
+       ballerina dist clean
+
+DESCRIPTION
+       Clean removes the ballerina distributions from your local environment except the active distribution.
+

@@ -24,6 +24,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -216,5 +217,38 @@ public class OSUtils {
             userHome = System.getProperty("user.home");
         }
         return userHome;
+    }
+
+    /**
+     * Delete files inside directories.
+     *
+     * @param dirPath directory path
+     * @param outStream output stream
+     *      @param version deleting version
+     * @throws IOException throw an exception if an issue occurs
+     */
+    public static void deleteFiles(Path dirPath, PrintStream outStream, String version) throws IOException {
+        if (dirPath == null) {
+            return;
+        }
+
+        Files.walk(dirPath)
+                .sorted(Comparator.reverseOrder())
+                .forEach(path -> {
+                    if (!Files.isWritable(path)) {
+                        throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" +
+                                dirPath + "'");
+                    }
+                });
+
+        Files.walk(dirPath)
+                .sorted(Comparator.reverseOrder())
+                .forEach(path -> {
+                    try {
+                        Files.delete(path);
+                    } catch (IOException e) {
+                        throw ErrorUtil.createCommandException("cannot remove '" + path + "'");
+                    }
+                });
     }
 }

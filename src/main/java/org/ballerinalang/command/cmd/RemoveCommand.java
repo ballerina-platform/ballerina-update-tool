@@ -24,10 +24,9 @@ import picocli.CommandLine;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.List;
+
+import static org.ballerinalang.command.util.OSUtils.deleteFiles;
 
 /**
  * This class represents the "Remove" command and it holds arguments and flags specified by the user.
@@ -104,38 +103,5 @@ public class RemoveCommand extends Command implements BCommand {
         } catch (IOException e) {
             throw ErrorUtil.createCommandException("error occurred while removing '" + version + "'");
         }
-    }
-
-    /**
-     * Delete files inside directories.
-     *
-     * @param dirPath directory path
-     * @param outStream output stream
-     *      @param version deleting version
-     * @throws IOException throw an exception if an issue occurs
-     */
-    public static void deleteFiles(Path dirPath, PrintStream outStream, String version) throws IOException {
-        if (dirPath == null) {
-            return;
-        }
-
-        Files.walk(dirPath)
-                .sorted(Comparator.reverseOrder())
-                .forEach(path -> {
-                    if (!Files.isWritable(path)) {
-                        throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" +
-                                dirPath + "'");
-                    }
-                });
-
-        Files.walk(dirPath)
-                .sorted(Comparator.reverseOrder())
-                .forEach(path -> {
-                    try {
-                        Files.delete(path);
-                    } catch (IOException e) {
-                        throw ErrorUtil.createCommandException("cannot remove '" + path + "'");
-                    }
-                });
     }
 }
