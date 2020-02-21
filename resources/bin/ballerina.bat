@@ -88,7 +88,6 @@ if "%RUN_BALLERINA%" == "true" (
         )
     )
     call %CURRENT_PATH%..\distributions\!BALLERINA_HOME!\bin\ballerina.bat %*
-    exit /b %errorlevel%
 )
 set merge=false
 if "%1" == "help" (
@@ -103,7 +102,6 @@ if "%1" == "--version" set merge=true
 
 if "%merge%" == "true" (
     %JAVA_CMD% -jar %CURRENT_PATH%..\lib\ballerina-command-${ballerina.command.version}.jar %*
-    exit /b %errorlevel%
 )
 
 exit /b
