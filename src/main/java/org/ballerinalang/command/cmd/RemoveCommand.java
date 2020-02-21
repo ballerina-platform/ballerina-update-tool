@@ -18,6 +18,7 @@ package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
 import org.ballerinalang.command.util.ErrorUtil;
+import org.ballerinalang.command.util.OSUtils;
 import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
 
@@ -25,8 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
-
-import static org.ballerinalang.command.util.OSUtils.deleteFiles;
 
 /**
  * This class represents the "Remove" command and it holds arguments and flags specified by the user.
@@ -40,6 +39,9 @@ public class RemoveCommand extends Command implements BCommand {
     @CommandLine.Option(names = {"--help", "-h", "?"}, hidden = true)
     private boolean helpFlag;
 
+    @CommandLine.Option(names = {"--all", "-a"}, hidden = true)
+    private boolean allFlag;
+
     private CommandLine parentCmdParser;
 
     public RemoveCommand(PrintStream printStream) {
@@ -52,8 +54,14 @@ public class RemoveCommand extends Command implements BCommand {
             return;
         }
 
+        if (allFlag) {
+            ToolUtil.handleInstallDirPermission();
+            clean();
+            return;
+        }
+
         if (removeCommands == null || removeCommands.size() == 0) {
-            throw ErrorUtil.createDistributionRequiredException("remove");
+            throw ErrorUtil.createDistributionRequiredException("remove", "--all, -a");
         }
 
         if (removeCommands.size() > 1) {
@@ -85,16 +93,18 @@ public class RemoveCommand extends Command implements BCommand {
         this.parentCmdParser = parentCmdParser;
     }
 
+    private boolean isCurrentVersion(String version) {
+        return version.equals(ToolUtil.BALLERINA_TYPE + "-" + ToolUtil.getCurrentBallerinaVersion());
+    }
+
     private void remove(String version) {
-        boolean isCurrentVersion =
-                version.equals(ToolUtil.BALLERINA_TYPE + "-" + ToolUtil.getCurrentBallerinaVersion());
         try {
-            if (isCurrentVersion) {
+            if (isCurrentVersion(version)) {
                 throw ErrorUtil.createCommandException("The active Ballerina distribution cannot be removed");
             } else {
                 File directory = new File(ToolUtil.getDistributionsPath() + File.separator + version);
                 if (directory.exists()) {
-                        deleteFiles(directory.toPath(), getPrintStream(), version);
+                    OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
                     getPrintStream().println("Distribution '" + version + "' successfully removed");
                 } else {
                     throw ErrorUtil.createCommandException("distribution '" + version + "' not found");
@@ -102,6 +112,30 @@ public class RemoveCommand extends Command implements BCommand {
             }
         } catch (IOException e) {
             throw ErrorUtil.createCommandException("error occurred while removing '" + version + "'");
+        }
+    }
+
+    private void clean() {
+        try {
+            File folder = new File(ToolUtil.getDistributionsPath());
+            File[] listOfFiles;
+            listOfFiles = folder.listFiles();
+            if (listOfFiles.length == 2) {
+                getPrintStream().println("There is nothing to remove since active distribution only exists");
+                return;
+            }
+            for (File file: listOfFiles) {
+                if (file.isDirectory()) {
+                    String version = file.getName();
+                    File directory = new File(ToolUtil.getDistributionsPath() + File.separator + version);
+                    if (!isCurrentVersion(version) && directory.exists()) {
+                        OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
+                    }
+                }
+            }
+            getPrintStream().println("All non-active distributions are successfully removed");
+        } catch (IOException | NullPointerException e) {
+            throw ErrorUtil.createCommandException("error occurred while cleaning distributions" + e);
         }
     }
 }

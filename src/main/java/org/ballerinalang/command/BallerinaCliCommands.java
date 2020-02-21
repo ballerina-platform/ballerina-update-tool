@@ -32,6 +32,5 @@ public class BallerinaCliCommands {
     public static final String PULL = "pull";
     public static final String USE = "use";
     public static final String REMOVE = "remove";
-    public static final String CLEAN = "clean";
     public static final String VERSION = "version";
 }
