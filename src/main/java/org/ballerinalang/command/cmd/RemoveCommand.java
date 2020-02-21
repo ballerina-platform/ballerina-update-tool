@@ -135,7 +135,7 @@ public class RemoveCommand extends Command implements BCommand {
             }
             getPrintStream().println("All non-active distributions are successfully removed");
         } catch (IOException | NullPointerException e) {
-            throw ErrorUtil.createCommandException("error occurred while cleaning distributions" + e);
+            throw ErrorUtil.createCommandException("error occurred while cleaning the distributions" + e);
         }
     }
 }

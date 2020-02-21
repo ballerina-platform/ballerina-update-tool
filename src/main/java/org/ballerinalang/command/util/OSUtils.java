@@ -224,7 +224,7 @@ public class OSUtils {
      *
      * @param dirPath directory path
      * @param outStream output stream
-     *      @param version deleting version
+     * @param version version to be deleted
      * @throws IOException throw an exception if an issue occurs
      */
     public static void deleteFiles(Path dirPath, PrintStream outStream, String version) throws IOException {
