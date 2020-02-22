@@ -55,9 +55,13 @@ public class RemoveCommand extends Command implements BCommand {
         }
 
         if (allFlag) {
-            ToolUtil.handleInstallDirPermission();
-            clean();
-            return;
+            if (removeCommands == null) {
+                ToolUtil.handleInstallDirPermission();
+                clean();
+                return;
+            }
+            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments",
+                    BallerinaCliCommands.REMOVE);
         }
 
         if (removeCommands == null || removeCommands.size() == 0) {
@@ -66,7 +70,7 @@ public class RemoveCommand extends Command implements BCommand {
 
         if (removeCommands.size() > 1) {
             throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments",
-                                                                       BallerinaCliCommands.REMOVE);
+                    BallerinaCliCommands.REMOVE);
         }
 
         ToolUtil.handleInstallDirPermission();
