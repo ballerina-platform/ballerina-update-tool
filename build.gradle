@@ -39,6 +39,45 @@ dependencies {
     implementation 'me.tongfei:progressbar:0.7.4'
 }
 
+subprojects {
+    apply plugin: 'maven-publish'
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId project.group
+                artifactId project.name
+                version = project.version
+            }
+        }
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url "https://maven.pkg.github.com/ballerina-platform/ballerina-update-tool/"
+
+                credentials {
+                    username System.getenv("GITHUB_ACTOR")
+                    password System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
+
+    release {
+        // Disable check snapshots temporarily
+        failOnSnapshotDependencies = false
+        failOnCommitNeeded = false
+        tagTemplate = 'v${version}'
+        git {
+            // To release from any branch
+            requireBranch = null
+        }
+    }
+
+    afterReleaseBuild.dependsOn publishToMavenLocal
+    afterReleaseBuild.dependsOn publish
+}
+
+
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {
@@ -78,5 +117,9 @@ repositories {
 
     maven {
         url = 'https://repo.maven.apache.org/maven2'
+    }
+
+    maven {
+        url = 'https://maven.pkg.github.com/ballerina-platform/ballerina-update-tool'
     }
 }
