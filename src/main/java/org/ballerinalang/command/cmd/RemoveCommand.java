@@ -57,7 +57,7 @@ public class RemoveCommand extends Command implements BCommand {
         if (allFlag) {
             if (removeCommands == null) {
                 ToolUtil.handleInstallDirPermission();
-                clean();
+                removeAll();
                 return;
             }
             throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments",
@@ -119,7 +119,7 @@ public class RemoveCommand extends Command implements BCommand {
         }
     }
 
-    private void clean() {
+    private void removeAll() {
         try {
             File folder = new File(ToolUtil.getDistributionsPath());
             File[] listOfFiles;
@@ -139,7 +139,7 @@ public class RemoveCommand extends Command implements BCommand {
             }
             getPrintStream().println("All non-active distributions are successfully removed");
         } catch (IOException | NullPointerException e) {
-            throw ErrorUtil.createCommandException("error occurred while cleaning the distributions" + e);
+            throw ErrorUtil.createCommandException("error occurred while removing the distributions" + e);
         }
     }
 }
