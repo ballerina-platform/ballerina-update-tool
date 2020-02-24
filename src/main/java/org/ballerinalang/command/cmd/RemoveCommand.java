@@ -39,7 +39,7 @@ public class RemoveCommand extends Command implements BCommand {
     @CommandLine.Option(names = {"--help", "-h", "?"}, hidden = true)
     private boolean helpFlag;
 
-    @CommandLine.Option(names = {"--all", "-a"}, hidden = true)
+    @CommandLine.Option(names = {"--all", "-a"})
     private boolean allFlag;
 
     private CommandLine parentCmdParser;
@@ -125,7 +125,7 @@ public class RemoveCommand extends Command implements BCommand {
             File[] listOfFiles;
             listOfFiles = folder.listFiles();
             if (listOfFiles.length == 2) {
-                getPrintStream().println("There is nothing to remove since active distribution only exists");
+                getPrintStream().println("There is nothing to remove. Only active distribution is remaining");
                 return;
             }
             for (File file: listOfFiles) {
