@@ -20,5 +20,6 @@ DESCRIPTION
 EXAMPLES
        This command deletes the jballerina-1.0.5 version in your local machine.
           $ ballerina dist remove jballerina-1.0.5
-       This command deletes all the distributions except the currently active one in your local machine.
+       This command deletes all the distributions except the currently active one
+       in your local machine.
           $ ballerina dist remove -a
