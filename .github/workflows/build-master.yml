@@ -1,6 +1,9 @@
-name: Java CI
+name: Build master branch
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -32,10 +35,6 @@ jobs:
       - name: Publish artifact
         env:
           GITHUB_TOKEN: ${{ secrets.PUBLISH_PAT }}
-
-        # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
-        # If we split on '/' and take the 3rd value,
-        # we can get the release name.
         run: |
           NEW_VERSION=0.8.1-SNAPSHOT
           echo "New version: ${NEW_VERSION}"
