@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ * Copyright (c) 2019, WSO2 Inc. (http://wso2.com) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class OSUtils {
         return OSUtils.isWindows() ? "language-server-launcher.bat" : "language-server-launcher.sh";
     }
 
-    public static String getBallerinaVersionFilePath() throws IOException {
+    public static String getBallerinaVersionFilePath() throws Exception {
         String userHome = getUserHome();
         File file = new File(userHome + File.separator
                 + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG);
@@ -115,7 +115,7 @@ public class OSUtils {
      * @return needs to be shown
      * @throws IOException occurs when reading files
      */
-    static boolean updateNotice() throws IOException {
+    static boolean updateNotice() throws Exception {
         boolean showNotice;
         String userHome = getUserHome();
         LocalDate today = LocalDate.now();
@@ -144,7 +144,7 @@ public class OSUtils {
      * @param outStream output stream to indicate errors
      * @throws IOException could occur accessing the file
      */
-    public static void clearBirCacheLocation(PrintStream outStream) throws IOException {
+    public static void clearBirCacheLocation(PrintStream outStream) throws Exception {
         deleteDirectory(new File(getUserHome() + File.separator
                 + BALLERINA_HOME_DIR + File.separator + BIR_CACHE), outStream);
     }
@@ -154,7 +154,7 @@ public class OSUtils {
      * @param outStream output stream to indicate errors
      * @throws IOException could occur accessing the file
      */
-    public static void clearJarCacheLocation(PrintStream outStream) throws IOException {
+    public static void clearJarCacheLocation(PrintStream outStream) throws Exception {
         deleteDirectory(new File(getUserHome() + File.separator
                 + BALLERINA_HOME_DIR + File.separator + JAR_CACHE), outStream);
     }
@@ -211,16 +211,15 @@ public class OSUtils {
      * Provide user home directory based on command.
      * @return user home directory
      */
-    private static String getUserHome() {
+    private static String getUserHome() throws Exception {
         String userHome = System.getenv("HOME");
         if (userHome == null) {
-            if (OS.contains("nux")) {
+            if (System.getProperty("user.name").contains("root")) {
                 ProcessBuilder processBuilder = new ProcessBuilder();
                 processBuilder.command("bash", "-c", "echo home/$USER");
                 StringBuilder output = new StringBuilder();
                 try {
                     Process process = processBuilder.start();
-
                     BufferedReader reader = new BufferedReader(
                             new InputStreamReader(process.getInputStream()));
                     String line;
@@ -228,12 +227,21 @@ public class OSUtils {
                         output.append(line + "\n");
                     }
                     int exitVal = process.waitFor();
-                } catch (IOException e) {
-
-                } catch (InterruptedException ex) {
+                    if (exitVal == 0) {
+                        System.exit(0);
+                    }
+                } catch (IOException | InterruptedException e) {
 
                 }
-                userHome = output.toString();
+                if (output.toString().contains("home/")) {
+                    try {
+                        userHome = output.toString();
+                    } catch (Exception e) {
+                        throw new Exception("cannot find the user home directory!");
+                    }
+
+                }
+
             } else {
                 userHome = System.getProperty("user.home");
             }
