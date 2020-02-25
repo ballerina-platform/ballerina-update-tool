@@ -34,6 +34,18 @@ task fatJar(type: Jar) {
     with jar
 }
 
+CopySpec copyJarSpec = copySpec {
+    from ('build/libs')
+    into('/lib')
+}
+
+task createZip(type:Zip) {
+    dependsOn jar
+    with copyJarSpec
+    from ('resources')
+    destinationDir file('build')
+}
+
 sourceCompatibility = 1.8
 
 dependencies {
@@ -49,7 +61,7 @@ publishing {
             version = project.version
             artifact fatJar
         }
-        maven(MavenPublication) {
+        mavenJava(MavenPublication) {
             groupId project.group
             artifactId project.name + "-distribution"
             version = project.version
@@ -74,17 +86,7 @@ tasks.withType(JavaCompile) {
 }
 
 
-CopySpec copyJarSpec = copySpec {
-    from ('build/libs')
-    into('/lib')
-}
 
-task createZip(type:Zip) {
-    dependsOn jar
-    with copyJarSpec
-    from ('resources')
-    destinationDir file('build')
-}
 
 build {
     dependsOn createZip
