@@ -49,6 +49,12 @@ publishing {
             version = project.version
             artifact fatJar
         }
+        maven(MavenPublication) {
+            groupId project.group
+            artifactId project.name + "-distribution"
+            version = project.version
+            artifact  source: fatJar, extension: 'zip'
+        }
     }
 
     repositories {
