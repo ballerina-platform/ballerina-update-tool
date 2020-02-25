@@ -53,7 +53,7 @@ publishing {
             groupId project.group
             artifactId project.name + "-distribution"
             version = project.version
-            artifact  source: fatJar, extension: 'zip'
+            artifact  source: createZip, extension: 'zip'
         }
     }
 
