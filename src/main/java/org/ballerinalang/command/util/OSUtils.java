@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ * Copyright (c) 2019, WSO2 Inc. (http://wso2.com) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -214,13 +214,12 @@ public class OSUtils {
     private static String getUserHome() {
         String userHome = System.getenv("HOME");
         if (userHome == null) {
-            if (OS.contains("nux")) {
+            if (System.getProperty("user.name").contains("root")) {
                 ProcessBuilder processBuilder = new ProcessBuilder();
                 processBuilder.command("bash", "-c", "echo home/$USER");
                 StringBuilder output = new StringBuilder();
                 try {
                     Process process = processBuilder.start();
-
                     BufferedReader reader = new BufferedReader(
                             new InputStreamReader(process.getInputStream()));
                     String line;
@@ -228,12 +227,13 @@ public class OSUtils {
                         output.append(line + "\n");
                     }
                     int exitVal = process.waitFor();
-                } catch (IOException e) {
-
-                } catch (InterruptedException ex) {
+                    if (exitVal == 0) {
+                        System.exit(0);
+                    }
+                    userHome = output.toString();
+                } catch (IOException | InterruptedException e) {
 
                 }
-                userHome = output.toString();
             } else {
                 userHome = System.getProperty("user.home");
             }
