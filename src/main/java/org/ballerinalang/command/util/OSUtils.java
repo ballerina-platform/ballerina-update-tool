@@ -207,6 +207,10 @@ public class OSUtils {
         return OS.contains("sunos");
     }
 
+    private static boolean isCentOS() {
+        return System.getProperty("user.name").contains("root");
+    }
+
     /**
      * Provide user home directory based on command.
      * @return user home directory
@@ -214,26 +218,9 @@ public class OSUtils {
     private static String getUserHome() {
         String userHome = System.getenv("HOME");
         if (userHome == null) {
-            if (System.getProperty("user.name").contains("root")) {
-                ProcessBuilder processBuilder = new ProcessBuilder();
-                processBuilder.command("bash", "-c", "echo home/$USER");
-                StringBuilder output = new StringBuilder();
-                try {
-                    Process process = processBuilder.start();
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(process.getInputStream()));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        output.append(line + "\n");
-                    }
-                    int exitVal = process.waitFor();
-                    if (exitVal == 0) {
-                        System.exit(0);
-                    }
-                    userHome = output.toString();
-                } catch (IOException | InterruptedException e) {
-
-                }
+            if (isCentOS()) {
+                String user = System.getProperty("update_user");
+                userHome = "/home/" + user;
             } else {
                 userHome = System.getProperty("user.home");
             }
