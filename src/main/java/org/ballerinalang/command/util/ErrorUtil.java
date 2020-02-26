@@ -62,6 +62,11 @@ public class ErrorUtil {
                                                           operation);
     }
 
+    public static CommandException createDistributionRequiredException(String operation, String flags) {
+        return createDistSubCommandUsageExceptionWithHelp("a distribution or `" + flags +
+                        "` must be specified to " + operation, operation);
+    }
+
     public static void printLauncherException(CommandException e, PrintStream outStream) {
         List<String> errorMessages = e.getMessages();
         errorMessages.forEach(outStream::println);

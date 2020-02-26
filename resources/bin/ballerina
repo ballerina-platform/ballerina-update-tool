@@ -93,4 +93,7 @@ then
       exit 1;
     fi
     $JAVA_COMMAND -jar -Dupdate_user=$USER $CURRENT_PATH/../lib/ballerina-command-${ballerina.command.version}.jar "$@"
+    exit $?
+else
+    exit $?
 fi

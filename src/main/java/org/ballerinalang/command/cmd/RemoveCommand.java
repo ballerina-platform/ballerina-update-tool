@@ -18,15 +18,13 @@ package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
 import org.ballerinalang.command.util.ErrorUtil;
+import org.ballerinalang.command.util.OSUtils;
 import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -41,6 +39,9 @@ public class RemoveCommand extends Command implements BCommand {
     @CommandLine.Option(names = {"--help", "-h", "?"}, hidden = true)
     private boolean helpFlag;
 
+    @CommandLine.Option(names = {"--all", "-a"})
+    private boolean allFlag;
+
     private CommandLine parentCmdParser;
 
     public RemoveCommand(PrintStream printStream) {
@@ -53,13 +54,23 @@ public class RemoveCommand extends Command implements BCommand {
             return;
         }
 
+        if (allFlag) {
+            if (removeCommands == null) {
+                ToolUtil.handleInstallDirPermission();
+                removeAll();
+                return;
+            }
+            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments",
+                    BallerinaCliCommands.REMOVE);
+        }
+
         if (removeCommands == null || removeCommands.size() == 0) {
-            throw ErrorUtil.createDistributionRequiredException("remove");
+            throw ErrorUtil.createDistributionRequiredException("remove", "--all, -a");
         }
 
         if (removeCommands.size() > 1) {
             throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments",
-                                                                       BallerinaCliCommands.REMOVE);
+                    BallerinaCliCommands.REMOVE);
         }
 
         ToolUtil.handleInstallDirPermission();
@@ -86,16 +97,18 @@ public class RemoveCommand extends Command implements BCommand {
         this.parentCmdParser = parentCmdParser;
     }
 
+    private boolean isCurrentVersion(String version) {
+        return version.equals(ToolUtil.BALLERINA_TYPE + "-" + ToolUtil.getCurrentBallerinaVersion());
+    }
+
     private void remove(String version) {
-        boolean isCurrentVersion =
-                version.equals(ToolUtil.BALLERINA_TYPE + "-" + ToolUtil.getCurrentBallerinaVersion());
         try {
-            if (isCurrentVersion) {
+            if (isCurrentVersion(version)) {
                 throw ErrorUtil.createCommandException("The active Ballerina distribution cannot be removed");
             } else {
                 File directory = new File(ToolUtil.getDistributionsPath() + File.separator + version);
                 if (directory.exists()) {
-                        deleteFiles(directory.toPath(), getPrintStream(), version);
+                    OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
                     getPrintStream().println("Distribution '" + version + "' successfully removed");
                 } else {
                     throw ErrorUtil.createCommandException("distribution '" + version + "' not found");
@@ -106,36 +119,27 @@ public class RemoveCommand extends Command implements BCommand {
         }
     }
 
-    /**
-     * Delete files inside directories.
-     *
-     * @param dirPath directory path
-     * @param outStream output stream
-     *      @param version deleting version
-     * @throws IOException throw an exception if an issue occurs
-     */
-    public static void deleteFiles(Path dirPath, PrintStream outStream, String version) throws IOException {
-        if (dirPath == null) {
-            return;
+    private void removeAll() {
+        try {
+            File folder = new File(ToolUtil.getDistributionsPath());
+            File[] listOfFiles;
+            listOfFiles = folder.listFiles();
+            if (listOfFiles.length == 2) {
+                getPrintStream().println("There is nothing to remove. Only active distribution is remaining");
+                return;
+            }
+            for (File file: listOfFiles) {
+                if (file.isDirectory()) {
+                    String version = file.getName();
+                    File directory = new File(ToolUtil.getDistributionsPath() + File.separator + version);
+                    if (!isCurrentVersion(version) && directory.exists()) {
+                        OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
+                    }
+                }
+            }
+            getPrintStream().println("All non-active distributions are successfully removed");
+        } catch (IOException | NullPointerException e) {
+            throw ErrorUtil.createCommandException("error occurred while removing the distributions" + e);
         }
-
-        Files.walk(dirPath)
-                .sorted(Comparator.reverseOrder())
-                .forEach(path -> {
-                    if (!Files.isWritable(path)) {
-                        throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" +
-                                dirPath + "'");
-                    }
-                });
-
-        Files.walk(dirPath)
-                .sorted(Comparator.reverseOrder())
-                .forEach(path -> {
-                    try {
-                        Files.delete(path);
-                    } catch (IOException e) {
-                        throw ErrorUtil.createCommandException("cannot remove '" + path + "'");
-                    }
-                });
     }
 }

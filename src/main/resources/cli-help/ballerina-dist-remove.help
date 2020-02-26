@@ -3,16 +3,23 @@ NAME
 
 SYNOPSIS
        ballerina dist remove <distribution>
+       ballerina dist remove <-a | --all>
 
 DESCRIPTION
-       Remove deletes the given Ballerina distribution from your local environment.
+       Removes the specified Ballerina distribution from your local environment.
 
-       However, you are not allowed to remove the active distribution.
+       However, you are not allowed to remove the distribution, which is currently active.
 
        Here, the "distribution" has two parts: name and version. Following are some sample
-       distributions: jballerina-1.1.0, jballerina-1.4.0, nballerina-0.5.0.
+            distributions: jballerina-1.1.0, jballerina-1.4.0, nballerina-0.5.0.
+
+       The <-a | --all> flag removes all the Ballerina distributions except the currently
+       active one from your local environment.
 
 
 EXAMPLES
-       This command deletes jballerina-1.0.5 version in your local machine.
+       This command removes the jballerina-1.0.5 version in your local machine.
           $ ballerina dist remove jballerina-1.0.5
+       This command removes all the distributions except the currently active one
+       in your local machine.
+          $ ballerina dist remove -a
