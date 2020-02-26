@@ -15,11 +15,12 @@
  *
  */
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 group = project.group
 version = project.version
 
-jar {
+task fatJar(type: Jar) {
     manifest {
         attributes(
                 'Main-Class': 'org.ballerinalang.command.Main',
@@ -30,21 +31,8 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    with jar
 }
-
-sourceCompatibility = 1.8
-
-dependencies {
-    implementation 'info.picocli:picocli:4.0.1'
-    implementation 'me.tongfei:progressbar:0.7.4'
-}
-
-sourceCompatibility = '1.8'
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
 
 CopySpec copyJarSpec = copySpec {
     from ('build/libs')
@@ -57,6 +45,48 @@ task createZip(type:Zip) {
     from ('resources')
     destinationDir file('build')
 }
+
+sourceCompatibility = 1.8
+
+dependencies {
+    implementation 'info.picocli:picocli:4.0.1'
+    implementation 'me.tongfei:progressbar:0.7.4'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version = project.version
+            artifact fatJar
+        }
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.name + "-distribution"
+            version = project.version
+            artifact  source: createZip, extension: 'zip'
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ballerina-platform/ballerina-update-tool")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+
+
 
 build {
     dependsOn createZip
@@ -78,5 +108,9 @@ repositories {
 
     maven {
         url = 'https://repo.maven.apache.org/maven2'
+    }
+
+    maven {
+        url = 'https://maven.pkg.github.com/ballerina-platform/ballerina-update-tool'
     }
 }
