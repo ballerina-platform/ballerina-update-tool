@@ -219,7 +219,7 @@ public class OSUtils {
         String userHome = System.getenv("HOME");
         if (userHome == null) {
             if (isCentOS()) {
-                String user = System.getProperty("update_user");
+                String user = System.getProperty("centos.user");
                 userHome = "/home/" + user;
             } else {
                 userHome = System.getProperty("user.home");

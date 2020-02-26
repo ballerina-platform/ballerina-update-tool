@@ -92,7 +92,7 @@ then
       echo "Compatible JRE 8 not found. Please follow the instructions in <BALLERINA_HOME>/INSTALL.txt to install and setup Ballerina."
       exit 1;
     fi
-    $JAVA_COMMAND -jar -Dupdate_user=$USER $CURRENT_PATH/../lib/ballerina-command-${ballerina.command.version}.jar "$@"
+    $JAVA_COMMAND -jar -Dcentos.user=$USER $CURRENT_PATH/../lib/ballerina-command-${ballerina.command.version}.jar "$@"
     exit $?
 else
     exit $?
