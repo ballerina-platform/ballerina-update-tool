@@ -6,7 +6,7 @@ SYNOPSIS
        ballerina dist remove <-a | --all>
 
 DESCRIPTION
-       Removes the specified Ballerina distribution from your local environment.
+       Remove deletes the specified Ballerina distribution from your local environment.
 
        However, you are not allowed to remove the distribution, which is currently active.
 
