@@ -207,22 +207,28 @@ public class OSUtils {
         return OS.contains("sunos");
     }
 
-    private static boolean isCentOS() {
-        return System.getProperty("user.name").contains("root");
-    }
-
     /**
      * Provide user home directory based on command.
      * @return user home directory
      */
     private static String getUserHome() {
         String userHome = System.getenv("HOME");
+        String user = System.getenv("USER");
+        String home = System.getProperty("user.home");
+        String username = System.getProperty("user.name");
         if (userHome == null) {
-            if (isCentOS()) {
-                String user = System.getProperty("centos.user");
-                userHome = "/home/" + user;
-            } else {
+            if (user.equals(username)) {
                 userHome = System.getProperty("user.home");
+            } else {
+                // Fixes centOS issue
+                if (home.contains(username)) {
+                    home = "/home";
+                }
+                userHome = home + user;
+            }
+            File file = new File(userHome);
+            if (!file.exists()) {
+                throw ErrorUtil.createCommandException(file + "not exists");
             }
         }
         return userHome;
