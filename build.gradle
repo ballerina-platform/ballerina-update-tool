@@ -20,7 +20,7 @@ apply plugin: 'maven-publish'
 group = project.group
 version = project.version
 
-task fatJar(type: Jar) {
+jar {
     manifest {
         attributes(
                 'Main-Class': 'org.ballerinalang.command.Main',
@@ -31,7 +31,6 @@ task fatJar(type: Jar) {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    with jar
 }
 
 CopySpec copyJarSpec = copySpec {
@@ -59,7 +58,7 @@ publishing {
             groupId project.group
             artifactId project.name
             version = project.version
-            artifact fatJar
+            artifact jar
         }
         mavenJava(MavenPublication) {
             groupId project.group
