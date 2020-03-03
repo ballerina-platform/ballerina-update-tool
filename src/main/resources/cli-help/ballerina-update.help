@@ -7,3 +7,4 @@ SYNOPSIS
 
 DESCRIPTION
        Update updates the Ballerina tool to the latest version.
+       If you want to update the Ballerina distribution use `ballerina dist update`.

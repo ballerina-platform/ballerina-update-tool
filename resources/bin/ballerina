@@ -61,6 +61,8 @@ then
         fi
         rm -rf $CURRENT_PATH/../ballerina-command-tmp
         echo "Update successfully completed"
+        echo
+        echo "If you want to update the Ballerina distribution, use 'ballerina dist update'"
         exit 0
     fi
 fi
