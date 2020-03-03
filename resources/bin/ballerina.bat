@@ -68,6 +68,8 @@ if "%dist%" == "true" (
         )
         rd /s /q %CURRENT_PATH%\..\ballerina-command-tmp
         echo Update successfully completed
+        echo.
+        echo "If you want to update the Ballerina distribution, use 'ballerina dist update'"
         exit /b
    )
 )
