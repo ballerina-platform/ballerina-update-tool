@@ -57,14 +57,18 @@ public class ErrorUtil {
         return createCommandException("distribution '" + distribution + "' not found");
     }
 
+    public static CommandException createDependencyNotFoundException(String dependency) {
+        return createCommandException("dependency '" + dependency + "' not found");
+    }
+
     public static CommandException createDistributionRequiredException(String operation) {
         return createDistSubCommandUsageExceptionWithHelp("a distribution must be specified to " + operation,
-                                                          operation);
+                operation);
     }
 
     public static CommandException createDistributionRequiredException(String operation, String flags) {
         return createDistSubCommandUsageExceptionWithHelp("a distribution or `" + flags +
-                        "` must be specified to " + operation, operation);
+                "` must be specified to " + operation, operation);
     }
 
     public static void printLauncherException(CommandException e, PrintStream outStream) {
@@ -72,4 +76,3 @@ public class ErrorUtil {
         errorMessages.forEach(outStream::println);
     }
 }
-

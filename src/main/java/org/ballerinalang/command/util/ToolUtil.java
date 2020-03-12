@@ -69,9 +69,11 @@ public class ToolUtil {
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
                 }
+
                 public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
                     //No need to implement.
                 }
+
                 public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
                     //No need to implement.
                 }
@@ -80,6 +82,7 @@ public class ToolUtil {
 
     /**
      * Provides used Ballerina version.
+     *
      * @return Used Ballerina version
      */
     public static String getCurrentBallerinaVersion() {
@@ -113,6 +116,7 @@ public class ToolUtil {
 
     /**
      * Provides used Ballerina tools version.
+     *
      * @return Used Ballerina tools version.
      */
     public static String getCurrentToolsVersion() {
@@ -146,6 +150,11 @@ public class ToolUtil {
         return installFile.exists();
     }
 
+    public static boolean checkDependencyAvailable(String dependency) {
+        File dependencyLocation = new File(getDependencyPath() + File.separator + dependency);
+        return dependencyLocation.exists();
+    }
+
     public static List<Distribution> getDistributions() {
         HttpURLConnection conn = null;
         List<Distribution> distributions = new ArrayList<>();
@@ -158,8 +167,8 @@ public class ToolUtil {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
-                                    OSUtils.getUserAgent(getCurrentBallerinaVersion(),
-                                                         getCurrentToolsVersion(), "jballerina"));
+                    OSUtils.getUserAgent(getCurrentBallerinaVersion(),
+                            getCurrentToolsVersion(), "jballerina"));
             conn.setRequestProperty("Accept", "application/json");
             if (conn.getResponseCode() != 200) {
                 conn.disconnect();
@@ -190,12 +199,12 @@ public class ToolUtil {
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
             URL url = new URL(getServerURL()
-                                      + "/distributions/latest?version=" + currentVersion + "&type=" + type);
+                    + "/distributions/latest?version=" + currentVersion + "&type=" + type);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
-                                    OSUtils.getUserAgent(getCurrentBallerinaVersion(),
-                                                         getCurrentToolsVersion(), "jballerina"));
+                    OSUtils.getUserAgent(getCurrentBallerinaVersion(),
+                            getCurrentToolsVersion(), "jballerina"));
             conn.setRequestProperty("Accept", "application/json");
             if (conn.getResponseCode() == 200) {
                 return getValue(type, convertStreamToString(conn.getInputStream()));
@@ -234,7 +243,7 @@ public class ToolUtil {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent", OSUtils.getUserAgent(getCurrentBallerinaVersion(),
-                                                                       getCurrentToolsVersion(), "jballerina"));
+                    getCurrentToolsVersion(), "jballerina"));
             conn.setRequestProperty("Accept", "application/json");
             if (conn.getResponseCode() == 200) {
                 String json = convertStreamToString(conn.getInputStream());
@@ -284,11 +293,25 @@ public class ToolUtil {
 
     /**
      * Provides path of the installed distributions.
+     *
      * @return installed distributions path
      */
     public static String getDistributionsPath() {
         try {
             return OSUtils.getInstallationPath() + File.separator + "distributions";
+        } catch (URISyntaxException e) {
+            throw ErrorUtil.createCommandException("failed to get the path of the distributions");
+        }
+    }
+
+    /**
+     * Provides path of the dependencies.
+     *
+     * @return dependencies path
+     */
+    public static String getDependencyPath() {
+        try {
+            return OSUtils.getInstallationPath() + File.separator + "dependencies";
         } catch (URISyntaxException e) {
             throw ErrorUtil.createCommandException("failed to get the path of the distributions");
         }
@@ -326,7 +349,7 @@ public class ToolUtil {
                     String newBalDistName = BALLERINA_TYPE + "-" + latestVersion;
                     printStream.println("A new version of Ballerina is available: " + newBalDistName);
                     printStream.println("Use 'ballerina dist pull " + newBalDistName + "' to " +
-                                                "download and use the distribution");
+                            "download and use the distribution");
                     printStream.println();
                 }
             }
@@ -350,17 +373,19 @@ public class ToolUtil {
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("user-agent",
-                                        OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
-                                                             distributionType));
+                        OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
+                                distributionType));
                 conn.setRequestProperty("Accept", "application/json");
                 if (conn.getResponseCode() == 302) {
                     String newUrl = conn.getHeaderField("Location");
                     conn = (HttpURLConnection) new URL(newUrl).openConnection();
                     conn.setRequestProperty("content-type", "binary/data");
                     ToolUtil.downloadAndSetupDist(printStream, conn, distribution);
+                    ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
                     return false;
                 } else if (conn.getResponseCode() == 200) {
                     ToolUtil.downloadAndSetupDist(printStream, conn, distribution);
+                    ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
                     return false;
                 } else {
                     throw ErrorUtil.createDistributionNotFoundException(distribution);
@@ -386,12 +411,12 @@ public class ToolUtil {
             downloadFile(conn, zipFileLocation, distribution, printStream);
             unzip(zipFileLocation, distPath);
             addExecutablePermissionToFile(new File(distPath + File.separator + distribution
-                                                           + File.separator + "bin"
-                                                           + File.separator + OSUtils.getExecutableFileName()));
+                    + File.separator + "bin"
+                    + File.separator + OSUtils.getExecutableFileName()));
 
 
             String langServerPath = distPath + File.separator + distribution + File.separator + "lib"
-                                    + File.separator + "tools";
+                    + File.separator + "tools";
             File launcherServer = new File(langServerPath + File.separator + "lang-server"
                     + File.separator + "launcher" + File.separator + OSUtils.getLangServerLauncherName());
             File debugAdpater = new File(langServerPath + File.separator + "debug-adapter"
@@ -411,6 +436,94 @@ public class ToolUtil {
         }
     }
 
+    public static void getDependency(PrintStream printStream, String distribution, String distributionType,
+                                     String distributionVersion) {
+        HttpURLConnection conn = null;
+        try {
+            printStream.println("\nFetching the dependencies for '" + distribution + "' from the remote server...");
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            URL url = new URL(ToolUtil.getServerURL() + "/distributions");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("user-agent",
+                    OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
+                            distributionType));
+            conn.setRequestProperty("Accept", "application/json");
+            if (conn.getResponseCode() == 200) {
+                String response = convertStreamToString(conn.getInputStream());
+                String infoRegex = "\\{.*?\\]\\}";
+                Pattern infoPattern = Pattern.compile(infoRegex);
+                Matcher infoMatcher = infoPattern.matcher(response);
+                while (infoMatcher.find()) {
+                    String distInfo = infoMatcher.group();
+                    if (distInfo.contains(distributionVersion)) {
+                        String dependencyRegex = "\"(jdk.*?)\"";
+                        Pattern dependencyPattern = Pattern.compile(dependencyRegex);
+                        Matcher dependencyMatcher = dependencyPattern.matcher(distInfo);
+                        while (dependencyMatcher.find()) {
+                            String dependencyName = dependencyMatcher.group(1);
+                            if (!ToolUtil.checkDependencyAvailable(dependencyName)) {
+                                downloadDependency(printStream, conn, dependencyName, distributionType,
+                                        distributionVersion);
+                            } else {
+                                printStream.println("Dependency '" + dependencyName +
+                                        "' is already available locally");
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+    }
+
+    private static void downloadDependency(PrintStream printStream, HttpURLConnection conn,
+                                           String dependency, String distributionType,
+                                           String distributionVersion) {
+        try {
+            String url = ToolUtil.getServerURL() + "/dependencies/" + dependency;
+            conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("user-agent",
+                    OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
+                            distributionType));
+            conn.setRequestProperty("Accept", "application/json");
+            if (conn.getResponseCode() == 302) {
+                String newUrl = conn.getHeaderField("Location");
+                conn = (HttpURLConnection) new URL(newUrl).openConnection();
+                conn.setRequestProperty("content-type", "binary/data");
+                downloadAndSetupDependency(conn, printStream, dependency);
+            } else if (conn.getResponseCode() == 200) {
+                downloadAndSetupDependency(conn, printStream, dependency);
+            } else {
+                throw ErrorUtil.createDependencyNotFoundException(dependency);
+            }
+        } catch (IOException e) {
+            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+        }
+    }
+
+    private static void downloadAndSetupDependency(HttpURLConnection conn, PrintStream printStream, String dependency) {
+        File zipFile = null;
+        String dependencyLocation = getDependencyPath();
+        String zipFileLocation = dependencyLocation + File.separator + dependency + ".zip";
+        zipFile = Paths.get(zipFileLocation).toFile();
+        downloadFile(conn, zipFileLocation, dependency, printStream);
+        unzip(zipFileLocation, dependencyLocation);
+        if (zipFile.exists()) {
+            zipFile.delete();
+        }
+    }
+
     public static void downloadTool(PrintStream printStream, String toolVersion) {
         HttpURLConnection conn = null;
         try {
@@ -422,7 +535,7 @@ public class ToolUtil {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent", OSUtils.getUserAgent(getCurrentBallerinaVersion(),
-                                                                       getCurrentToolsVersion(), "jballerina"));
+                    getCurrentToolsVersion(), "jballerina"));
             conn.setRequestProperty("Accept", "application/json");
             if (conn.getResponseCode() == 302) {
                 String newUrl = conn.getHeaderField("Location");
@@ -436,7 +549,7 @@ public class ToolUtil {
             }
         } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
             throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
-        }  finally {
+        } finally {
             if (conn != null) {
                 conn.disconnect();
             }
@@ -480,7 +593,7 @@ public class ToolUtil {
             long totalSizeInMB = conn.getContentLengthLong() / (1024 * 1024);
 
             try (ProgressBar progressBar = new ProgressBar("Downloading " + fileName, totalSizeInMB,
-                    1000, printStream , ProgressBarStyle.ASCII, " MB", 1)) {
+                    1000, printStream, ProgressBarStyle.ASCII, " MB", 1)) {
                 while ((count = in.read(b)) > 0) {
                     out.write(b, 0, count);
                     progress++;
@@ -491,7 +604,7 @@ public class ToolUtil {
             }
         } catch (IOException e) {
             throw ErrorUtil.createCommandException("failed to download file " + fileName + " to " +
-                                                           zipFileLocation + ".");
+                    zipFileLocation + ".");
         }
     }
 
@@ -521,7 +634,7 @@ public class ToolUtil {
             }
         } catch (IOException e) {
             throw ErrorUtil.createCommandException("failed to unzip zip the file in '" + zipFilePath + "' to '" +
-                                                           destDirectory + "'");
+                    destDirectory + "'");
         }
     }
 
@@ -530,10 +643,10 @@ public class ToolUtil {
         Path installScript = Paths.get(unzippedUpdateToolPath, installScriptFileName);
         try {
             Files.copy(Paths.get(unzippedUpdateToolPath, ballerinaCommandDir, "scripts", installScriptFileName),
-                       installScript);
+                    installScript);
         } catch (IOException e) {
             throw ErrorUtil.createCommandException("failed to copy the update scripts to temporary directory '" +
-                                                           unzippedUpdateToolPath + "'");
+                    unzippedUpdateToolPath + "'");
         }
         addExecutablePermissionToFile(installScript.toFile());
     }
@@ -584,7 +697,6 @@ public class ToolUtil {
 
     /**
      * Handle user permission to ballerina install location.
-     *
      */
     public static void handleInstallDirPermission() {
         try {
@@ -592,7 +704,7 @@ public class ToolUtil {
             boolean isWritable = Files.isWritable(Paths.get(installationPath));
             if (!isWritable) {
                 throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" +
-                                                               installationPath + "'");
+                        installationPath + "'");
             }
         } catch (URISyntaxException e) {
             throw ErrorUtil.createCommandException("failed to get the path to the Ballerina installation directory");
@@ -606,6 +718,7 @@ public class ToolUtil {
 
     /**
      * Provide server url based on the envorinment variable setting.
+     *
      * @return
      */
     private static String getServerURL() {
