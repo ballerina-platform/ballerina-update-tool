@@ -6,8 +6,8 @@ SYNOPSIS
 
 
 DESCRIPTION
-       Update fetches the latest patch version of your active distribution and marks it
-       as the active version.
+       Update fetches the latest patch version of your active distribution with its dependencies
+       and marks it as the active version.
 
        This command does not fetch the latest minor version if any.
 
