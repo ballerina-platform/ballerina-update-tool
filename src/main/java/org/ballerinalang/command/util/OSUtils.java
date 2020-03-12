@@ -92,10 +92,7 @@ public class OSUtils {
         if (!file.exists()) {
             file.getParentFile().mkdirs();
             file.createNewFile();
-            InputStream inputStream = OSUtils.class.getResourceAsStream("/META-INF/tool.properties");
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            ToolUtil.setVersion(file.getPath(), properties.getProperty("ballerina.command.version"));
+            ToolUtil.setVersion(file.getPath(), ToolUtil.getCurrentInstalledBallerinaVersion());
         }
         return getUserHome() + File.separator
                 + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG;

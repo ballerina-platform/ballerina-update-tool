@@ -88,9 +88,21 @@ public class ToolUtil {
             if (checkDistributionAvailable(BALLERINA_TYPE + "-" + userVersion)) {
                 return userVersion;
             }
-            return getVersion(OSUtils.getInstalledConfigPath());
+            return getCurrentInstalledBallerinaVersion();
         } catch (IOException e) {
             throw ErrorUtil.createCommandException("current Ballerina version not found.");
+        }
+    }
+
+    /**
+     * Provide the installed Ballerina version by the installer.
+     * @return Installed Ballerina version
+     */
+    public static String getCurrentInstalledBallerinaVersion() {
+        try {
+            return getVersion(OSUtils.getInstalledConfigPath());
+        } catch (IOException e) {
+            throw ErrorUtil.createCommandException("installed Ballerina version not found.");
         }
     }
 
