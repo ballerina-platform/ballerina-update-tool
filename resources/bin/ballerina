@@ -80,6 +80,7 @@ then
 
     export BALLERINA_HOME
     $BALLERINA_HOME/bin/./ballerina "$@"
+    EXIT_CODE=$?
 fi
 
 if [ "$1" == "help" ] && [ "$2" == "" ]  || [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] || \
@@ -95,5 +96,5 @@ then
     $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-${ballerina.command.version}.jar "$@"
     exit $?
 else
-    exit $?
+    exit $EXIT_CODE
 fi
