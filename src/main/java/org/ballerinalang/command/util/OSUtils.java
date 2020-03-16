@@ -210,20 +210,27 @@ public class OSUtils {
      */
     private static String getUserHome() {
         String userHome = System.getenv("HOME");
-        String user = System.getenv("USER");
-        String home = System.getProperty("user.home");
-        String username = System.getProperty("user.name");
 
-        if (user.equals(username)) {
-            userHome = System.getProperty("user.home");
+        if (isMac() || isWindows()) {
+            if (userHome == null) {
+                userHome = System.getProperty("user.home");
+            }
         } else {
-            // Fixes centOS issue
-            home = "/home/";
-            userHome = home + user;
-        }
-        File file = new File(userHome);
-        if (!file.exists()) {
-            throw ErrorUtil.createCommandException(file + "not exists");
+            String user = System.getenv("USER");
+            String home = System.getProperty("user.home");
+            String username = System.getProperty("user.name");
+
+            if (user.equals(username)) {
+                userHome = System.getProperty("user.home");
+            } else {
+                // Fixes centOS issue
+                home = "/home/";
+                userHome = home + user;
+            }
+            File file = new File(userHome);
+            if (!file.exists()) {
+                throw ErrorUtil.createCommandException(file + "not exists");
+            }
         }
         return userHome;
     }
