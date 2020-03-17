@@ -531,6 +531,8 @@ public class ToolUtil {
         zipFile = Paths.get(zipFileLocation).toFile();
         downloadFile(conn, zipFileLocation, dependency, printStream);
         unzip(zipFileLocation, dependencyLocation);
+        addExecutablePermissionToFile(new File(dependencyLocation + File.separator + dependency
+                + File.separator + "bin" + File.separator + "java"));
         if (zipFile.exists()) {
             zipFile.delete();
         }
