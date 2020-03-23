@@ -1,13 +1,12 @@
 NAME
-       ballerina-dist-pull - Fetch a given distribution and set it as the active version
+       ballerina-dist-pull - Fetch a given distribution
 
 SYNOPSIS
        ballerina dist pull <distribution>
 
 
 DESCRIPTION
-       Pull fetches the specified distribution with its dependencies to your local environment and
-       marks it as the active version.
+       Pull fetches the specified distribution with its dependencies to your local environment
 
        The update command always fetches the latest patch version whereas the pull command gives
        you the flexibility to fetch and use any distribution.
@@ -17,5 +16,5 @@ DESCRIPTION
 
 
 EXAMPLES
-       This command fetches "jballerina-1.0.5" and marks it as the active distribution.
+       This command fetches "jballerina-1.0.5" distribution.
           $ ballerina dist pull jballerina-1.0.5

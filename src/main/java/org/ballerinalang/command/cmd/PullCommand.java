@@ -70,7 +70,8 @@ public class PullCommand extends Command implements BCommand {
         }
         ToolUtil.downloadDistribution(printStream, distribution, distributionType, distributionVersion);
         ToolUtil.useBallerinaVersion(printStream, distribution);
-        printStream.println("'" + distribution + "' successfully set as the active distribution");
+        printStream.println("'" + distribution + "' successfully downloaded");
+        printStream.println("You can use " + "'" + "ballerina dist use " + distribution + "' to activate " + distribution);
     }
 
     @Override
