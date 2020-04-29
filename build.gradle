@@ -38,12 +38,25 @@ CopySpec copyJarSpec = copySpec {
     into('/lib')
 }
 
+task copyBin(type: Copy) {
+    from file("resources/bin")
+    into file("build/resources/bin")
+    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
+}
+
+task copyScripts(type: Copy) {
+    from file("resources/scripts")
+    into file("build/resources/scripts")
+    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
+}
+
 task createZip(type:Zip) {
     dependsOn jar
+    dependsOn copyBin
+    dependsOn copyScripts
     with copyJarSpec
-    from ('resources')
+    from ('build/resources')
     destinationDir file('build')
-    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
 }
 
 sourceCompatibility = 1.8
