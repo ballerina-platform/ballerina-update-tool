@@ -43,6 +43,7 @@ task createZip(type:Zip) {
     with copyJarSpec
     from ('resources')
     destinationDir file('build')
+    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
 }
 
 sourceCompatibility = 1.8
