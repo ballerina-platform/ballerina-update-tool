@@ -55,9 +55,9 @@ if "%dist%" == "true" (
        set RUN_BALLERINA=false;
    )
    if "%build%" == "true" (
-        %JAVA_CMD% -jar %CURRENT_PATH%..\lib\ballerina-command-${ballerina.command.version}.jar build
+        %JAVA_CMD% -jar %CURRENT_PATH%..\lib\ballerina-command-@version@.jar build
    ) else (
-        %JAVA_CMD% -jar %CURRENT_PATH%..\lib\ballerina-command-${ballerina.command.version}.jar %*
+        %JAVA_CMD% -jar %CURRENT_PATH%..\lib\ballerina-command-@version@.jar %*
    )
    if "%update%" == "true" if exist  %CURRENT_PATH%..\ballerina-command-tmp (
         call %CURRENT_PATH%\..\ballerina-command-tmp\install.bat
@@ -103,7 +103,7 @@ if "%1" == "-v" set merge=true
 if "%1" == "--version" set merge=true
 
 if "%merge%" == "true" (
-    %JAVA_CMD% -jar %CURRENT_PATH%..\lib\ballerina-command-${ballerina.command.version}.jar %*
+    %JAVA_CMD% -jar %CURRENT_PATH%..\lib\ballerina-command-@version@.jar %*
 )
 
 exit /b
