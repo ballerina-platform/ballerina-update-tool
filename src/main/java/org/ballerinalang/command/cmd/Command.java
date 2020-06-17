@@ -65,7 +65,7 @@ public abstract class Command {
     }
 
     public void printVersionInfo() {
-        String output = "Ballerina tool " + ToolUtil.getCurrentToolsVersion() + "\n";
+        String output = "Update Tool " + ToolUtil.getCurrentToolsVersion() + "\n";
         getPrintStream().print(output);
     }
 }

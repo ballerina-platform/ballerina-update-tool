@@ -56,7 +56,7 @@ public class UpdateCommand extends Command implements BCommand {
 
         if (updateCommands.size() > 0) {
             throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments",
-                                                                       BallerinaCliCommands.UPDATE);
+                    BallerinaCliCommands.UPDATE);
         }
     }
 
@@ -82,20 +82,20 @@ public class UpdateCommand extends Command implements BCommand {
 
     public static void update(PrintStream printStream) {
         String version = ToolUtil.getCurrentBallerinaVersion();
-        String distVersion = ToolUtil.BALLERINA_TYPE + "-" + version;
+        String distVersion = ToolUtil.getType(version) + "-" + version;
         printStream.println("Fetching the latest patch distribution for '" + distVersion + "' from " +
-                                    "the remote server...");
+                "the remote server...");
         String latestVersion = ToolUtil.getLatest(version, "patch");
         if (latestVersion == null) {
             printStream.println("Failed to find the latest patch distribution for '" + distVersion + "'");
             return;
         }
-        String distribution = ToolUtil.BALLERINA_TYPE + "-" + latestVersion;
+        String distribution = ToolUtil.getType(latestVersion) + "-" + latestVersion;
         if (!latestVersion.equals(version)) {
-            ToolUtil.downloadDistribution(printStream, distribution, ToolUtil.BALLERINA_TYPE, latestVersion);
+            ToolUtil.downloadDistribution(printStream, distribution, ToolUtil.getType(latestVersion), latestVersion);
             ToolUtil.useBallerinaVersion(printStream, distribution);
             printStream.println("Successfully set the latest patch distribution '" + distribution + "' as the " +
-                                        "active distribution");
+                    "active distribution");
             return;
         }
         printStream.println("The latest patch distribution '" + distribution + "' is already the active distribution");

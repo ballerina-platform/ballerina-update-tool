@@ -98,7 +98,7 @@ public class RemoveCommand extends Command implements BCommand {
     }
 
     private boolean isCurrentVersion(String version) {
-        return version.equals(ToolUtil.BALLERINA_TYPE + "-" + ToolUtil.getCurrentBallerinaVersion());
+        return version.equals(ToolUtil.getCurrentBallerinaVersion());
     }
 
     private void remove(String version) {
@@ -106,7 +106,8 @@ public class RemoveCommand extends Command implements BCommand {
             if (isCurrentVersion(version)) {
                 throw ErrorUtil.createCommandException("The active Ballerina distribution cannot be removed");
             } else {
-                File directory = new File(ToolUtil.getDistributionsPath() + File.separator + version);
+                String file = ToolUtil.getType(version) + "-" + version;
+                File directory = new File(ToolUtil.getDistributionsPath() + File.separator + file);
                 if (directory.exists()) {
                     OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
                     getPrintStream().println("Distribution '" + version + "' successfully removed");
@@ -128,7 +129,7 @@ public class RemoveCommand extends Command implements BCommand {
                 getPrintStream().println("There is nothing to remove. Only active distribution is remaining");
                 return;
             }
-            for (File file: listOfFiles) {
+            for (File file : listOfFiles) {
                 if (file.isDirectory()) {
                     String version = file.getName();
                     File directory = new File(ToolUtil.getDistributionsPath() + File.separator + version);
