@@ -59,16 +59,11 @@ public class PullCommand extends Command implements BCommand {
         ToolUtil.handleInstallDirPermission();
         PrintStream printStream = getPrintStream();
         String distribution = pullCommands.get(0);
-        String distributionType = distribution.split("-")[0];
-        if (!distributionType.equals("ballerina") && !distributionType.equals("jballerina")) {
-            throw ErrorUtil.createDistributionNotFoundException(distribution);
-        }
-        String distributionVersion = distribution.replace(distributionType + "-", "");
-        if (distributionVersion.equals(ToolUtil.getCurrentBallerinaVersion())) {
+        if (distribution.equals(ToolUtil.getCurrentBallerinaVersion())) {
             printStream.println("'" + distribution + "' is already the active distribution");
             return;
         }
-        ToolUtil.downloadDistribution(printStream, distribution, distributionType, distributionVersion);
+        ToolUtil.downloadDistribution(printStream, distribution, ToolUtil.getType(distribution), distribution);
         ToolUtil.useBallerinaVersion(printStream, distribution);
         printStream.println("'" + distribution + "' successfully set as the active distribution");
     }

@@ -18,6 +18,7 @@ package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
 import org.ballerinalang.command.exceptions.CommandException;
+import org.ballerinalang.command.util.Channel;
 import org.ballerinalang.command.util.Distribution;
 import org.ballerinalang.command.util.ErrorUtil;
 import org.ballerinalang.command.util.ToolUtil;
@@ -86,6 +87,7 @@ public class ListCommand extends Command implements BCommand {
 
     /**
      * List distributions in the local and remote.
+     *
      * @param outStream stream outputs need to be printed
      */
     private static void listDistributions(PrintStream outStream) {
@@ -96,21 +98,22 @@ public class ListCommand extends Command implements BCommand {
             listOfFiles = folder.listFiles();
             outStream.println("Distributions available locally: \n");
             List<String> installedVersions = new ArrayList<>();
-            Arrays.sort(listOfFiles, Collections.reverseOrder());
             for (int i = 0; i < listOfFiles.length; i++) {
                 if (listOfFiles[i].isDirectory()) {
-                    String version = listOfFiles[i].getName();
-                    outStream.println(markVersion(ToolUtil.BALLERINA_TYPE + "-" + currentBallerinaVersion,
-                            version));
+                    String version = listOfFiles[i].getName().split("-")[1];
+                    outStream.println(markVersion(currentBallerinaVersion, version)
+                            + " " +  ToolUtil.getType(version) + " version " + version);
                     installedVersions.add(version);
                 }
             }
-            outStream.println("\nDistributions available remotely: \n");
-            List<Distribution> remoteDistributions = ToolUtil.getDistributions();
-            for (Distribution distribution : remoteDistributions) {
-                String version = distribution.getName() + "-" + distribution.getVersion();
-                if (!installedVersions.stream().anyMatch(version::contains)) {
-                    outStream.println("  " + version);
+            outStream.println("\nDistributions available remotely:");
+            List<Channel> channels = ToolUtil.getDistributions();
+            for (Channel channel : channels) {
+                outStream.println("\n" + channel.getName() + "\n");
+                for (Distribution distribution : channel.getDistributions()) {
+                    if (!installedVersions.stream().anyMatch(distribution.getVersion()::contains)) {
+                        outStream.println("  [" + distribution.getVersion() + "] " + distribution.getName());
+                    }
                 }
             }
         } catch (CommandException e) {
@@ -123,15 +126,16 @@ public class ListCommand extends Command implements BCommand {
 
     /**
      * Checks used Ballerina version and mark the output.
-     * @param used Used Ballerina version
+     *
+     * @param used    Used Ballerina version
      * @param current Version needs to be checked
      * @return Marked output
      */
     private static String markVersion(String used, String current) {
         if (used.equals(current)) {
-            return "* " + current;
+            return "* [" + current + "]";
         } else {
-            return "  " + current;
+            return "  [" + current + "]";
         }
     }
 }
