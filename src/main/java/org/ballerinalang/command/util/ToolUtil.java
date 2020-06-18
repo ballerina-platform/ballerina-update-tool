@@ -57,11 +57,14 @@ import javax.net.ssl.X509TrustManager;
 public class ToolUtil {
     private static final String PRODUCTION_URL = "https://api.central.ballerina.io/1.0/update-tool";
     private static final String STAGING_URL = "https://api.staging-central.ballerina.io/update-tool";
+    private static final String PREPROD_URL = "https://api.preprod-central.ballerina.io/1.0/update-tool";
     public static final String CLI_HELP_FILE_PREFIX = "dist-";
     private static final String BALLERINA_1_X_VERSIONS = "1.0.";
     private static final String CONNECTION_ERROR_MESSAGE = "connection to the remote server failed";
     public static final boolean BALLERINA_DEV_STAGE_UPDATE = Boolean.parseBoolean(
             System.getenv("BALLERINA_DEV_STAGE_UPDATE"));
+    public static final boolean BALLERINA_DEV_PREPROD_UPDATE = Boolean.parseBoolean(
+            System.getenv("BALLERINA_DEV_PREPROD_UPDATE"));
 
     private static TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
@@ -764,12 +767,15 @@ public class ToolUtil {
     }
 
     /**
-     * Provide server url based on the envorinment variable setting.
+     * Provide server url based on the environment variable setting.
      *
-     * @return
+     * @return server url
      */
     private static String getServerURL() {
-        return BALLERINA_DEV_STAGE_UPDATE ? STAGING_URL : PRODUCTION_URL;
+        String url = PRODUCTION_URL;
+        url = BALLERINA_DEV_STAGE_UPDATE ? STAGING_URL : url;
+        url = BALLERINA_DEV_PREPROD_UPDATE ? PREPROD_URL : url;
+        return url;
     }
 
     /**
