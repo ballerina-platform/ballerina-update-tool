@@ -111,9 +111,7 @@ public class ListCommand extends Command implements BCommand {
             for (Channel channel : channels) {
                 outStream.println("\n" + channel.getName() + "\n");
                 for (Distribution distribution : channel.getDistributions()) {
-                    if (!installedVersions.stream().anyMatch(distribution.getVersion()::contains)) {
-                        outStream.println("  [" + distribution.getVersion() + "] " + distribution.getName());
-                    }
+                    outStream.println("  [" + distribution.getVersion() + "] " + distribution.getName());
                 }
             }
         } catch (CommandException e) {
