@@ -141,12 +141,12 @@ public class ToolUtil {
     private static String getVersion(String path) throws IOException {
         BufferedReader br = Files.newBufferedReader(Paths.get(path));
         List<String> list = br.lines().collect(Collectors.toList());
-        return list.get(0);
+        return list.get(0).split("-")[1];
     }
 
     static void setVersion(String path, String version) throws IOException {
         PrintWriter writer = new PrintWriter(path, "UTF-8");
-        writer.println(version);
+        writer.println(ToolUtil.getType(version) + "-" + version);
         writer.close();
     }
 
