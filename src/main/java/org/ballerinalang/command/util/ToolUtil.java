@@ -421,7 +421,7 @@ public class ToolUtil {
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("user-agent",
-                        OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
+                        OSUtils.getUserAgent(getCurrentBallerinaVersion(), ToolUtil.getCurrentToolsVersion(),
                                 distributionType));
                 conn.setRequestProperty("Accept", "application/json");
                 if (conn.getResponseCode() == 302) {
@@ -458,8 +458,8 @@ public class ToolUtil {
             String zipFileLocation = getDistributionsPath() + File.separator + distribution + ".zip";
             downloadFile(conn, zipFileLocation, distribution, printStream);
             unzip(zipFileLocation, distPath);
-            addExecutablePermissionToFile(new File(distPath + File.separator + distribution
-                    + File.separator + "bin"
+            addExecutablePermissionToFile(new File(distPath + File.separator + ToolUtil.getType(distribution)
+                    + "-" + distribution + File.separator + "bin"
                     + File.separator + OSUtils.getExecutableFileName()));
 
 
