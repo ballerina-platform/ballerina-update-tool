@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: Ballerina Update Tool
-Implementation-Version: 0.8.6-SNAPSHOT
-Main-Class: org.ballerinalang.command.Main
-
