@@ -394,9 +394,8 @@ public class ToolUtil {
                     return;
                 }
                 if (!latestVersion.equals(version)) {
-                    String newBalDistName = ToolUtil.getType(latestVersion) + "-" + latestVersion;
-                    printStream.println("A new version of Ballerina is available: " + newBalDistName);
-                    printStream.println("Use 'ballerina dist pull " + newBalDistName + "' to " +
+                    printStream.println("A new version of Ballerina is available: " + latestVersion);
+                    printStream.println("Use 'ballerina dist pull " + latestVersion + "' to " +
                             "download and use the distribution");
                     printStream.println();
                 }
