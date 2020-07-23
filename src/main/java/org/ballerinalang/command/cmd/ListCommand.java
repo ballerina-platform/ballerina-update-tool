@@ -96,18 +96,26 @@ public class ListCommand extends Command implements BCommand {
             File folder = new File(ToolUtil.getDistributionsPath());
             File[] listOfFiles;
             listOfFiles = folder.listFiles();
+            Arrays.sort(listOfFiles);
+            List<Channel> channels = ToolUtil.getDistributions();
             outStream.println("Distributions available locally: \n");
             List<String> installedVersions = new ArrayList<>();
-            for (int i = 0; i < listOfFiles.length; i++) {
-                if (listOfFiles[i].isDirectory()) {
-                    String version = listOfFiles[i].getName().split("-")[1];
-                    outStream.println(markVersion(currentBallerinaVersion, version)
-                            + " " +  ToolUtil.getType(version) + " version " + version);
-                    installedVersions.add(version);
+            for (Channel channel : channels) {
+                outStream.println("\n" + channel.getName() + "\n");
+                for (Distribution distribution : channel.getDistributions()) {
+                    for (int i = 0; i < listOfFiles.length; i++) {
+                        if (listOfFiles[i].isDirectory()) {
+                            String version = listOfFiles[i].getName().split("-")[1];
+                            if (version.equals(distribution.getVersion())) {
+                                outStream.println(markVersion(currentBallerinaVersion, version)
+                                        + " " + ToolUtil.getType(version) + " version " + version);
+                                installedVersions.add(version);
+                            }
+                        }
+                    }
                 }
             }
             outStream.println("\nDistributions available remotely:");
-            List<Channel> channels = ToolUtil.getDistributions();
             for (Channel channel : channels) {
                 outStream.println("\n" + channel.getName() + "\n");
                 for (Distribution distribution : channel.getDistributions()) {
