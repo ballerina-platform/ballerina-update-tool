@@ -783,6 +783,20 @@ public class ToolUtil {
      * @param version distribution version
      */
     public static String getType(String version) {
-        return version.contains("1.") ? "jballerina" : "ballerina";
+        if (version.contains("1.")) {
+            return "jballerina" + " version " + version;
+        } else {
+            String preview = "";
+            if (version.contains("1")) {
+                preview = " Preview 1";
+            } else if (version.contains("2")) {
+                preview = " Preview 2";
+            } else if (version.contains("3")) {
+                preview = " Preview 3";
+            } else if (version.contains("4")) {
+                preview = " Preview 4";
+            }
+            return preview;
+        }
     }
 }

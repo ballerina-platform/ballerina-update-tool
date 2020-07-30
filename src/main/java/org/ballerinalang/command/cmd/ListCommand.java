@@ -18,18 +18,24 @@ package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
 import org.ballerinalang.command.exceptions.CommandException;
+import picocli.CommandLine;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.ballerinalang.command.util.Channel;
 import org.ballerinalang.command.util.Distribution;
 import org.ballerinalang.command.util.ErrorUtil;
 import org.ballerinalang.command.util.ToolUtil;
-import picocli.CommandLine;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
 
 /**
  * This class represents the "Update" command and it holds arguments and flags specified by the user.
@@ -91,8 +97,8 @@ public class ListCommand extends Command implements BCommand {
      * @param outStream stream outputs need to be printed
      */
     private static void listDistributions(PrintStream outStream) {
+        String currentBallerinaVersion = ToolUtil.getCurrentBallerinaVersion();
         try {
-            String currentBallerinaVersion = ToolUtil.getCurrentBallerinaVersion();
             File folder = new File(ToolUtil.getDistributionsPath());
             File[] listOfFiles;
             listOfFiles = folder.listFiles();
@@ -101,29 +107,61 @@ public class ListCommand extends Command implements BCommand {
             outStream.println("Distributions available locally: \n");
             List<String> installedVersions = new ArrayList<>();
             for (Channel channel : channels) {
-                outStream.println("\n" + channel.getName() + "\n");
                 for (Distribution distribution : channel.getDistributions()) {
                     for (int i = 0; i < listOfFiles.length; i++) {
                         if (listOfFiles[i].isDirectory()) {
                             String version = listOfFiles[i].getName().split("-")[1];
                             if (version.equals(distribution.getVersion())) {
                                 outStream.println(markVersion(currentBallerinaVersion, version)
-                                        + " " + ToolUtil.getType(version) + " version " + version);
+                                        + " " + ToolUtil.getType(version));
                                 installedVersions.add(version);
                             }
                         }
                     }
                 }
             }
-            outStream.println("\nDistributions available remotely:");
+            FileWriter writer = null;
+            try {
+                writer = new FileWriter("localDists.json");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            for(String str: installedVersions) {
+                writer.write(str + System.lineSeparator());
+            }
+            writer.close();
+            outStream.println("\nDistributions available remotely:\n");
             for (Channel channel : channels) {
                 outStream.println("\n" + channel.getName() + "\n");
                 for (Distribution distribution : channel.getDistributions()) {
-                    outStream.println("  [" + distribution.getVersion() + "] " + distribution.getName());
+                    outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion())
+                            + " " + distribution.getName());
                 }
             }
         } catch (CommandException e) {
             ErrorUtil.printLauncherException(e, outStream);
+            outStream.println("Distributions available locally: \n");
+            BufferedReader reader;
+            try {
+                reader = new BufferedReader(new FileReader("localDists.json"));
+                String line = reader.readLine();
+                while (line != null) {
+                    try {
+                        line = reader.readLine();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                    outStream.println(markVersion(currentBallerinaVersion, line)
+                            + "  " + ToolUtil.getType(line));
+                }
+                reader.close();
+            } catch (FileNotFoundException fileNotFoundException) {
+                fileNotFoundException.printStackTrace();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             outStream.println();
             outStream.println("Use 'ballerina help dist' for more information on specific commands.");
