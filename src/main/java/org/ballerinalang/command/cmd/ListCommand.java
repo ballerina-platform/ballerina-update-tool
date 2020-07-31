@@ -20,10 +20,6 @@ import org.ballerinalang.command.BallerinaCliCommands;
 import org.ballerinalang.command.exceptions.CommandException;
 import picocli.CommandLine;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.ballerinalang.command.util.Channel;
 import org.ballerinalang.command.util.Distribution;
 import org.ballerinalang.command.util.ErrorUtil;
@@ -37,11 +33,16 @@ import java.io.FileWriter;
 import java.io.PrintStream;
 import java.io.IOException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class represents the "Update" command and it holds arguments and flags specified by the user.
  */
 @CommandLine.Command(name = "list", description = "List Ballerina Distributions")
 public class ListCommand extends Command implements BCommand {
+    private static final String LOCAL_DISTRIBUTIONS_FILE = "local-dists.json";
 
     @CommandLine.Parameters(description = "Command name")
     private List<String> listCommands;
@@ -113,24 +114,15 @@ public class ListCommand extends Command implements BCommand {
                             String version = listOfFiles[i].getName().split("-")[1];
                             if (version.equals(distribution.getVersion())) {
                                 outStream.println(markVersion(currentBallerinaVersion, version)
-                                        + " " + ToolUtil.getType(version));
+                                        + " " + ToolUtil.getTypeName(version));
                                 installedVersions.add(version);
                             }
                         }
                     }
                 }
             }
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter("localDists.json");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            for(String str: installedVersions) {
-                writer.write(str + System.lineSeparator());
-            }
-            writer.close();
-            outStream.println("\nDistributions available remotely:\n");
+            writeLocalDistsIntoJson(installedVersions);
+            outStream.println("\nDistributions available remotely:");
             for (Channel channel : channels) {
                 outStream.println("\n" + channel.getName() + "\n");
                 for (Distribution distribution : channel.getDistributions()) {
@@ -138,30 +130,10 @@ public class ListCommand extends Command implements BCommand {
                             + " " + distribution.getName());
                 }
             }
-        } catch (CommandException e) {
-            ErrorUtil.printLauncherException(e, outStream);
+        } catch (CommandException | IOException e) {
             outStream.println("Distributions available locally: \n");
-            BufferedReader reader;
-            try {
-                reader = new BufferedReader(new FileReader("localDists.json"));
-                String line = reader.readLine();
-                while (line != null) {
-                    try {
-                        line = reader.readLine();
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
-                    outStream.println(markVersion(currentBallerinaVersion, line)
-                            + "  " + ToolUtil.getType(line));
-                }
-                reader.close();
-            } catch (FileNotFoundException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            readLocalDistsFromJson(outStream, currentBallerinaVersion);
+            ErrorUtil.printLauncherException((CommandException) e, outStream);
         } finally {
             outStream.println();
             outStream.println("Use 'ballerina help dist' for more information on specific commands.");
@@ -180,6 +152,47 @@ public class ListCommand extends Command implements BCommand {
             return "* [" + current + "]";
         } else {
             return "  [" + current + "]";
+        }
+    }
+
+    /**
+     * Writes the locally available distributions into a json file to fetch local distributions when offline.
+     *
+     * @param installedVersions Installed ballerina versions
+     */
+    private static void writeLocalDistsIntoJson(List<String> installedVersions) throws IOException {
+        FileWriter writer;
+        try {
+            writer = new FileWriter(LOCAL_DISTRIBUTIONS_FILE);
+        } catch (IOException e) {
+            throw ErrorUtil.createCommandException("cannot write into " + LOCAL_DISTRIBUTIONS_FILE + " file.");
+        }
+        for(String str: installedVersions) {
+            writer.write(str + System.lineSeparator());
+        }
+        writer.close();
+    }
+
+    /**
+     * Reads the locally available distributions from previously saved json file.
+     *
+     * @param outStream stream outputs need to be printed
+     * @param currentBallerinaVersion Current active version
+     */
+    private static void readLocalDistsFromJson(PrintStream outStream, String currentBallerinaVersion) {
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader(LOCAL_DISTRIBUTIONS_FILE));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                outStream.println(markVersion(currentBallerinaVersion, line) + "  " + ToolUtil.getTypeName(line));
+            }
+            outStream.println("\n");
+            reader.close();
+        } catch (FileNotFoundException fileNotFoundException) {
+            throw ErrorUtil.createCommandException("cannot find " + LOCAL_DISTRIBUTIONS_FILE + " file.");
+        } catch (IOException ioException) {
+            throw ErrorUtil.createCommandException("cannot read " + LOCAL_DISTRIBUTIONS_FILE + " file.");
         }
     }
 }
