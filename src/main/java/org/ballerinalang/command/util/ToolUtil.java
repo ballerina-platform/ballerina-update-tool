@@ -785,4 +785,19 @@ public class ToolUtil {
     public static String getType(String version) {
         return version.contains("1.") ? "jballerina" : "ballerina";
     }
+
+    /**
+     * Modify the output based on distribution type
+     *
+     * @param version distribution version
+     */
+    public static String getTypeName(String version) {
+        if (version.contains("1.")) {
+            return "jballerina" + " version " + version;
+        } else {
+            char lastChar = version.charAt(version.length() - 1);
+            String preview = " Preview " + lastChar;
+            return preview;
+        }
+    }
 }
