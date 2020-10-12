@@ -41,9 +41,6 @@ then
     JAVA_COMMAND=java
     if test -d "$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre"; then
       JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre/bin/java"
-    elif [[ `$JAVA_COMMAND -version 2>&1 | grep "1.8."` = "" ]]; then
-      echo "Compatible JRE 8 not found. Please follow the instructions in <BALLERINA_HOME>/INSTALL.txt to install and setup Ballerina."
-      exit 1;
     fi
     if [ "$1" == "build" ]
     then
