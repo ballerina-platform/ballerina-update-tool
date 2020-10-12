@@ -35,17 +35,11 @@ if "%1" == "update" set update=true
 if "%1" == "build" set build=true
 SetLocal EnableDelayedExpansion
 
-if exist %CURRENT_PATH%..\dependencies\jdk8u202-b08-jre (
-   set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk8u202-b08-jre\bin\java
+if exist %CURRENT_PATH%..\dependencies\jdk-11.0.8+10-jre (
+   set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk-11.0.8+10-jre\bin\java
 ) else (
     if not exist "%JAVA_HOME%" (
-        echo Compatible JRE 8 not found. Please follow the instructions in ^<BALLERINA_HOME^>\INSTALL.txt to install and setup Ballerina.
-        exit /b
-    )
-
-    "%JAVA_HOME%\bin\java" -version 2>&1 | findstr /r "1.8">NUL
-    if errorlevel 1 (
-        echo Compatible JRE 8 not found. Please follow the instructions in ^<BALLERINA_HOME^>\INSTALL.txt to install and setup Ballerina.
+        echo Compatible JRE not found. Please follow the instructions in ^<BALLERINA_HOME^>\INSTALL.txt to install and setup Ballerina.
         exit /b
     )
 )
