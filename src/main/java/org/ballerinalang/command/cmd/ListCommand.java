@@ -109,9 +109,13 @@ public class ListCommand extends Command implements BCommand {
             List<String> installedVersions = new ArrayList<>();
             for (Channel channel : channels) {
                 for (Distribution distribution : channel.getDistributions()) {
-                    for (int i = 0; i < listOfFiles.length; i++) {
-                        if (listOfFiles[i].isDirectory()) {
-                            String version = listOfFiles[i].getName().split("-")[1];
+                    for (File listOfFile : listOfFiles) {
+                        if (listOfFile.isDirectory()) {
+                            String version = "";
+                            String[] parts =  listOfFile.getName().split("-");
+                            if (parts.length == 2) {
+                                version = parts[1];
+                            }
                             if (version.equals(distribution.getVersion())) {
                                 outStream.println(markVersion(currentBallerinaVersion, version)
                                         + " " + ToolUtil.getTypeName(version));

@@ -131,9 +131,14 @@ public class RemoveCommand extends Command implements BCommand {
             }
             for (File file : listOfFiles) {
                 if (file.isDirectory()) {
-                    String version = file.getName();
-                    File directory = new File(ToolUtil.getDistributionsPath() + File.separator + version);
-                    if (!isCurrentVersion(version) && directory.exists()) {
+                    String version = "";
+                    String fileName = file.getName();
+                    String[] parts = fileName.split("-");
+                    if (parts.length == 2) {
+                        version = parts[1];
+                    }
+                    File directory = new File(ToolUtil.getDistributionsPath() + File.separator + fileName);
+                    if (directory.exists() && (!isCurrentVersion(version) || version.equals(""))) {
                         OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
                     }
                 }
