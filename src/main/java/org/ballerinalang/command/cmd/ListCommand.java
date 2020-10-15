@@ -109,10 +109,10 @@ public class ListCommand extends Command implements BCommand {
             List<String> installedVersions = new ArrayList<>();
             for (Channel channel : channels) {
                 for (Distribution distribution : channel.getDistributions()) {
-                    for (File listOfFile : listOfFiles) {
-                        if (listOfFile.isDirectory()) {
+                    for (File file : listOfFiles) {
+                        if (file.isDirectory()) {
                             String version = "";
-                            String[] parts =  listOfFile.getName().split("-");
+                            String[] parts =  file.getName().split("-");
                             if (parts.length == 2) {
                                 version = parts[1];
                             }
