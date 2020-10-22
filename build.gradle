@@ -59,7 +59,7 @@ task createZip(type:Zip) {
     destinationDir file('build')
 }
 
-sourceCompatibility = 11
+sourceCompatibility = 1.8
 
 dependencies {
     implementation 'info.picocli:picocli:4.0.1'
