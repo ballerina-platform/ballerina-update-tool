@@ -19,7 +19,6 @@ package org.ballerinalang.command.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
@@ -29,7 +28,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +38,7 @@ public class OSUtils {
     private static final String OS = System.getProperty("os.name").toLowerCase(Locale.getDefault());
     private static final String BALLERINA_HOME_DIR = ".ballerina";
     private static final String BALLERINA_CONFIG = "ballerina-version";
+    public static final String BALLERINA_LIST_JSON = "local-dists.json";
     private static final String UPDATE_NOTICE = "command-notice";
     private static final String BIR_CACHE = "bir_cache";
     private static final String JAR_CACHE = "jar_cache";
@@ -97,6 +96,19 @@ public class OSUtils {
         }
         return getUserHome() + File.separator
                 + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG;
+    }
+
+    public static String getBallerinaDistListFilePath() throws IOException {
+        String userHome = getUserHome();
+        File file = new File(userHome + File.separator
+                + BALLERINA_HOME_DIR + File.separator + BALLERINA_LIST_JSON);
+
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+            file.createNewFile();
+        }
+        return getUserHome() + File.separator
+                + BALLERINA_HOME_DIR + File.separator + BALLERINA_LIST_JSON;
     }
 
     /**
