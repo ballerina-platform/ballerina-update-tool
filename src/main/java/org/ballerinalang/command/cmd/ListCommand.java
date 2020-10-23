@@ -23,11 +23,11 @@ import picocli.CommandLine;
 import org.ballerinalang.command.util.Channel;
 import org.ballerinalang.command.util.Distribution;
 import org.ballerinalang.command.util.ErrorUtil;
+import org.ballerinalang.command.util.OSUtils;
 import org.ballerinalang.command.util.ToolUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintStream;
@@ -42,8 +42,6 @@ import java.util.List;
  */
 @CommandLine.Command(name = "list", description = "List Ballerina Distributions")
 public class ListCommand extends Command implements BCommand {
-    private static final String LOCAL_DISTRIBUTIONS_FILE = "local-dists.json";
-
     @CommandLine.Parameters(description = "Command name")
     private List<String> listCommands;
 
@@ -166,10 +164,11 @@ public class ListCommand extends Command implements BCommand {
      */
     private static void writeLocalDistsIntoJson(List<String> installedVersions) throws IOException {
         FileWriter writer;
+        String distListPath = OSUtils.getBallerinaDistListFilePath();
         try {
-            writer = new FileWriter(LOCAL_DISTRIBUTIONS_FILE);
+            writer = new FileWriter(distListPath);
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException("cannot write into " + LOCAL_DISTRIBUTIONS_FILE + " file.");
+            throw ErrorUtil.createCommandException("cannot write into " + distListPath + " file: " + e.getMessage());
         }
         for(String str: installedVersions) {
             writer.write(str + System.lineSeparator());
@@ -186,17 +185,15 @@ public class ListCommand extends Command implements BCommand {
     private static void readLocalDistsFromJson(PrintStream outStream, String currentBallerinaVersion) {
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader(LOCAL_DISTRIBUTIONS_FILE));
+            reader = new BufferedReader(new FileReader(OSUtils.getBallerinaDistListFilePath()));
             String line;
             while ((line = reader.readLine()) != null) {
                 outStream.println(markVersion(currentBallerinaVersion, line) + "  " + ToolUtil.getTypeName(line));
             }
             outStream.println("\n");
             reader.close();
-        } catch (FileNotFoundException fileNotFoundException) {
-            throw ErrorUtil.createCommandException("cannot find " + LOCAL_DISTRIBUTIONS_FILE + " file.");
-        } catch (IOException ioException) {
-            throw ErrorUtil.createCommandException("cannot read " + LOCAL_DISTRIBUTIONS_FILE + " file.");
+        } catch (IOException e) {
+            throw ErrorUtil.createCommandException("failed to read the file: " + e.getMessage());
         }
     }
 }
