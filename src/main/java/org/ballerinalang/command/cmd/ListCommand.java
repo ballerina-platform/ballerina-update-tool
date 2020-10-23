@@ -23,6 +23,7 @@ import picocli.CommandLine;
 import org.ballerinalang.command.util.Channel;
 import org.ballerinalang.command.util.Distribution;
 import org.ballerinalang.command.util.ErrorUtil;
+import org.ballerinalang.command.util.OSUtils;
 import org.ballerinalang.command.util.ToolUtil;
 
 import java.io.BufferedReader;
@@ -35,8 +36,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.ballerinalang.command.util.OSUtils.getBallerinaDistListFilePath;
 
 /**
  * This class represents the "Update" command and it holds arguments and flags specified by the user.
@@ -165,7 +164,7 @@ public class ListCommand extends Command implements BCommand {
      */
     private static void writeLocalDistsIntoJson(List<String> installedVersions) throws IOException {
         FileWriter writer;
-        String distListPath = getBallerinaDistListFilePath();
+        String distListPath = OSUtils.getBallerinaDistListFilePath();
         try {
             writer = new FileWriter(distListPath);
         } catch (IOException e) {
@@ -186,7 +185,7 @@ public class ListCommand extends Command implements BCommand {
     private static void readLocalDistsFromJson(PrintStream outStream, String currentBallerinaVersion) {
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader(getBallerinaDistListFilePath()));
+            reader = new BufferedReader(new FileReader(OSUtils.getBallerinaDistListFilePath()));
             String line;
             while ((line = reader.readLine()) != null) {
                 outStream.println(markVersion(currentBallerinaVersion, line) + "  " + ToolUtil.getTypeName(line));
