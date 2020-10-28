@@ -567,7 +567,7 @@ public class ToolUtil {
         downloadFile(conn, zipFileLocation, dependency, printStream);
         unzip(zipFileLocation, dependencyLocation);
         if(OSUtils.isMac()) {
-            setPermission(dependencyLocation + File.separator + dependency);
+            addExecutablePermissionToDirectory(dependencyLocation + File.separator + dependency);
         } else {
             addExecutablePermissionToFile(new File(dependencyLocation + File.separator + dependency
                     + File.separator + "bin" + File.separator + "java"));
@@ -805,7 +805,7 @@ public class ToolUtil {
         }
     }
 
-    public static void setPermission(String filePath) {
+    private static void addExecutablePermissionToDirectory(String filePath) {
         Process process;
         try {
             process = Runtime.getRuntime().exec("chmod -R 755 " + filePath);
