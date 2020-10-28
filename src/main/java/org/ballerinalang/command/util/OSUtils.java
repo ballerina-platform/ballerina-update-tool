@@ -192,7 +192,7 @@ public class OSUtils {
         return OS.contains("win");
     }
 
-    private static boolean isMac() {
+    public static boolean isMac() {
         return OS.contains("mac");
     }
 

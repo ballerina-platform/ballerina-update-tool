@@ -566,8 +566,12 @@ public class ToolUtil {
         zipFile = Paths.get(zipFileLocation).toFile();
         downloadFile(conn, zipFileLocation, dependency, printStream);
         unzip(zipFileLocation, dependencyLocation);
-        addExecutablePermissionToFile(new File(dependencyLocation + File.separator + dependency
-                + File.separator + "bin" + File.separator + "java"));
+        if(OSUtils.isMac()) {
+            setPermission(dependencyLocation + File.separator + dependency);
+        } else {
+            addExecutablePermissionToFile(new File(dependencyLocation + File.separator + dependency
+                    + File.separator + "bin" + File.separator + "java"));
+        }
         if (zipFile.exists()) {
             zipFile.delete();
         }
@@ -798,6 +802,17 @@ public class ToolUtil {
             char lastChar = version.charAt(version.length() - 1);
             String preview = " Preview " + lastChar;
             return preview;
+        }
+    }
+
+    public static void setPermission(String filePath) {
+        Process process;
+        try {
+            process = Runtime.getRuntime().exec("chmod -R 755 " + filePath);
+            process.waitFor();
+        } catch (InterruptedException | IOException e) {
+            throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" + filePath
+                    + "'");
         }
     }
 }
