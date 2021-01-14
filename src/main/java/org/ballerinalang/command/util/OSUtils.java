@@ -222,6 +222,9 @@ public class OSUtils {
      */
     private static String getUserHome() {
         String userHome = System.getenv("HOME");
+        if (isUnix() && userHome.contains("root")) {
+            userHome = "/home/" + System.getenv("SUDO_USER");
+        }
         if (userHome == null) {
             userHome = System.getProperty("user.home");
         }
