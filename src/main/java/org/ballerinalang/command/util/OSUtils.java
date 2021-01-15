@@ -92,6 +92,7 @@ public class OSUtils {
         if (!file.exists()) {
             file.getParentFile().mkdirs();
             file.createNewFile();
+            ToolUtil.addExecutablePermissionToFile(file);
             ToolUtil.setVersion(file.getPath(), ToolUtil.getCurrentInstalledBallerinaVersion());
         }
         return getUserHome() + File.separator
@@ -106,6 +107,7 @@ public class OSUtils {
         if (!file.exists()) {
             file.getParentFile().mkdirs();
             file.createNewFile();
+            ToolUtil.addExecutablePermissionToFile(file);
         }
         return getUserHome() + File.separator
                 + BALLERINA_HOME_DIR + File.separator + BALLERINA_LIST_JSON;
