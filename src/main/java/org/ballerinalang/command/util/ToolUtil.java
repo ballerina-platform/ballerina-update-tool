@@ -704,7 +704,12 @@ public class ToolUtil {
         addExecutablePermissionToFile(installScript.toFile());
     }
 
-    private static void addExecutablePermissionToFile(File file) {
+    /**
+     * Add read, write, and executable permission to the given file.
+     *
+     * @param file file path
+     */
+    public static void addExecutablePermissionToFile(File file) {
         file.setReadable(true, false);
         file.setExecutable(true, false);
         file.setWritable(true, false);
