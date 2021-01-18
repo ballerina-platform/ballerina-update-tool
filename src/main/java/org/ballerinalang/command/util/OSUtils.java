@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class OSUtils {
 
     private static final String OS = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-    private static final String BALLERINA_HOME_DIR = ".ballerina";
+    public static final String BALLERINA_HOME_DIR = ".ballerina";
     private static final String BALLERINA_CONFIG = "ballerina-version";
     public static final String BALLERINA_LIST_JSON = "local-dists.json";
     private static final String UPDATE_NOTICE = "command-notice";
@@ -99,18 +99,8 @@ public class OSUtils {
                 + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG;
     }
 
-    public static String getBallerinaDistListFilePath() throws IOException {
-        String userHome = getUserHome();
-        File file = new File(userHome + File.separator
-                + BALLERINA_HOME_DIR + File.separator + BALLERINA_LIST_JSON);
-
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-            ToolUtil.addExecutablePermissionToFile(file);
-        }
-        return getUserHome() + File.separator
-                + BALLERINA_HOME_DIR + File.separator + BALLERINA_LIST_JSON;
+    public static String getBallerinaDistListFilePath() {
+        return getUserHome() + File.separator + BALLERINA_HOME_DIR + File.separator + BALLERINA_LIST_JSON;
     }
 
     /**
