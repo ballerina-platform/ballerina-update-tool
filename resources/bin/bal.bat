@@ -91,7 +91,7 @@ if "%RUN_BALLERINA%" == "true" (
             set BALLERINA_HOME=%%a
         )
     )
-    call %CURRENT_PATH%..\distributions\!BALLERINA_HOME!\bin\ballerina.bat %*
+    call %CURRENT_PATH%..\distributions\!BALLERINA_HOME!\bin\bal.bat %*
 )
 set merge=false
 if "%1" == "help" (

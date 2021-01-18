@@ -1,9 +1,9 @@
 NAME
-       ballerina-remove - Remove distributions in your local environment
+       bal-remove - Remove distributions in your local environment
 
 SYNOPSIS
-       ballerina dist remove <distribution>
-       ballerina dist remove <-a | --all>
+       bal dist remove <distribution>
+       bal dist remove <-a | --all>
 
 DESCRIPTION
        Removes the specified Ballerina distribution from your local environment.
@@ -19,7 +19,7 @@ DESCRIPTION
 
 EXAMPLES
        This command removes the 1.0.5 version in your local machine.
-          $ ballerina dist remove 1.0.5
+          $ bal dist remove 1.0.5
        This command removes all the distributions except the currently active one
        in your local machine.
-          $ ballerina dist remove -a
+          $ bal dist remove -a

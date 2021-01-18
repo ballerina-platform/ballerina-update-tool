@@ -1,8 +1,8 @@
 NAME
-       ballerina-dist-pull - Fetch a given distribution and set it as the active version
+       bal-dist-pull - Fetch a given distribution and set it as the active version
 
 SYNOPSIS
-       ballerina dist pull <distribution>
+       bal dist pull <distribution>
 
 
 DESCRIPTION
@@ -18,4 +18,4 @@ DESCRIPTION
 
 EXAMPLES
        This command fetches "1.0.5" and marks it as the active distribution.
-          $ ballerina dist pull 1.0.5
+          $ bal dist pull 1.0.5
