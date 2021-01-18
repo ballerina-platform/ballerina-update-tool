@@ -37,7 +37,6 @@ import java.io.IOException;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -101,16 +100,15 @@ public class ListCommand extends Command implements BCommand {
      */
     private static void listDistributions(PrintStream outStream) {
         String currentBallerinaVersion = ToolUtil.getCurrentBallerinaVersion();
+        File folder = new File(ToolUtil.getDistributionsPath());
+        File[] listOfFiles;
+        listOfFiles = folder.listFiles();
+        Arrays.sort(listOfFiles);
         try {
-            File folder = new File(ToolUtil.getDistributionsPath());
-            File[] listOfFiles;
-            listOfFiles = folder.listFiles();
-            Arrays.sort(listOfFiles);
             JSONObject distList = new JSONObject();
             JSONArray channelsArr = new JSONArray();
             List<Channel> channels = ToolUtil.getDistributions();
             outStream.println("Distributions available locally: \n");
-            List<String> installedVersions = new ArrayList<>();
             for (Channel channel : channels) {
                 JSONObject channelJson = new JSONObject();
                 JSONArray releases = new JSONArray();
@@ -126,7 +124,6 @@ public class ListCommand extends Command implements BCommand {
                             if (version.equals(distribution.getVersion())) {
                                 outStream.println(markVersion(currentBallerinaVersion, version)
                                         + " " + ToolUtil.getTypeName(version));
-                                installedVersions.add(version);
                                 releases.add(version);
                             }
                         }
@@ -135,7 +132,7 @@ public class ListCommand extends Command implements BCommand {
                 channelJson.put("releases", releases);
                 channelsArr.add(channelJson);
             }
-            distList.put("Channnels", channelsArr);
+            distList.put("channels", channelsArr);
             writeLocalDistsIntoJson(distList);
             outStream.println("\nDistributions available remotely:");
             for (Channel channel : channels) {
@@ -145,10 +142,15 @@ public class ListCommand extends Command implements BCommand {
                             + " " + distribution.getName());
                 }
             }
-        } catch (CommandException | IOException e) {
+        } catch (CommandException e) {
             outStream.println("Distributions available locally: \n");
-            readLocalDistsFromJson(outStream, currentBallerinaVersion);
-            ErrorUtil.printLauncherException((CommandException) e, outStream);
+            if(!isUpdated(listOfFiles)) {
+                listLocalDists(listOfFiles, outStream, currentBallerinaVersion);
+            } else {
+                readLocalDistsFromJson(outStream, currentBallerinaVersion);
+            }
+            outStream.println("\nDistributions available remotely: \n");
+            ErrorUtil.printLauncherException(e, outStream);
         } finally {
             outStream.println();
             outStream.println("Use 'ballerina help dist' for more information on specific commands.");
@@ -175,8 +177,19 @@ public class ListCommand extends Command implements BCommand {
      *
      * @param distList Installed ballerina versions
      */
-    private static void writeLocalDistsIntoJson(JSONObject distList) throws IOException {
-        Files.write(Paths.get(OSUtils.getBallerinaDistListFilePath()), distList.toJSONString().getBytes());
+    private static void writeLocalDistsIntoJson(JSONObject distList) {
+        try {
+            String path = OSUtils.getBallerinaDistListFilePath();
+            File file = new File(path);
+
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+            Files.write(Paths.get(path), distList.toJSONString().getBytes());
+        } catch (IOException e) {
+            throw ErrorUtil.createCommandException("failed to write in the file: " + e.getMessage());
+        }
     }
 
     /**
@@ -190,7 +203,7 @@ public class ListCommand extends Command implements BCommand {
             FileReader reader = new FileReader(OSUtils.getBallerinaDistListFilePath());
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
-            JSONArray channels = (JSONArray) jsonObject.get("Channels");
+            JSONArray channels = (JSONArray) jsonObject.get("channels");
             for (Object channel: channels) {
                 JSONObject channelObj = (JSONObject) channel;
                 JSONArray releases = (JSONArray) channelObj.get("releases");
@@ -202,5 +215,53 @@ public class ListCommand extends Command implements BCommand {
         } catch (IOException | ParseException e) {
             throw ErrorUtil.createCommandException("failed to read the file: " + e.getMessage());
         }
+    }
+
+    /**
+     * List the locally available distributions from the distributions directory.
+     *
+     * @param listOfFiles locally available distributions
+     * @param outStream stream outputs need to be printed
+     * @param currentBallerinaVersion Current active version
+     */
+    private static void listLocalDists(File[] listOfFiles, PrintStream outStream, String currentBallerinaVersion) {
+        for (File file : listOfFiles) {
+            if (file.isDirectory()) {
+                String version = "";
+                String[] parts = file.getName().split("-");
+                if (parts.length == 2) {
+                    version = parts[1];
+                }
+                outStream.println(markVersion(currentBallerinaVersion, version) + " " + ToolUtil.getTypeName(version));
+            }
+        }
+    }
+
+    private static boolean isUpdated(File[] listOfFiles) {
+        try {
+            if (!new File(OSUtils.getBallerinaDistListFilePath()).exists()) {
+                return false;
+            }
+
+            FileReader reader = new FileReader(OSUtils.getBallerinaDistListFilePath());
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
+            String jsonString = jsonObject.toJSONString();
+            for (File file : listOfFiles) {
+                if (file.isDirectory()) {
+                    String version = "";
+                    String[] parts = file.getName().split("-");
+                    if (parts.length == 2) {
+                        version = parts[1];
+                    }
+                    if (!jsonString.contains(version)) {
+                        return false;
+                    }
+                }
+            }
+        } catch (ParseException | IOException e) {
+            throw ErrorUtil.createCommandException("failed to parse the content of the file: " + e.getMessage());
+        }
+        return true;
     }
 }
