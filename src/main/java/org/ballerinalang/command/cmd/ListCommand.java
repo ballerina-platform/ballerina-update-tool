@@ -101,8 +101,7 @@ public class ListCommand extends Command implements BCommand {
     private static void listDistributions(PrintStream outStream) {
         String currentBallerinaVersion = ToolUtil.getCurrentBallerinaVersion();
         File folder = new File(ToolUtil.getDistributionsPath());
-        File[] listOfFiles;
-        listOfFiles = folder.listFiles();
+        File[] listOfFiles = folder.listFiles();
         Arrays.sort(listOfFiles);
         try {
             JSONObject distList = new JSONObject();

@@ -64,7 +64,7 @@ sourceCompatibility = 1.8
 dependencies {
     implementation 'info.picocli:picocli:4.0.1'
     implementation 'me.tongfei:progressbar:0.7.4'
-    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
 }
 
 publishing {
