@@ -32,7 +32,7 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
-xcopy /q %CURRENT_PATH%\ballerina-command-@version@\bin\ballerina.bat  %CURRENT_PATH%\..\bin /Y
+xcopy /q %CURRENT_PATH%\ballerina-command-@version@\bin\bal.bat  %CURRENT_PATH%\..\bin /Y
 
 if %errorlevel% neq 0 (
     echo error occurred while copying ballerina.bat

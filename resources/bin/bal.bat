@@ -71,7 +71,7 @@ if "%dist%" == "true" (
         rd /s /q %CURRENT_PATH%\..\ballerina-command-tmp
         echo Update successfully completed
         echo.
-        echo "If you want to update the Ballerina distribution, use 'ballerina dist update'"
+        echo "If you want to update the Ballerina distribution, use 'bal dist update'"
         exit /b
    )
 )
@@ -91,7 +91,12 @@ if "%RUN_BALLERINA%" == "true" (
             set BALLERINA_HOME=%%a
         )
     )
-    call %CURRENT_PATH%..\distributions\!BALLERINA_HOME!\bin\ballerina.bat %*
+
+    if exist %CURRENT_PATH%..\distributions\!BALLERINA_HOME!\bin\bal.bat (
+        call %CURRENT_PATH%..\distributions\!BALLERINA_HOME!\bin\bal.bat %*
+    ) else (
+        call %CURRENT_PATH%..\distributions\!BALLERINA_HOME!\bin\ballerina.bat %*
+    )
 )
 set merge=false
 if "%1" == "help" (

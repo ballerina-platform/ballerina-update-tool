@@ -57,7 +57,7 @@ public class OSUtils {
      * @return name of the file
      */
     public static String getExecutableFileName() {
-        return OSUtils.isWindows() ? "ballerina.bat" : "ballerina";
+        return OSUtils.isWindows() ? "bal.bat" : "bal";
     }
 
     /**
