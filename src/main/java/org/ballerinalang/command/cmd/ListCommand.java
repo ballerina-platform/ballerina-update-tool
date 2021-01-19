@@ -152,7 +152,7 @@ public class ListCommand extends Command implements BCommand {
             ErrorUtil.printLauncherException(e, outStream);
         } finally {
             outStream.println();
-            outStream.println("Use 'ballerina help dist' for more information on specific commands.");
+            outStream.println("Use 'bal help dist' for more information on specific commands.");
         }
     }
 
@@ -184,6 +184,7 @@ public class ListCommand extends Command implements BCommand {
             if (!file.exists()) {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
+                ToolUtil.addExecutablePermissionToFile(file);
             }
             Files.write(Paths.get(path), distList.toJSONString().getBytes());
         } catch (IOException e) {

@@ -459,7 +459,7 @@ public class ToolUtil {
             unzip(zipFileLocation, distPath);
             addExecutablePermissionToFile(new File(distPath + File.separator + ToolUtil.getType(distribution)
                     + "-" + distribution + File.separator + "bin"
-                    + File.separator + OSUtils.getExecutableFileName()));
+                    + File.separator + OSUtils.getExecutableFileName(distribution)));
 
 
             String langServerPath = distPath + File.separator + distribution + File.separator + "lib"
