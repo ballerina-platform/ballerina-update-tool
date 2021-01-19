@@ -56,8 +56,14 @@ public class OSUtils {
      * Provide file name of executable for current operating system.
      * @return name of the file
      */
-    public static String getExecutableFileName() {
-        return OSUtils.isWindows() ? "bal.bat" : "bal";
+    public static String getExecutableFileName(String distribution) {
+        String fileName = OSUtils.isWindows() ? "bal.bat" : "bal";
+        File file = new File(ToolUtil.getDistributionsPath() + File.separator + ToolUtil.getType(distribution) + "-" +
+                distribution + File.separator + "bin" + File.separator + fileName);
+        if(file.exists()) {
+            return fileName;
+        }
+        return OSUtils.isWindows() ? "ballerina.bat" : "ballerina";
     }
 
     /**
