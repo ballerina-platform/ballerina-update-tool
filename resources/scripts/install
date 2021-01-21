@@ -43,6 +43,24 @@ if [ $? -ne '0' ]; then
   exit $?
 fi
 
+echo "Updating environment variables"
+if [ -f "/usr/lib/ballerina/bin/ballerina" ] 
+then
+    ln -sf /usr/lib/ballerina/bin/bal /usr/bin/bal
+    echo "export BALLERINA_HOME=/usr/lib/bal" >> /etc/profile.d/wso2.sh
+elif [ -f "usr/lib64/ballerina/bin/ballerina" ] 
+then
+        ln -sf usr/lib64/ballerina/bin/bal /usr/bin/bal
+elif [ -f "/Library/Ballerina/bin/ballerina" ] 
+then
+        echo "/Library/Ballerina/bin" >> target/darwinpkg/etc/paths.d/bal
+fi
+
+echo "The ‘ballerina’ command was changed to ‘bal’. Please use ‘bal’ command for all the ballerina tools. "
+echo "Ie : $ bal build"
+echo "     $ bal dist list"
+echo "     $ bal dist pull <version>"
+
 echo "Tool version updated to the latest version: @version@"
 echo "Cleaning old files..."
 
