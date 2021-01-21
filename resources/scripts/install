@@ -56,10 +56,10 @@ then
         echo "/Library/Ballerina/bin" >> target/darwinpkg/etc/paths.d/bal
 fi
 
-echo "The ‘ballerina’ command was changed to ‘bal’. Please use ‘bal’ command for all the ballerina tools. "
+echo "The ‘ballerina’ command was changed to ‘bal’. Please use ‘bal’ command from now onwards."
 echo "Ie : $ bal build"
 echo "     $ bal dist list"
-echo "     $ bal dist pull <version>"
+echo "     $ bal dist update"
 
 echo "Tool version updated to the latest version: @version@"
 echo "Cleaning old files..."
