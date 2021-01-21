@@ -90,6 +90,11 @@ public class ToolUtil {
     public static String getCurrentBallerinaVersion() {
         try {
             String userVersion = getVersion(OSUtils.getBallerinaVersionFilePath());
+            String installerVersion = getInstallerVersion(OSUtils.getInstalledInstallerVersionPath());
+            if (!installerVersion.equals(getInstallerVersion(OSUtils.getInstallerVersionFilePath()))) {
+                setCurrentBallerinaVersion(ToolUtil.getCurrentInstalledBallerinaVersion());
+                setInstallerVersion(installerVersion);
+            }
             if (checkDistributionAvailable(userVersion)) {
                 return userVersion;
             }
@@ -144,9 +149,28 @@ public class ToolUtil {
         return list.get(0).split("-")[1];
     }
 
+    /**
+     * Get the installation version from the file.
+     *
+     * @param path path to the installer version file
+     * @return installer version
+     * @throws IOException
+     */
+    private static String getInstallerVersion(String path) throws IOException {
+        BufferedReader br = Files.newBufferedReader(Paths.get(path));
+        List<String> list = br.lines().collect(Collectors.toList());
+        return list.get(0);
+    }
+
     static void setVersion(String path, String version) throws IOException {
         PrintWriter writer = new PrintWriter(path, "UTF-8");
         writer.println(ToolUtil.getType(version) + "-" + version);
+        writer.close();
+    }
+
+    static void setInstallerVersion(String path) throws IOException {
+        PrintWriter writer = new PrintWriter(path, "UTF-8");
+        writer.println(ToolUtil.getInstallerVersion(OSUtils.getInstalledInstallerVersionPath()));
         writer.close();
     }
 

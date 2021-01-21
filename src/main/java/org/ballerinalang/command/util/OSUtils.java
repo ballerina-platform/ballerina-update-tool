@@ -38,6 +38,7 @@ public class OSUtils {
     private static final String OS = System.getProperty("os.name").toLowerCase(Locale.getDefault());
     public static final String BALLERINA_HOME_DIR = ".ballerina";
     private static final String BALLERINA_CONFIG = "ballerina-version";
+    private static final String INSTALLER_VERSION = "installer-version";
     public static final String BALLERINA_LIST_JSON = "local-dists.json";
     private static final String UPDATE_NOTICE = "command-notice";
     private static final String BIR_CACHE = "bir_cache";
@@ -90,19 +91,38 @@ public class OSUtils {
         return OSUtils.isWindows() ? "language-server-launcher.bat" : "language-server-launcher.sh";
     }
 
+    /**
+     * Provides the ballerina version path
+     *
+     * @return path to the file
+     */
     public static String getBallerinaVersionFilePath() throws IOException {
         String userHome = getUserHome();
-        File file = new File(userHome + File.separator
+        File ballerinaVersionfile = new File(userHome + File.separator
                 + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG);
 
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-            ToolUtil.addExecutablePermissionToFile(file);
-            ToolUtil.setVersion(file.getPath(), ToolUtil.getCurrentInstalledBallerinaVersion());
+        File installerVersionfile = new File(userHome + File.separator
+                + BALLERINA_HOME_DIR + File.separator + INSTALLER_VERSION);
+
+        if (!ballerinaVersionfile.exists()) {
+            ballerinaVersionfile.getParentFile().mkdirs();
+            ballerinaVersionfile.createNewFile();
+            installerVersionfile.createNewFile();
+            ToolUtil.addExecutablePermissionToFile(ballerinaVersionfile);
+            ToolUtil.addExecutablePermissionToFile(installerVersionfile);
+            ToolUtil.setVersion(ballerinaVersionfile.getPath(), ToolUtil.getCurrentInstalledBallerinaVersion());
+            ToolUtil.setInstallerVersion(installerVersionfile.getPath());
         }
-        return getUserHome() + File.separator
-                + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG;
+        return getUserHome() + File.separator + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG;
+    }
+
+    /**
+     * Provides the installer version path
+     *
+     * @return path to the file
+     */
+    public static String getInstallerVersionFilePath() {
+        return getUserHome() + File.separator + BALLERINA_HOME_DIR + File.separator + INSTALLER_VERSION;
     }
 
     public static String getBallerinaDistListFilePath() {
@@ -110,11 +130,21 @@ public class OSUtils {
     }
 
     /**
-     * Provide configuration file path of the installation.
+     * Provide installer version file path of the installation.
+     *
      * @return path to the file
      */
     public static String getInstalledConfigPath() {
         return ToolUtil.getDistributionsPath() + File.separator + OSUtils.BALLERINA_CONFIG;
+    }
+
+    /**
+     * Provide configuration file path of the installation.
+     *
+     * @return path to the file
+     */
+    public static String getInstalledInstallerVersionPath() {
+        return ToolUtil.getDistributionsPath() + File.separator + OSUtils.INSTALLER_VERSION;
     }
 
     /**
