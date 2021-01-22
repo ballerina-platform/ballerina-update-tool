@@ -51,6 +51,7 @@ echo      $ bal dist update
 echo Tool version updated to the latest version: @version@
 echo Cleaning old files...
 
+del /F/Q %CURRENT_PATH%\..\bin\ballerina.bat
 for %%f in (%CURRENT_PATH%\..\lib\*ballerina-command*.jar) do (
 	echo %%f|find /i "ballerina-command-@version@.jar">nul
     	if errorlevel 1 (
