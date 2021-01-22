@@ -65,6 +65,7 @@ public abstract class Command {
     }
 
     public void printVersionInfo() {
+        ToolUtil.getCurrentBallerinaVersion();
         String output = "Update Tool " + ToolUtil.getCurrentToolsVersion() + "\n";
         getPrintStream().print(output);
     }
