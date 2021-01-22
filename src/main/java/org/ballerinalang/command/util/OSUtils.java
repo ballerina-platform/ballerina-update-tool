@@ -100,20 +100,13 @@ public class OSUtils {
         String userHome = getUserHome();
         File ballerinaVersionfile = new File(userHome + File.separator
                 + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG);
-
-        File installerVersionfile = new File(userHome + File.separator
-                + BALLERINA_HOME_DIR + File.separator + INSTALLER_VERSION);
-
         if (!ballerinaVersionfile.exists()) {
             ballerinaVersionfile.getParentFile().mkdirs();
             ballerinaVersionfile.createNewFile();
-            installerVersionfile.createNewFile();
             ToolUtil.addExecutablePermissionToFile(ballerinaVersionfile);
-            ToolUtil.addExecutablePermissionToFile(installerVersionfile);
             ToolUtil.setVersion(ballerinaVersionfile.getPath(), ToolUtil.getCurrentInstalledBallerinaVersion());
-            ToolUtil.setInstallerVersion(installerVersionfile.getPath());
         }
-        return getUserHome() + File.separator + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG;
+        return userHome + File.separator + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG;
     }
 
     /**
@@ -121,8 +114,19 @@ public class OSUtils {
      *
      * @return path to the file
      */
-    public static String getInstallerVersionFilePath() {
-        return getUserHome() + File.separator + BALLERINA_HOME_DIR + File.separator + INSTALLER_VERSION;
+    public static String getInstallerVersionFilePath() throws IOException {
+        String userHome = getUserHome();
+        File installerVersionfile = new File(userHome + File.separator
+                + BALLERINA_HOME_DIR + File.separator + INSTALLER_VERSION);
+
+        if (new File(OSUtils.getInstalledInstallerVersionPath()).exists() && !installerVersionfile.exists()) {
+            installerVersionfile.getParentFile().mkdirs();
+            installerVersionfile.createNewFile();
+            ToolUtil.addExecutablePermissionToFile(installerVersionfile);
+            ToolUtil.setInstallerVersion(installerVersionfile.getPath());
+            ToolUtil.setVersion(getBallerinaVersionFilePath(), ToolUtil.getCurrentInstalledBallerinaVersion());
+        }
+        return userHome + File.separator + BALLERINA_HOME_DIR + File.separator + INSTALLER_VERSION;
     }
 
     public static String getBallerinaDistListFilePath() {

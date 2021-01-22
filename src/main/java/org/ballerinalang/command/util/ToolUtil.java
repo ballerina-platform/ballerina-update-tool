@@ -89,12 +89,15 @@ public class ToolUtil {
      */
     public static String getCurrentBallerinaVersion() {
         try {
-            String userVersion = getVersion(OSUtils.getBallerinaVersionFilePath());
-            String installerVersion = getInstallerVersion(OSUtils.getInstalledInstallerVersionPath());
-            if (!installerVersion.equals(getInstallerVersion(OSUtils.getInstallerVersionFilePath()))) {
-                setCurrentBallerinaVersion(ToolUtil.getCurrentInstalledBallerinaVersion());
-                setInstallerVersion(installerVersion);
+            String installerVersionFilePath = OSUtils.getInstallerVersionFilePath();
+            if (new File(installerVersionFilePath).exists()) {
+                String installedInstallerVersion = getInstallerVersion(OSUtils.getInstalledInstallerVersionPath());
+                if (!installedInstallerVersion.equals(getInstallerVersion(installerVersionFilePath))) {
+                    setCurrentBallerinaVersion(ToolUtil.getCurrentInstalledBallerinaVersion());
+                    setInstallerVersion(installedInstallerVersion);
+                }
             }
+            String userVersion = getVersion(OSUtils.getBallerinaVersionFilePath());
             if (checkDistributionAvailable(userVersion)) {
                 return userVersion;
             }
