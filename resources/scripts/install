@@ -48,12 +48,15 @@ if [ -f "/usr/lib/ballerina/bin/ballerina" ]
 then
     ln -sf /usr/lib/ballerina/bin/bal /usr/bin/bal
     echo "export BALLERINA_HOME=/usr/lib/bal" >> /etc/profile.d/wso2.sh
+        rm -f /usr/lib/ballerina/bin/ballerina
 elif [ -f "usr/lib64/ballerina/bin/ballerina" ] 
 then
     ln -sf usr/lib64/ballerina/bin/bal /usr/bin/bal
+    rm -f usr/lib64/ballerina/bin/ballerina
 elif [ -f "/Library/Ballerina/bin/ballerina" ] 
 then
     echo "/Library/Ballerina/bin" >> target/darwinpkg/etc/paths.d/bal
+    rm -f /Library/Ballerina/bin/ballerina
 fi
 
 echo "The ‘ballerina’ command was changed to ‘bal’. Please use ‘bal’ command from now onwards."
