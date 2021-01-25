@@ -2,7 +2,7 @@ NAME
        bal-update - Update the Ballerina tool
 
 SYNOPSIS
-       ballerina update
+       bal update
 
 
 DESCRIPTION
