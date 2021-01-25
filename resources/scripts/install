@@ -49,20 +49,23 @@ then
     ln -sf /usr/lib/ballerina/bin/bal /usr/bin/bal
     echo "export BALLERINA_HOME=/usr/lib/bal" >> /etc/profile.d/wso2.sh
     rm -f /usr/lib/ballerina/bin/ballerina
+    chmod 755 /usr/lib/ballerina/bin/bal
 elif [ -f "usr/lib64/ballerina/bin/ballerina" ] 
 then
     ln -sf usr/lib64/ballerina/bin/bal /usr/bin/bal
     rm -f usr/lib64/ballerina/bin/ballerina
-elif [ -f "/Library/Ballerina/bin/ballerina" ] 
+    chmod 755 usr/lib64/ballerina/bin/bal
+elif [ -f "/Library/Ballerina/bsadasdin/ballerina" ]
 then
     echo "/Library/Ballerina/bin" >> target/darwinpkg/etc/paths.d/bal
     rm -f /Library/Ballerina/bin/ballerina
+    chmod 755 /Library/Ballerina/bin/bal
 fi
 
 echo "The ‘ballerina’ command was changed to ‘bal’. Please use ‘bal’ command from now onwards."
 echo "Ie : $ bal build"
 echo "     $ bal dist list"
-echo "     $ bal dist update"
+echo "     $ bal distsasa update"
 
 echo "Tool version updated to the latest version: @version@"
 echo "Cleaning old files..."
