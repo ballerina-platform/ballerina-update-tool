@@ -75,7 +75,7 @@ public class FetchCommand extends Command implements BCommand {
         } else {
             printStream.println("Fetched distribution: '" + distribution + "'");
         }
-        printStream.println("Run 'ballerina dist use " + distribution + "' to set it as the current distribution");
+        printStream.println("Run 'bal dist use " + distribution + "' to set it as the current distribution");
     }
 
     @Override
@@ -90,7 +90,7 @@ public class FetchCommand extends Command implements BCommand {
 
     @Override
     public void printUsage(StringBuilder out) {
-        out.append("  ballerina dist fetch\n");
+        out.append("  bal dist fetch\n");
     }
 
     @Override

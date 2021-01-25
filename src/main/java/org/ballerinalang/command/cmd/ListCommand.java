@@ -85,7 +85,7 @@ public class ListCommand extends Command implements BCommand {
 
     @Override
     public void printUsage(StringBuilder out) {
-        out.append("  ballerina dist list\n");
+        out.append("  bal dist list\n");
     }
 
     @Override

@@ -80,7 +80,7 @@ public class PullCommand extends Command implements BCommand {
 
     @Override
     public void printUsage(StringBuilder out) {
-        out.append("  ballerina dist pull\n");
+        out.append("  bal dist pull\n");
     }
 
     @Override
