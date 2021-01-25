@@ -830,10 +830,12 @@ public class ToolUtil {
     public static String getTypeName(String version) {
         if (version.contains("1.")) {
             return "jballerina" + " version " + version;
-        } else {
+        } else if(version.contains("slp")) {
             char lastChar = version.charAt(version.length() - 1);
-            String preview = " Preview " + lastChar;
-            return preview;
+            return " Preview " + lastChar;
+        } else {
+            String versionId = version.substring(2);
+            return versionId.substring(0, 1).toUpperCase() + versionId.substring(1);
         }
     }
 

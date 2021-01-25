@@ -122,7 +122,7 @@ public class ListCommand extends Command implements BCommand {
                             }
                             if (version.equals(distribution.getVersion())) {
                                 outStream.println(markVersion(currentBallerinaVersion, version)
-                                        + " " + ToolUtil.getTypeName(version));
+                                        + " " + distribution.getName());
                                 releases.add(version);
                             }
                         }
