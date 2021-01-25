@@ -55,7 +55,7 @@ then
     ln -sf usr/lib64/ballerina/bin/bal /usr/bin/bal
     rm -f usr/lib64/ballerina/bin/ballerina
     chmod 755 usr/lib64/ballerina/bin/bal
-elif [ -f "/Library/Ballerina/bsadasdin/ballerina" ]
+elif [ -f "/Library/Ballerina/bin/ballerina" ]
 then
     echo "/Library/Ballerina/bin" >> target/darwinpkg/etc/paths.d/bal
     rm -f /Library/Ballerina/bin/ballerina
