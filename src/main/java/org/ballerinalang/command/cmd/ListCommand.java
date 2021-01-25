@@ -121,9 +121,14 @@ public class ListCommand extends Command implements BCommand {
                                 version = parts[1];
                             }
                             if (version.equals(distribution.getVersion())) {
-                                outStream.println(markVersion(currentBallerinaVersion, version)
-                                        + " " + distribution.getName());
-                                releases.add(version);
+                                String versionName = distribution.getName();
+                                String versionId = distribution.getVersion();
+                                JSONObject versionInfo = new JSONObject();
+                                versionInfo.put("name", versionName);
+                                versionInfo.put("version", versionId);
+                                outStream.println(markVersion(currentBallerinaVersion, versionId)
+                                        + " " + versionName);
+                                releases.add(versionInfo);
                             }
                         }
                     }
@@ -207,9 +212,10 @@ public class ListCommand extends Command implements BCommand {
             for (Object channel: channels) {
                 JSONObject channelObj = (JSONObject) channel;
                 JSONArray releases = (JSONArray) channelObj.get("releases");
-                for (Object version : releases) {
-                    outStream.println(markVersion(currentBallerinaVersion, version.toString()) + "  " +
-                            ToolUtil.getTypeName(version.toString()));
+                for (Object release : releases) {
+                    JSONObject versionInfo = (JSONObject) release;
+                    outStream.println(markVersion(currentBallerinaVersion, versionInfo.get("version").toString()) +
+                            " " + versionInfo.get("name").toString());
                 }
             }
         } catch (IOException | ParseException e) {
