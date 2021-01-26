@@ -38,14 +38,14 @@ public class ErrorUtil {
     public static CommandException createUsageExceptionWithHelp(String errorMsg) {
         CommandException launcherException = new CommandException();
         launcherException.addMessage("ballerina: " + errorMsg);
-        launcherException.addMessage("Run 'ballerina help' for usage.");
+        launcherException.addMessage("Run 'bal help' for usage.");
         return launcherException;
     }
 
     public static CommandException createUsageExceptionWithHelp(String errorMsg, String subCommand) {
         CommandException launcherException = new CommandException();
         launcherException.addMessage("ballerina: " + errorMsg);
-        launcherException.addMessage("Run 'ballerina help " + subCommand + "' for usage.");
+        launcherException.addMessage("Run 'bal help " + subCommand + "' for usage.");
         return launcherException;
     }
 
