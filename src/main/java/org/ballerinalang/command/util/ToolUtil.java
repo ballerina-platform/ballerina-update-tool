@@ -94,7 +94,7 @@ public class ToolUtil {
                 String installedInstallerVersion = getInstallerVersion(OSUtils.getInstalledInstallerVersionPath());
                 if (!installedInstallerVersion.equals(getInstallerVersion(installerVersionFilePath))) {
                     setCurrentBallerinaVersion(ToolUtil.getCurrentInstalledBallerinaVersion());
-                    setInstallerVersion(installedInstallerVersion);
+                    setInstallerVersion(installerVersionFilePath);
                 }
             }
             String userVersion = getVersion(OSUtils.getBallerinaVersionFilePath());

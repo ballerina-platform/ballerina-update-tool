@@ -126,7 +126,7 @@ public class OSUtils {
             ToolUtil.setInstallerVersion(installerVersionfile.getPath());
             ToolUtil.setVersion(getBallerinaVersionFilePath(), ToolUtil.getCurrentInstalledBallerinaVersion());
         }
-        return userHome + File.separator + BALLERINA_HOME_DIR + File.separator + INSTALLER_VERSION;
+        return installerVersionfile.getPath();
     }
 
     public static String getBallerinaDistListFilePath() {
