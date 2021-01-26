@@ -422,7 +422,7 @@ public class ToolUtil {
                 }
                 if (!latestVersion.equals(version)) {
                     printStream.println("A new version of Ballerina is available: " + latestVersion);
-                    printStream.println("Use 'ballerina dist pull " + latestVersion + "' to " +
+                    printStream.println("Use 'bal dist pull " + latestVersion + "' to " +
                             "download and use the distribution");
                     printStream.println();
                 }
