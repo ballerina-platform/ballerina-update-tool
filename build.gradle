@@ -56,6 +56,7 @@ task createZip(type:Zip) {
     dependsOn copyScripts
     with copyJarSpec
     from ('build/resources')
+    into(project.name + "-" + project.version)
     destinationDir file('build')
 }
 
@@ -72,12 +73,6 @@ publishing {
         mavenJava(MavenPublication) {
             groupId project.group
             artifactId project.name
-            version = project.version
-            artifact jar
-        }
-        mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.name + "-distribution"
             version = project.version
             artifact  source: createZip, extension: 'zip'
         }
