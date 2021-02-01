@@ -119,6 +119,10 @@ public class OSUtils {
         File installerVersionfile = new File(userHome + File.separator
                 + BALLERINA_HOME_DIR + File.separator + INSTALLER_VERSION);
 
+        if (!new File(OSUtils.getInstalledInstallerVersionPath()).exists() && installerVersionfile.exists()) {
+            installerVersionfile.delete();
+        }
+
         if (new File(OSUtils.getInstalledInstallerVersionPath()).exists() && !installerVersionfile.exists()) {
             installerVersionfile.getParentFile().mkdirs();
             installerVersionfile.createNewFile();
