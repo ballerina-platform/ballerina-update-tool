@@ -183,15 +183,20 @@ public class ListCommand extends Command implements BCommand {
      */
     private static void writeLocalDistsIntoJson(JSONObject distList) {
         try {
-            String path = OSUtils.getBallerinaDistListFilePath();
-            File file = new File(path);
+            String distListFilePath = OSUtils.getBallerinaDistListFilePath();
+            File file = new File(distListFilePath);
 
             if (!file.exists()) {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
                 ToolUtil.addExecutablePermissionToFile(file);
             }
-            Files.write(Paths.get(path), distList.toJSONString().getBytes());
+
+            if (!Files.isWritable(Paths.get(distListFilePath))) {
+                throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" +
+                        distListFilePath + "'");
+            }
+            Files.write(Paths.get(distListFilePath), distList.toJSONString().getBytes());
         } catch (IOException e) {
             throw ErrorUtil.createCommandException("failed to write in the file: " + e.getMessage());
         }
