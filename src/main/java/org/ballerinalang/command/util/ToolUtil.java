@@ -103,7 +103,7 @@ public class ToolUtil {
             }
             return getCurrentInstalledBallerinaVersion();
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException("current Ballerina version not found.");
+            throw ErrorUtil.createCommandException("current Ballerina version not found: " + e.getMessage());
         }
     }
 
@@ -122,9 +122,14 @@ public class ToolUtil {
 
     private static void setCurrentBallerinaVersion(String version) {
         try {
-            setVersion(OSUtils.getBallerinaVersionFilePath(), version);
+            String ballerinaVersionFilePath = OSUtils.getBallerinaVersionFilePath();
+            if (!Files.isWritable(Paths.get(ballerinaVersionFilePath))) {
+                throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" +
+                        ballerinaVersionFilePath + "'");
+            }
+            setVersion(ballerinaVersionFilePath, version);
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException("failed to set the Ballerina version.");
+            throw ErrorUtil.createCommandException("failed to set the Ballerina version: " + e.getMessage());
         }
     }
 
