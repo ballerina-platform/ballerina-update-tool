@@ -61,6 +61,7 @@ if "%dist%" == "true" (
    ) else (
         %JAVA_CMD% -jar %CURRENT_PATH%..\lib\ballerina-command-@version@.jar %*
    )
+   exit /b %errorlevel%
    if "%update%" == "true" if exist  %CURRENT_PATH%..\ballerina-command-tmp (
         call %CURRENT_PATH%\..\ballerina-command-tmp\install.bat
         if %errorlevel% neq 0 (
