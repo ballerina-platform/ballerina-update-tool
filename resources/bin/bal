@@ -53,6 +53,7 @@ then
     else
         $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar "$@"
     fi
+    exit $?
 
     if [ "$1" == "update" ] && [ -d "$CURRENT_PATH/../ballerina-command-tmp" ]; then
         $CURRENT_PATH/../ballerina-command-tmp/install
