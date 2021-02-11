@@ -27,6 +27,10 @@ import java.io.PrintStream;
 @CommandLine.Command(description = "Default Command.", name = "default")
 public class DefaultCommand extends Command implements BCommand {
 
+    public DefaultCommand(){
+
+    }
+
     @CommandLine.Option(names = { "--help", "-h", "?" }, hidden = true, description = "for more information")
     private boolean helpFlag;
 
