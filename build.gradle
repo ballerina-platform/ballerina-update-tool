@@ -37,11 +37,6 @@ jar {
     }
 }
 
-CopySpec copyJarSpec = copySpec {
-    from ('build/libs')
-    into('/lib')
-}
-
 task copyBin(type: Copy) {
     from file("resources/bin")
     into file("build/resources/bin")
@@ -54,11 +49,17 @@ task copyScripts(type: Copy) {
     filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
 }
 
+task copyLib(type: Copy) {
+    from file("build/libs")
+    into file("build/resources/lib")
+    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
+}
+
 task createZip(type:Zip) {
     dependsOn jar
     dependsOn copyBin
     dependsOn copyScripts
-    with copyJarSpec
+    dependsOn copyLib
     from ('build/resources')
     into(project.name + "-" + project.version)
     destinationDir file('build')
