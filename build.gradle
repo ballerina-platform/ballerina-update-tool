@@ -52,7 +52,6 @@ task copyScripts(type: Copy) {
 task copyLib(type: Copy) {
     from file("build/libs")
     into file("build/resources/lib")
-    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
 }
 
 task createZip(type:Zip) {
