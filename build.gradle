@@ -14,8 +14,12 @@
  * limitations under the License.
  *
  */
-apply plugin: 'java'
-apply plugin: 'maven-publish'
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'net.researchgate.release' version '2.8.1'
+}
 
 group = project.group
 version = project.version
@@ -33,11 +37,6 @@ jar {
     }
 }
 
-CopySpec copyJarSpec = copySpec {
-    from ('build/libs')
-    into('/lib')
-}
-
 task copyBin(type: Copy) {
     from file("resources/bin")
     into file("build/resources/bin")
@@ -50,11 +49,16 @@ task copyScripts(type: Copy) {
     filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
 }
 
+task copyLib(type: Copy) {
+    from file("build/libs")
+    into file("build/resources/lib")
+}
+
 task createZip(type:Zip) {
     dependsOn jar
     dependsOn copyBin
     dependsOn copyScripts
-    with copyJarSpec
+    dependsOn copyLib
     from ('build/resources')
     into(project.name + "-" + project.version)
     destinationDir file('build')
@@ -87,6 +91,18 @@ publishing {
                 password = System.getenv("GITHUB_TOKEN")
             }
         }
+    }
+}
+
+release {
+    buildTasks = []
+    failOnSnapshotDependencies = false
+    failOnCommitNeeded = false
+    versionPropertyFile = 'gradle.properties'
+    tagTemplate = 'v${version}'
+    git {
+        // To release from any branch
+        requireBranch = ''
     }
 }
 
