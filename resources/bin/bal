@@ -52,6 +52,7 @@ then
         $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar build
     else
         $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar "$@"
+        EXIT_CODE=$?
     fi
 
     if [ "$1" == "update" ] && [ -d "$CURRENT_PATH/../ballerina-command-tmp" ]; then
@@ -59,7 +60,7 @@ then
         if [ $? -ne '0' ]; then
           echo "Update failed due to errors"
           rm -rf $CURRENT_PATH/../ballerina-command-tmp
-          exit $?
+          EXIT_CODE=$?
         fi
         rm -rf $CURRENT_PATH/../ballerina-command-tmp
         echo "Update successfully completed"
