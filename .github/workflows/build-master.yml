@@ -24,3 +24,5 @@ jobs:
       run: |
         ./gradlew build jacocoTestReport
         ./gradlew publish
+    - name: Generate Codecov Report
+      uses: codecov/codecov-action@v1
