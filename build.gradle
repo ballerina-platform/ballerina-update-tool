@@ -122,7 +122,6 @@ task copyFilesForTests(type: Copy) {
     into file("$buildDir/classes/distributions")
 }
 
-
 test {
     useTestNG() {
     }
