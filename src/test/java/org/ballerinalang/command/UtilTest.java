@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ * Copyright (c) 2021, WSO2 Inc. (http://wso2.com) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,5 +30,10 @@ public class UtilTest {
         } catch (IOException e) {
             System.out.print(e);
         }
+    }
+
+    @Test
+    public void ballerinaVersionFileTest() {
+        Assert.assertTrue(OSUtils.getInstalledConfigPath().contains("ballerina-version"));
     }
 }
