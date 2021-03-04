@@ -22,5 +22,5 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.PUBLISH_PAT }}
       run: |
-        ./gradlew build
+        ./gradlew build jacocoTestReport
         ./gradlew publish
