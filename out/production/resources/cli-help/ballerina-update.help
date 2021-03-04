@@ -1,0 +1,10 @@
+NAME
+       bal-update - Update the Ballerina tool
+
+SYNOPSIS
+       bal update
+
+
+DESCRIPTION
+       Update updates the Ballerina tool to the latest version.
+       If you want to update the Ballerina distribution use `bal dist update`.
