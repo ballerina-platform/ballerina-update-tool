@@ -117,6 +117,12 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+task copyFilesForTests(type: Copy) {
+    from file("$buildDir/../src/test/resources/ballerina-version")
+    into file("$buildDir/classes/distributions")
+}
+
+
 test {
     useTestNG() {
     }
@@ -160,4 +166,5 @@ jacocoTestReport {
     }
 }
 
+test.dependsOn copyFilesForTests
 jacocoTestReport.dependsOn test

@@ -46,6 +46,7 @@ public class OSUtils {
 
     /**
      * Provide the path of configuration file.
+     *
      * @return File path
      */
     public static String getInstallationPath() throws URISyntaxException {
@@ -55,13 +56,14 @@ public class OSUtils {
 
     /**
      * Provide file name of executable for current operating system.
+     *
      * @return name of the file
      */
     public static String getExecutableFileName(String distribution) {
         String fileName = OSUtils.isWindows() ? "bal.bat" : "bal";
         File file = new File(ToolUtil.getDistributionsPath() + File.separator + ToolUtil.getType(distribution) + "-" +
                 distribution + File.separator + "bin" + File.separator + fileName);
-        if(file.exists()) {
+        if (file.exists()) {
             return fileName;
         }
         return OSUtils.isWindows() ? "ballerina.bat" : "ballerina";
@@ -69,6 +71,7 @@ public class OSUtils {
 
     /**
      * Provide file name of tool update install script for current operating system.
+     *
      * @return name of the file
      */
     public static String getInstallScriptFileName() {
@@ -77,6 +80,7 @@ public class OSUtils {
 
     /**
      * Provide file name of debug adapter script for current operating system.
+     *
      * @return name of the file
      */
     public static String getDebugAdapterName() {
@@ -85,6 +89,7 @@ public class OSUtils {
 
     /**
      * Provide file name of language server launcher script for current operating system.
+     *
      * @return name of the file
      */
     public static String getLangServerLauncherName() {
@@ -156,16 +161,25 @@ public class OSUtils {
     }
 
     /**
+     * Provide update notice file path.
+     *
+     * @return
+     */
+    public static String getUpdateNoticePath() {
+        return getUserHome() + File.separator + BALLERINA_HOME_DIR + File.separator + UPDATE_NOTICE;
+    }
+
+    /**
      * Check file and specify notice needs to be shown.
+     *
      * @return needs to be shown
      * @throws IOException occurs when reading files
      */
     static boolean updateNotice() throws IOException {
         boolean showNotice;
-        String userHome = getUserHome();
+
         LocalDate today = LocalDate.now();
-        File file = new File(userHome + File.separator
-                + BALLERINA_HOME_DIR + File.separator + UPDATE_NOTICE);
+        File file = new File(getUpdateNoticePath());
         if (!file.exists()) {
             file.getParentFile().mkdirs();
             file.createNewFile();
@@ -186,6 +200,7 @@ public class OSUtils {
 
     /**
      * Delete BIR cache directory.
+     *
      * @param outStream output stream to indicate errors
      * @throws IOException could occur accessing the file
      */
@@ -196,6 +211,7 @@ public class OSUtils {
 
     /**
      * Delete jar cache directory.
+     *
      * @param outStream output stream to indicate errors
      * @throws IOException could occur accessing the file
      */
@@ -206,7 +222,8 @@ public class OSUtils {
 
     /**
      * Delete provided file.
-     * @param file file needs to be deleted
+     *
+     * @param file      file needs to be deleted
      * @param outStream output stream to indicate errors
      * @throws IOException could occur accessing the file
      */
@@ -254,6 +271,7 @@ public class OSUtils {
 
     /**
      * Provide user home directory based on command.
+     *
      * @return user home directory
      */
     private static String getUserHome() {
@@ -270,9 +288,9 @@ public class OSUtils {
     /**
      * Delete files inside directories.
      *
-     * @param dirPath directory path
+     * @param dirPath   directory path
      * @param outStream output stream
-     * @param version version to be deleted
+     * @param version   version to be deleted
      * @throws IOException throw an exception if an issue occurs
      */
     public static void deleteFiles(Path dirPath, PrintStream outStream, String version) throws IOException {
