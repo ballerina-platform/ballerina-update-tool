@@ -30,3 +30,4 @@ build/
 gradle-app.setting
 !gradle-wrapper.jar
 .gradletasknamecache
+out/
