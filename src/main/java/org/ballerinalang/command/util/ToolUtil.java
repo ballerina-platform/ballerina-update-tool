@@ -116,7 +116,7 @@ public class ToolUtil {
         try {
             return getVersion(OSUtils.getInstalledConfigPath());
         } catch (IOException e) {
-            //throw ErrorUtil.createCommandException("installed Ballerina version not found.");
+            //If we files does not exist it will be empty and update tool continues without a distribution
             return "";
         }
     }
