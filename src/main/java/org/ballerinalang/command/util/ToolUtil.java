@@ -116,7 +116,8 @@ public class ToolUtil {
         try {
             return getVersion(OSUtils.getInstalledConfigPath());
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException("installed Ballerina version not found.");
+            //throw ErrorUtil.createCommandException("installed Ballerina version not found.");
+            return "";
         }
     }
 
@@ -378,7 +379,11 @@ public class ToolUtil {
      */
     public static String getDistributionsPath() {
         try {
-            return OSUtils.getInstallationPath() + File.separator + "distributions";
+            File distDirectory = new File(OSUtils.getInstallationPath() + File.separator + "distributions");
+            if(!distDirectory.exists()) {
+                distDirectory.mkdirs();
+            }
+            return distDirectory.getPath();
         } catch (URISyntaxException e) {
             throw ErrorUtil.createCommandException("failed to get the path of the distributions");
         }
@@ -391,7 +396,11 @@ public class ToolUtil {
      */
     public static String getDependencyPath() {
         try {
-            return OSUtils.getInstallationPath() + File.separator + "dependencies";
+            File depDirectory = new File(OSUtils.getInstallationPath() + File.separator + "dependencies");
+            if(!depDirectory.exists()) {
+                depDirectory.mkdirs();
+            }
+            return depDirectory.getPath();
         } catch (URISyntaxException e) {
             throw ErrorUtil.createCommandException("failed to get the path of the distributions");
         }
