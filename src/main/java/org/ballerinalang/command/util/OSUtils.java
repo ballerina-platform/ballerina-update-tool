@@ -328,11 +328,12 @@ public class OSUtils {
      * @param version distribution version
      */
     public static void deleteCaches(String version, PrintStream outStream) throws IOException {
-        File centralCache = new File(getUserHome() + File.separator + BALLERINA_HOME_DIR + File.separator +
-                REPOSITORIES + File.separator + CENTRAL_CACHE_ROOT + File.separator + CACHE + version);
-        File localCache = new File(getUserHome() + File.separator + BALLERINA_HOME_DIR + File.separator +
-                REPOSITORIES + File.separator + LOCAL_CACHE_ROOT + File.separator + CACHE + version);
-        deleteDirectory(centralCache, outStream);
-        deleteDirectory(localCache, outStream);
+        Path centralCache = Paths.get(getUserHome(),
+                BALLERINA_HOME_DIR, REPOSITORIES, CENTRAL_CACHE_ROOT, CACHE + version);
+
+        Path localCache = Paths.get(getUserHome(),
+                BALLERINA_HOME_DIR, REPOSITORIES, LOCAL_CACHE_ROOT, CACHE + version);
+        deleteDirectory(centralCache.toFile(), outStream);
+        deleteDirectory(localCache.toFile(), outStream);
     }
 }
