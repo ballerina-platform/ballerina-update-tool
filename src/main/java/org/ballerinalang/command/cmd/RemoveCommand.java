@@ -110,6 +110,7 @@ public class RemoveCommand extends Command implements BCommand {
                 File directory = new File(ToolUtil.getDistributionsPath() + File.separator + file);
                 if (directory.exists()) {
                     OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
+                    OSUtils.deleteCaches(version, getPrintStream());
                     getPrintStream().println("Distribution '" + version + "' successfully removed");
                 } else {
                     throw ErrorUtil.createCommandException("distribution '" + version + "' not found");

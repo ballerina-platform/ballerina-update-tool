@@ -43,6 +43,10 @@ public class OSUtils {
     private static final String UPDATE_NOTICE = "command-notice";
     private static final String BIR_CACHE = "bir_cache";
     private static final String JAR_CACHE = "jar_cache";
+    private static final String REPOSITORIES = "repositories";
+    private static final String CENTRAL_CACHE_ROOT = "central.ballerina.io";
+    private static final String LOCAL_CACHE_ROOT = "local";
+    private static final String CACHE = "cache";
 
     /**
      * Provide the path of configuration file.
@@ -227,7 +231,7 @@ public class OSUtils {
      * @param outStream output stream to indicate errors
      * @throws IOException could occur accessing the file
      */
-    private static void deleteDirectory(File file, PrintStream outStream) throws IOException {
+    public static void deleteDirectory(File file, PrintStream outStream) throws IOException {
         if (file.exists()) {
             Files.walk(file.toPath())
                     .sorted(Comparator.reverseOrder())
@@ -316,5 +320,20 @@ public class OSUtils {
                         throw ErrorUtil.createCommandException("cannot remove '" + path + "'");
                     }
                 });
+    }
+
+    /**
+     * Deletes the repository caches in user home.
+     *
+     * @param version distribution version
+     */
+    public static void deleteCaches(String version, PrintStream outStream) throws IOException {
+        Path centralCache = Paths.get(getUserHome(),
+                BALLERINA_HOME_DIR, REPOSITORIES, CENTRAL_CACHE_ROOT, CACHE + version);
+
+        Path localCache = Paths.get(getUserHome(),
+                BALLERINA_HOME_DIR, REPOSITORIES, LOCAL_CACHE_ROOT, CACHE + version);
+        deleteDirectory(centralCache.toFile(), outStream);
+        deleteDirectory(localCache.toFile(), outStream);
     }
 }
