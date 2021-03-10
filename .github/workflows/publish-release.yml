@@ -31,7 +31,8 @@ jobs:
           packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
           packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
         run: |
-          ./gradlew build release publish -Prelease.useAutomaticVersion=true -Pversion=${VERSION}
+          ./gradlew release -Prelease.useAutomaticVersion=true
+          ./gradlew -Pversion=${VERSION} publish
       - name: Create Github release from the release tag
         run: |
           curl --request POST 'https://api.github.com/repos/ballerina-platform/ballerina-update-tool/releases' \
