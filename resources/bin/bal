@@ -45,7 +45,6 @@ then
     RUN_COMMAND=true
 fi
 
-
 if [ "$RUN_COMMAND" == "true" ]
 then
     if [ "$1" == "build" ]

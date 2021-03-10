@@ -42,6 +42,42 @@ jobs:
               "tag_name": "v'"$VERSION"'",
               "name": "ballerina-update-tool-v'"$VERSION"'"
           }'
+      - name: Upload zip artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: ballerina-jre-windows-${{ needs.get_release_version.outputs.version }}.zip
+          asset_path: build/distributions/ballerina-command-${{ needs.get_release_version.outputs.version }}.zip
+          asset_content_type: application/octet-stream
+      - name: Upload Linux zip artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: ballerina-jre-windows-${{ needs.get_release_version.outputs.version }}.zip
+          asset_path: build/distributions/ballerina-command-linux-${{ needs.get_release_version.outputs.version }}.zip
+          asset_content_type: application/octet-stream
+      - name: Upload MacOS zip artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: ballerina-jre-windows-${{ needs.get_release_version.outputs.version }}.zip
+          asset_path: build/distributions/ballerina-command-macos-${{ needs.get_release_version.outputs.version }}.zip
+          asset_content_type: application/octet-stream
+      - name: Upload Windows zip artifacts
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: ballerina-jre-windows-${{ needs.get_release_version.outputs.version }}.zip
+          asset_path: build/distributions/ballerina-command-windows-${{ needs.get_release_version.outputs.version }}.zip
+          asset_content_type: application/octet-stream
       - name: Post release PR
         env:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}

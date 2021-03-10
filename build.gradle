@@ -20,10 +20,15 @@ plugins {
     id 'maven-publish'
     id 'net.researchgate.release' version '2.8.1'
     id 'jacoco'
+    id 'de.undercouch.download' version '4.1.1'
 }
 
 group = project.group
 version = project.version
+
+ext {
+    jreLocation = "downloads/ballerina-jre-artifacts-zip/"
+}
 
 configurations {
     jacocoRuntime
@@ -66,7 +71,93 @@ task createZip(type:Zip) {
     dependsOn copyLib
     from ('build/resources')
     into(project.name + "-" + project.version)
-    destinationDir file('build')
+}
+
+task unpackBallerinaJre(type: Download) {
+    group = "unpack_dependencies"
+    def jreBaseURL = "https://github.com/ballerina-platform/ballerina-custom-jre/releases/download/${project.ballerinaJreVersion}"
+    src([
+            "${jreBaseURL}/ballerina-jre-linux-${project.ballerinaJreVersion}.zip",
+            "${jreBaseURL}/ballerina-jre-macos-${project.ballerinaJreVersion}.zip",
+            "${jreBaseURL}/ballerina-jre-windows-${project.ballerinaJreVersion}.zip"
+    ])
+    onlyIfModified true
+    dest "${jreLocation}"
+}
+
+task extractJreForLinux(type: Copy) {
+    dependsOn unpackBallerinaJre
+    group = "extract_jre"
+    from zipTree { "${jreLocation}/ballerina-jre-linux-${project.ballerinaJreVersion}.zip" }
+    into("${buildDir}/target/extracted-jre-linux")
+}
+
+task extractJreForMac(type: Copy) {
+    dependsOn unpackBallerinaJre
+    group = "extract_jre"
+    from zipTree { "${jreLocation}/ballerina-jre-macos-${project.ballerinaJreVersion}.zip" }
+    into("${buildDir}/target/extracted-jre-macos")
+}
+
+task extractJreForWindows(type: Copy) {
+    dependsOn unpackBallerinaJre
+    group = "extract_jre"
+    from zipTree { "${jreLocation}/ballerina-jre-windows-${project.ballerinaJreVersion}.zip" }
+    into("${buildDir}/target/extracted-jre-windows")
+}
+
+task createZipLinux(type:Zip) {
+    def distName = "${project.name}-linux-${project.version}"
+    dependsOn extractJreForLinux
+    dependsOn jar
+    dependsOn copyBin
+    dependsOn copyScripts
+    dependsOn copyLib
+    from ("${buildDir}/target/extracted-jre-linux") {
+        into "${distName}"
+    }
+
+    from('build/resources') {
+        into "${distName}"
+    }
+
+    archiveName "${distName}.zip"
+}
+
+task createZipMac(type:Zip) {
+    def distName = "${project.name}-macos-${project.version}"
+    dependsOn extractJreForMac
+    dependsOn jar
+    dependsOn copyBin
+    dependsOn copyScripts
+    dependsOn copyLib
+    from ("${buildDir}/target/extracted-jre-macos") {
+        into "${distName}/dependencies/jdk-11.0.8+10-jre"
+    }
+
+    from('build/resources') {
+        into "${distName}"
+    }
+
+    archiveName "${distName}.zip"
+}
+
+task createZipWindows(type:Zip) {
+    def distName = "${project.name}-windows-${project.version}"
+    dependsOn extractJreForWindows
+    dependsOn jar
+    dependsOn copyBin
+    dependsOn copyScripts
+    dependsOn copyLib
+    from ("${buildDir}/target/extracted-jre-windows") {
+        into "${distName}/dependencies/jdk-11.0.8+10-jre"
+    }
+
+    from('build/resources') {
+        into "${distName}"
+    }
+
+    archiveName "${distName}.zip"
 }
 
 sourceCompatibility = 1.8
@@ -129,6 +220,9 @@ test {
 
 build {
     dependsOn createZip
+    dependsOn createZipLinux
+    dependsOn createZipMac
+    dependsOn createZipWindows
 }
 
 repositories {
