@@ -17,7 +17,9 @@
 package org.ballerinalang.command;
 
 import org.ballerinalang.command.cmd.BCommand;
+import org.ballerinalang.command.cmd.BashCommand;
 import org.ballerinalang.command.cmd.BuildCommand;
+import org.ballerinalang.command.cmd.CompletionCommand;
 import org.ballerinalang.command.cmd.DefaultCommand;
 import org.ballerinalang.command.cmd.DistributionCommand;
 import org.ballerinalang.command.cmd.HelpCommand;
@@ -71,6 +73,14 @@ public class Main {
             CommandLine distCmdParser = new CommandLine(distCmd);
             distCmd.setParentCmdParser(distCmdParser);
 
+            CompletionCommand completionCmd = new CompletionCommand(outStream);
+            CommandLine completionCmdParser = new CommandLine(completionCmd);
+            completionCmd.setParentCmdParser(completionCmdParser);
+
+            BashCommand bashCmd = new BashCommand(outStream);
+            completionCmdParser.addSubcommand(BallerinaCliCommands.BASH, bashCmd);
+            bashCmd.setParentCmdParser(completionCmdParser);
+
             ListCommand listCmd = new ListCommand(outStream);
             distCmdParser.addSubcommand(BallerinaCliCommands.LIST, listCmd);
             listCmd.setParentCmdParser(distCmdParser);
@@ -98,7 +108,11 @@ public class Main {
             distCmdParser.setCommandName("dist");
             distCmdParser.setPosixClusteredShortOptionsAllowed(false);
 
+            completionCmdParser.setCommandName("completion");
+            completionCmdParser.setPosixClusteredShortOptionsAllowed(false);
+
             cmdParser.addSubcommand(BallerinaCliCommands.DIST, distCmdParser);
+            cmdParser.addSubcommand(BallerinaCliCommands.COMPLETION, completionCmdParser);
 
             UpdateToolCommand updateToolCommand = new UpdateToolCommand(outStream);
             cmdParser.addSubcommand(BallerinaCliCommands.UPDATE, updateToolCommand);
