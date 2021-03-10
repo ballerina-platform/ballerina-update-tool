@@ -16,4 +16,4 @@ _bal_completions()
     COMPREPLY=($(compgen -o plusdirs -f -X '!*.bal' -- "${COMP_WORDS[COMP_CWORD]}"))
 } 
  
-complete -F _bal_completions bal
+complete -o nospace -F _bal_completions bal
