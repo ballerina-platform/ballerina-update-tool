@@ -16,7 +16,9 @@
 
 package org.ballerinalang.command;
 
+import org.ballerinalang.command.cmd.BashCommand;
 import org.ballerinalang.command.cmd.BuildCommand;
+import org.ballerinalang.command.cmd.CompletionCommand;
 import org.ballerinalang.command.cmd.HelpCommand;
 import org.ballerinalang.command.cmd.ListCommand;
 import org.ballerinalang.command.cmd.VersionCommand;
@@ -79,5 +81,19 @@ public class CommandTest {
         helpCommand.execute();
         Assert.assertTrue(outContent.toString().contains("dist            Manage Ballerina distributions"));
         Assert.assertTrue(outContent.toString().contains("update          Update the Ballerina tool"));
+    }
+
+    @Test
+    public void completionCommandTest() {
+        CompletionCommand completionCommand = new CompletionCommand(testStream);
+        completionCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("bal-completion"));
+    }
+
+    @Test
+    public void bashCommandTest() {
+        BashCommand bashCommand = new BashCommand(testStream);
+        bashCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("#!/bin/bash"));
     }
 }
