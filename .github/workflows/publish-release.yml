@@ -32,7 +32,7 @@ jobs:
         run: |
           ./gradlew release -Prelease.useAutomaticVersion=true
     outputs:
-      version: ${VERSION}
+      version: ${{ VERSION }}
   create_release:
     needs: publish-release
     name: Create Release
