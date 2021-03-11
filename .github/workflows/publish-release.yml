@@ -14,8 +14,6 @@ jobs:
           java-version: 1.8
       - name: Set version env variable
         run: echo VERSION=$((grep -w "version" | cut -d= -f2) < gradle.properties | cut -d- -f1) >> $GITHUB_ENV
-        outputs:
-          version: ${{steps.execute.outputs.version}}
       - name: Pre release depenency version update
         env:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
@@ -43,6 +41,8 @@ jobs:
               "tag_name": "v'"$VERSION"'",
               "name": "ballerina-update-tool-v'"$VERSION"'"
           }'
+    outputs:
+      version: ${{steps.execute.outputs.version}}
   create_release:
     needs: publish-release
     name: Create Release
