@@ -154,8 +154,9 @@ public class ToolUtil {
 
     private static String getVersion(String path) throws IOException {
         BufferedReader br = Files.newBufferedReader(Paths.get(path));
-        List<String> list = br.lines().collect(Collectors.toList());
-        return list.get(0).split("-")[1];
+        String[] list = br.lines().collect(Collectors.toList()).get(0).split("-");
+        String version = list.length == 2 ? list[1] : "";
+        return version;
     }
 
     /**

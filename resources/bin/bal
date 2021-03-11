@@ -92,6 +92,8 @@ then
     else
       if test -f "$BALLERINA_HOME/bin/./ballerina"; then
         $BALLERINA_HOME/bin/./ballerina "$@"
+      else
+        echo "Distribution does not exist, use 'bal dist pull <version>'"
       fi
     fi
     EXIT_CODE=$?
