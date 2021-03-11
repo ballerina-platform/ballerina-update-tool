@@ -102,37 +102,42 @@ public class ListCommand extends Command implements BCommand {
         String currentBallerinaVersion = ToolUtil.getCurrentBallerinaVersion();
         File folder = new File(ToolUtil.getDistributionsPath());
         File[] listOfFiles = folder.listFiles();
-        Arrays.sort(listOfFiles);
         try {
             JSONObject distList = new JSONObject();
             JSONArray channelsArr = new JSONArray();
             List<Channel> channels = ToolUtil.getDistributions();
-            outStream.println("Distributions available locally: \n");
+            if (listOfFiles != null) {
+                outStream.println("Distributions available locally: \n");
+            }
+
             for (Channel channel : channels) {
                 JSONObject channelJson = new JSONObject();
                 JSONArray releases = new JSONArray();
                 channelJson.put("name", channel.getName());
-                for (Distribution distribution : channel.getDistributions()) {
-                    for (File file : listOfFiles) {
-                        if (file.isDirectory()) {
-                            String version = "";
-                            String[] parts =  file.getName().split("-");
-                            if (parts.length == 2) {
-                                version = parts[1];
-                            }
-                            if (version.equals(distribution.getVersion())) {
-                                String versionName = distribution.getName();
-                                String versionId = distribution.getVersion();
-                                JSONObject versionInfo = new JSONObject();
-                                versionInfo.put("name", versionName);
-                                versionInfo.put("version", versionId);
-                                outStream.println(markVersion(currentBallerinaVersion, versionId)
-                                        + " " + versionName);
-                                releases.add(versionInfo);
+                if (listOfFiles != null) {
+                    for (Distribution distribution : channel.getDistributions()) {
+                            Arrays.sort(listOfFiles);
+                            for (File file : listOfFiles) {
+                                if (file.isDirectory()) {
+                                    String version = "";
+                                    String[] parts =  file.getName().split("-");
+                                    if (parts.length == 2) {
+                                        version = parts[1];
+                                    }
+                                    if (version.equals(distribution.getVersion())) {
+                                        String versionName = distribution.getName();
+                                        String versionId = distribution.getVersion();
+                                        JSONObject versionInfo = new JSONObject();
+                                        versionInfo.put("name", versionName);
+                                        versionInfo.put("version", versionId);
+                                        outStream.println(markVersion(currentBallerinaVersion, versionId)
+                                                + " " + versionName);
+                                        releases.add(versionInfo);
+                                    }
+                                }
                             }
                         }
                     }
-                }
                 channelJson.put("releases", releases);
                 channelsArr.add(channelJson);
             }
@@ -148,7 +153,7 @@ public class ListCommand extends Command implements BCommand {
             }
         } catch (CommandException e) {
             outStream.println("Distributions available locally: \n");
-            if(!isUpdated(listOfFiles)) {
+            if(listOfFiles != null && !isUpdated(listOfFiles)) {
                 listLocalDists(listOfFiles, outStream, currentBallerinaVersion);
             } else {
                 readLocalDistsFromJson(outStream, currentBallerinaVersion);
