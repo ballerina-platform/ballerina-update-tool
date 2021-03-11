@@ -43,6 +43,23 @@ jobs:
               "tag_name": "v'"$VERSION"'",
               "name": "ballerina-update-tool-v'"$VERSION"'"
           }'
+  create_release:
+    needs: publish_release
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
+        with:
+          tag_name: ${{ needs.get_release_version.outputs.version }}
+          release_name: ${{ needs.get_release_version.outputs.version }}
+          draft: false
+          prerelease: false
       - name: Upload zip artifacts
         uses: actions/upload-release-asset@v1
         env:
