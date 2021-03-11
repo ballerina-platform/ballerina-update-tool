@@ -193,14 +193,14 @@ publishing {
 }
 
 release {
-    buildTasks = []
-    failOnSnapshotDependencies = false
-    failOnCommitNeeded = false
+    buildTasks = ['build']
+    failOnSnapshotDependencies = true
     versionPropertyFile = 'gradle.properties'
     tagTemplate = 'v${version}'
     git {
         // To release from any branch
         requireBranch = ''
+        pushToRemote = 'origin'
     }
 }
 
