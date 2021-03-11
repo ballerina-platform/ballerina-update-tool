@@ -42,7 +42,7 @@ jobs:
               "name": "ballerina-update-tool-v'"$VERSION"'"
           }'
     outputs:
-      version: ${{steps.execute.outputs.version}}
+      version: ${VERSION}
   create_release:
     needs: publish-release
     name: Create Release
@@ -56,7 +56,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
         with:
-          tag_name: ${{ needs.publish-release.outputs.version }}
+          tag_name: "v${{ needs.publish-release.outputs.version }}"
           release_name: ${{ needs.publish-release.outputs.version }}
           draft: false
           prerelease: false
