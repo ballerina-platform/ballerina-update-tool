@@ -44,7 +44,7 @@ jobs:
               "name": "ballerina-update-tool-v'"$VERSION"'"
           }'
   create_release:
-    needs: publish_release
+    needs: publish-release
     name: Create Release
     runs-on: ubuntu-latest
     outputs:
