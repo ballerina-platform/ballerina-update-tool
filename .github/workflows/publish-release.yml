@@ -70,7 +70,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: ballerina-command-macos-{{ steps.version-set.outputs.version }}.zip
+          asset_name: ballerina-command-macos-${{ steps.version-set.outputs.version }}.zip
           asset_path: build/distributions/ballerina-command-macos-${{ steps.version-set.outputs.version }}.zip
           asset_content_type: application/octet-stream
       - name: Upload Windows zip artifacts
@@ -87,4 +87,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
         run: |
           curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
-          bin/hub pull-request --base main -m "[Automated] Sync master after "$VERSION" release"
+          bin/hub pull-request -m "[Automated] Sync master after "$VERSION" release"
