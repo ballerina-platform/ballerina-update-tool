@@ -14,6 +14,8 @@ jobs:
           java-version: 1.8
       - name: Set version env variable
         run: echo VERSION=$((grep -w "version" | cut -d= -f2) < gradle.properties | cut -d- -f1) >> $GITHUB_ENV
+        outputs:
+          version: ${{steps.execute.outputs.version}}
       - name: Pre release depenency version update
         env:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
@@ -54,8 +56,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
         with:
-          tag_name: ${{ needs.get_release_version.outputs.version }}
-          release_name: ${{ needs.get_release_version.outputs.version }}
+          tag_name: ${{ needs.publish-release.outputs.version }}
+          release_name: ${{ needs.publish-release.outputs.version }}
           draft: false
           prerelease: false
       - name: Upload zip artifacts
@@ -64,8 +66,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_name: ballerina-jre-windows-${{ needs.get_release_version.outputs.version }}.zip
-          asset_path: build/distributions/ballerina-command-${{ needs.get_release_version.outputs.version }}.zip
+          asset_name: ballerina-jre-windows-${{ needs.publish-release.outputs.version }}.zip
+          asset_path: build/distributions/ballerina-command-${{ needs.publish-release.outputs.version }}.zip
           asset_content_type: application/octet-stream
       - name: Upload Linux zip artifacts
         uses: actions/upload-release-asset@v1
@@ -73,8 +75,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_name: ballerina-jre-windows-${{ needs.get_release_version.outputs.version }}.zip
-          asset_path: build/distributions/ballerina-command-linux-${{ needs.get_release_version.outputs.version }}.zip
+          asset_name: ballerina-jre-windows-${{ needs.publish-release.outputs.version }}.zip
+          asset_path: build/distributions/ballerina-command-linux-${{ needs.publish-release.outputs.version }}.zip
           asset_content_type: application/octet-stream
       - name: Upload MacOS zip artifacts
         uses: actions/upload-release-asset@v1
@@ -82,8 +84,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_name: ballerina-jre-windows-${{ needs.get_release_version.outputs.version }}.zip
-          asset_path: build/distributions/ballerina-command-macos-${{ needs.get_release_version.outputs.version }}.zip
+          asset_name: ballerina-jre-windows-${{ needs.publish-release.outputs.version }}.zip
+          asset_path: build/distributions/ballerina-command-macos-${{ needs.publish-release.outputs.version }}.zip
           asset_content_type: application/octet-stream
       - name: Upload Windows zip artifacts
         uses: actions/upload-release-asset@v1
@@ -91,8 +93,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_name: ballerina-jre-windows-${{ needs.get_release_version.outputs.version }}.zip
-          asset_path: build/distributions/ballerina-command-windows-${{ needs.get_release_version.outputs.version }}.zip
+          asset_name: ballerina-jre-windows-${{ needs.publish-release.outputs.version }}.zip
+          asset_path: build/distributions/ballerina-command-windows-${{ needs.publish-release.outputs.version }}.zip
           asset_content_type: application/octet-stream
       - name: Post release PR
         env:
