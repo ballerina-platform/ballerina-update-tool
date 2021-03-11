@@ -114,7 +114,7 @@ task createZipLinux(type:Zip) {
     dependsOn copyScripts
     dependsOn copyLib
     from ("${buildDir}/target/extracted-jre-linux") {
-        into "${distName}"
+        into "${distName}/dependencies/jdk-11.0.8+10-jre"
     }
 
     from('build/resources') {
