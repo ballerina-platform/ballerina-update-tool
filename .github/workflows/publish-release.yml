@@ -44,7 +44,6 @@ jobs:
     outputs:
       version: ${{steps.execute.outputs.version}}
   create-release:
-    id: create_release
     needs: publish-release
     name: Create Release
     runs-on: ubuntu-latest
