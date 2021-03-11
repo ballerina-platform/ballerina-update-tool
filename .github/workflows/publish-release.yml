@@ -42,7 +42,7 @@ jobs:
               "name": "ballerina-update-tool-v'"$VERSION"'"
           }'
     outputs:
-      version: ${VERSION}
+      version: ${{steps.execute.outputs.version}}
   create-release:
     id: create_release
     needs: publish-release
