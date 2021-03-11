@@ -43,7 +43,8 @@ jobs:
           }'
     outputs:
       version: ${VERSION}
-  create_release:
+  create-release:
+    id: create_release
     needs: publish-release
     name: Create Release
     runs-on: ubuntu-latest
