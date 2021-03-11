@@ -27,12 +27,10 @@ jobs:
       - name: Publish artifact
         env:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
-          BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
           packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
           packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
         run: |
           ./gradlew release -Prelease.useAutomaticVersion=true
-          ./gradlew -Pversion=${VERSION} publish
       - name: Create Github release from the release tag
         run: |
           curl --request POST 'https://api.github.com/repos/ballerina-platform/ballerina-update-tool/releases' \
@@ -43,6 +41,23 @@ jobs:
               "tag_name": "v'"$VERSION"'",
               "name": "ballerina-update-tool-v'"$VERSION"'"
           }'
+  create_release:
+    needs: publish-release
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
+        with:
+          tag_name: ${{ needs.get_release_version.outputs.version }}
+          release_name: ${{ needs.get_release_version.outputs.version }}
+          draft: false
+          prerelease: false
       - name: Upload zip artifacts
         uses: actions/upload-release-asset@v1
         env:
