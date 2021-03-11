@@ -329,10 +329,10 @@ public class OSUtils {
      */
     public static void deleteCaches(String version, PrintStream outStream) throws IOException {
         Path centralCache = Paths.get(getUserHome(),
-                BALLERINA_HOME_DIR, REPOSITORIES, CENTRAL_CACHE_ROOT, CACHE + version);
+                BALLERINA_HOME_DIR, REPOSITORIES, CENTRAL_CACHE_ROOT, CACHE + "-" + version);
 
         Path localCache = Paths.get(getUserHome(),
-                BALLERINA_HOME_DIR, REPOSITORIES, LOCAL_CACHE_ROOT, CACHE + version);
+                BALLERINA_HOME_DIR, REPOSITORIES, LOCAL_CACHE_ROOT, CACHE + "-" + version);
         deleteDirectory(centralCache.toFile(), outStream);
         deleteDirectory(localCache.toFile(), outStream);
     }
