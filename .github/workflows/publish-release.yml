@@ -33,12 +33,12 @@ jobs:
           ./gradlew release -Prelease.useAutomaticVersion=true
     outputs:
       version: ${{steps.execute.outputs.version}}
-  create-release:
+  create_release:
     needs: publish-release
     name: Create Release
     runs-on: ubuntu-latest
     outputs:
-      upload_url: ${{ steps.step_upload_url.outputs.upload_url }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Create release
         id: create_release
@@ -50,6 +50,11 @@ jobs:
           release_name: ${{ needs.publish-release.outputs.version }}
           draft: false
           prerelease: false
+  release_assets:
+    name: Release assets
+    needs: [ publish-release, create_release ]
+    runs-on: ubuntu-latest
+    steps:
       - name: Upload zip artifacts
         uses: actions/upload-release-asset@v1
         env:
