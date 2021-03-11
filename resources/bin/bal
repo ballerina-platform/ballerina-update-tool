@@ -72,7 +72,10 @@ fi
 
 if [ "$RUN_BALLERINA" == "true" ]
 then
-    BALLERINA_VERSION=`cat $CURRENT_PATH/../distributions/ballerina-version`
+    FILE=$CURRENT_PATH/../distributions/ballerina-version
+    if test -f "$FILE"; then
+        BALLERINA_VERSION=`cat $CURRENT_PATH/../distributions/ballerina-version`
+    fi
 
     FILE=~/.ballerina/ballerina-version
     if test -f "$FILE"; then
@@ -87,7 +90,9 @@ then
     if test -f "$BALLERINA_HOME/bin/./bal"; then
       $BALLERINA_HOME/bin/./bal "$@"
     else
-      $BALLERINA_HOME/bin/./ballerina "$@"
+      if test -f "$BALLERINA_HOME/bin/./ballerina"; then
+        $BALLERINA_HOME/bin/./ballerina "$@"
+      fi
     fi
     EXIT_CODE=$?
 fi
