@@ -37,15 +37,15 @@ jobs:
         run: |
           ./gradlew release -Prelease.useAutomaticVersion=true
       - name: Create release
-          id: create_release
-          uses: actions/create-release@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
-          with:
-            tag_name: "v${{ steps.version-set.outputs.version }}"
-            release_name: ${{ steps.version-set.outputs.version }}
-            draft: false
-            prerelease: false
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
+        with:
+          tag_name: "v${{ steps.version-set.outputs.version }}"
+          release_name: ${{ steps.version-set.outputs.version }}
+          draft: false
+          prerelease: false
       - name: Upload zip artifacts
         uses: actions/upload-release-asset@v1
         env:
