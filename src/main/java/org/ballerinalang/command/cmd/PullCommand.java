@@ -17,6 +17,8 @@
 package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
+import org.ballerinalang.command.util.Channel;
+import org.ballerinalang.command.util.Distribution;
 import org.ballerinalang.command.util.ErrorUtil;
 import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
@@ -59,6 +61,20 @@ public class PullCommand extends Command implements BCommand {
         ToolUtil.handleInstallDirPermission();
         PrintStream printStream = getPrintStream();
         String distribution = pullCommands.get(0);
+
+        // To handle bal dist pull latest
+        if (distribution.equals(ToolUtil.LATEST_PULL_INPUT)) {
+            String version = ToolUtil.getCurrentBallerinaVersion();
+
+            if (version.equals("")) {
+                List<Channel> channels = ToolUtil.getDistributions();
+                Channel latestChanel = channels.get(channels.size() - 1);
+                List<Distribution> distributions = latestChanel.getDistributions();
+                version = distributions.get(distributions.size() - 1).getVersion();
+            }
+            distribution = ToolUtil.getLatest(version, "patch");
+        }
+
         if (distribution.equals(ToolUtil.getCurrentBallerinaVersion())) {
             printStream.println("'" + distribution + "' is already the active distribution");
             return;
