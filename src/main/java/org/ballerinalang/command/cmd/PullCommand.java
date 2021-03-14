@@ -64,6 +64,7 @@ public class PullCommand extends Command implements BCommand {
 
         // To handle bal dist pull latest
         if (distribution.equals(ToolUtil.LATEST_PULL_INPUT)) {
+            printStream.println("Fetching the latest distribution from the remote server...");
             List<Channel> channels = ToolUtil.getDistributions();
             // Assume channels are sorted ascending
             Channel latestChanel = channels.get(channels.size() - 1);
