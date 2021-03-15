@@ -65,6 +65,7 @@ public class ToolUtil {
             System.getenv("BALLERINA_STAGING_UPDATE"));
     public static final boolean BALLERINA_DEV_UPDATE = Boolean.parseBoolean(
             System.getenv("BALLERINA_DEV_UPDATE"));
+    public static final String LATEST_PULL_INPUT = "latest";
 
     private static TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
