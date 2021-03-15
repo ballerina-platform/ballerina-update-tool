@@ -36,6 +36,9 @@ public class UpdateCommand extends Command implements BCommand {
     @CommandLine.Option(names = {"--help", "-h", "?"}, hidden = true)
     private boolean helpFlag;
 
+    @CommandLine.Option(names = {"--test", "-t"}, hidden = true)
+    private static boolean testFlag;
+
     private CommandLine parentCmdParser;
 
     public UpdateCommand(PrintStream printStream) {
@@ -92,7 +95,7 @@ public class UpdateCommand extends Command implements BCommand {
         }
         String distribution = ToolUtil.BALLERINA_TYPE + "-" + latestVersion;
         if (!latestVersion.equals(version)) {
-            ToolUtil.downloadDistribution(printStream, distribution, ToolUtil.BALLERINA_TYPE, latestVersion);
+            ToolUtil.downloadDistribution(printStream, distribution, ToolUtil.BALLERINA_TYPE, latestVersion, testFlag);
             ToolUtil.useBallerinaVersion(printStream, distribution);
             printStream.println("Successfully set the latest patch distribution '" + distribution + "' as the " +
                                         "active distribution");

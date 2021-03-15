@@ -63,6 +63,8 @@ public class ToolUtil {
     private static final String CONNECTION_ERROR_MESSAGE = "connection to the remote server failed";
     public static final boolean BALLERINA_DEV_STAGE_UPDATE = Boolean.parseBoolean(
             System.getenv("BALLERINA_DEV_STAGE_UPDATE"));
+    public static final boolean TEST_MODE = Boolean.parseBoolean(
+            System.getenv("TEST_MODE_ACTIVE"));
 
     private static TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
@@ -372,7 +374,7 @@ public class ToolUtil {
     }
 
     public static boolean downloadDistribution(PrintStream printStream, String distribution, String distributionType,
-                                               String distributionVersion) {
+                                               String distributionVersion, boolean testMode) {
         HttpURLConnection conn = null;
         try {
             if (!ToolUtil.checkDistributionAvailable(distribution)) {
@@ -388,6 +390,9 @@ public class ToolUtil {
                         OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
                                 distributionType));
                 conn.setRequestProperty("Accept", "application/json");
+                if (TEST_MODE == true) {
+                    conn.setRequestProperty("testMode", String.valueOf(testMode));
+                }
                 if (conn.getResponseCode() == 302) {
                     String newUrl = conn.getHeaderField("Location");
                     conn = (HttpURLConnection) new URL(newUrl).openConnection();
