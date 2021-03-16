@@ -67,22 +67,6 @@ public class ToolUtil {
             System.getenv("BALLERINA_DEV_UPDATE"));
     public static final String LATEST_PULL_INPUT = "latest";
 
-    private static TrustManager[] trustAllCerts = new TrustManager[]{
-            new X509TrustManager() {
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-
-                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-                    //No need to implement.
-                }
-
-                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-                    //No need to implement.
-                }
-            }
-    };
-
     /**
      * Provides used Ballerina version.
      *
@@ -206,10 +190,6 @@ public class ToolUtil {
         List<Channel> channels = new ArrayList<>();
         List<Distribution> distributions = new ArrayList<>();
         try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
             URL url = new URL(getServerURL() + "/distributions");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -264,7 +244,7 @@ public class ToolUtil {
                     channel.getDistributions().add(distribution);
                 }
             }
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (IOException e) {
             throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
         } finally {
             if (conn != null) {
@@ -277,10 +257,6 @@ public class ToolUtil {
     public static String getLatest(String currentVersion, String type) {
         HttpURLConnection conn = null;
         try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
             URL url = new URL(getServerURL()
                     + "/distributions/latest?version=" + currentVersion + "&type=" + type);
             conn = (HttpURLConnection) url.openConnection();
@@ -296,7 +272,7 @@ public class ToolUtil {
                 return null;
             }
             throw ErrorUtil.createCommandException(getServerRequestFailedErrorMessage(conn));
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (IOException e) {
             throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
         } finally {
             if (conn != null) {
@@ -317,12 +293,7 @@ public class ToolUtil {
     public static String getLatestToolVersion() {
         HttpURLConnection conn = null;
         try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
             URL url = new URL(getServerURL() + "/versions/latest");
-
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent", OSUtils.getUserAgent(getCurrentBallerinaVersion(),
@@ -343,7 +314,7 @@ public class ToolUtil {
                 return null;
             }
             throw ErrorUtil.createCommandException(getServerRequestFailedErrorMessage(conn));
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (IOException e) {
             throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
         } finally {
             if (conn != null) {
@@ -455,10 +426,6 @@ public class ToolUtil {
         try {
             if (!ToolUtil.checkDistributionAvailable(distribution)) {
                 printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
-                SSLContext sc = SSLContext.getInstance("SSL");
-                sc.init(null, trustAllCerts, new java.security.SecureRandom());
-                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
                 URL url = new URL(ToolUtil.getServerURL() + "/distributions/" + distributionVersion);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -484,7 +451,7 @@ public class ToolUtil {
                 printStream.println("'" + distribution + "' is already available locally");
                 return true;
             }
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (IOException e) {
             throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
         } finally {
             if (conn != null) {
@@ -531,10 +498,6 @@ public class ToolUtil {
         HttpURLConnection conn = null;
         try {
             printStream.println("\nFetching the dependencies for '" + distribution + "' from the remote server...");
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
             URL url = new URL(ToolUtil.getServerURL() + "/distributions");
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -567,7 +530,7 @@ public class ToolUtil {
                     }
                 }
             }
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (IOException e) {
             throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
         } finally {
             if (conn != null) {
@@ -623,10 +586,6 @@ public class ToolUtil {
     public static void downloadTool(PrintStream printStream, String toolVersion) {
         HttpURLConnection conn = null;
         try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
             URL url = new URL(ToolUtil.getServerURL() + "/versions/" + toolVersion);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -643,7 +602,7 @@ public class ToolUtil {
             } else {
                 throw ErrorUtil.createCommandException("tool version '" + toolVersion + "' not found ");
             }
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (IOException e) {
             throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
         } finally {
             if (conn != null) {
