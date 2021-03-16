@@ -390,8 +390,8 @@ public class ToolUtil {
                         OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
                                 distributionType));
                 conn.setRequestProperty("Accept", "application/json");
-                if (TEST_MODE == true) {
-                    conn.setRequestProperty("testMode", String.valueOf(testMode));
+                if (testMode || TEST_MODE) {
+                    conn.setRequestProperty("testMode", "true");
                 }
                 if (conn.getResponseCode() == 302) {
                     String newUrl = conn.getHeaderField("Location");
