@@ -89,7 +89,7 @@ public class RemoveCommand extends Command implements BCommand {
 
     @Override
     public void printUsage(StringBuilder out) {
-        out.append("  ballerina dist remove\n");
+        out.append("  bal dist remove\n");
     }
 
     @Override
@@ -98,7 +98,7 @@ public class RemoveCommand extends Command implements BCommand {
     }
 
     private boolean isCurrentVersion(String version) {
-        return version.equals(ToolUtil.BALLERINA_TYPE + "-" + ToolUtil.getCurrentBallerinaVersion());
+        return version.equals(ToolUtil.getCurrentBallerinaVersion());
     }
 
     private void remove(String version) {
@@ -106,9 +106,11 @@ public class RemoveCommand extends Command implements BCommand {
             if (isCurrentVersion(version)) {
                 throw ErrorUtil.createCommandException("The active Ballerina distribution cannot be removed");
             } else {
-                File directory = new File(ToolUtil.getDistributionsPath() + File.separator + version);
+                String file = ToolUtil.getType(version) + "-" + version;
+                File directory = new File(ToolUtil.getDistributionsPath() + File.separator + file);
                 if (directory.exists()) {
                     OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
+                    OSUtils.deleteCaches(version, getPrintStream());
                     getPrintStream().println("Distribution '" + version + "' successfully removed");
                 } else {
                     throw ErrorUtil.createCommandException("distribution '" + version + "' not found");
@@ -128,11 +130,16 @@ public class RemoveCommand extends Command implements BCommand {
                 getPrintStream().println("There is nothing to remove. Only active distribution is remaining");
                 return;
             }
-            for (File file: listOfFiles) {
+            for (File file : listOfFiles) {
                 if (file.isDirectory()) {
-                    String version = file.getName();
-                    File directory = new File(ToolUtil.getDistributionsPath() + File.separator + version);
-                    if (!isCurrentVersion(version) && directory.exists()) {
+                    String version = "";
+                    String fileName = file.getName();
+                    String[] parts = fileName.split("-");
+                    if (parts.length == 2) {
+                        version = parts[1];
+                    }
+                    File directory = new File(ToolUtil.getDistributionsPath() + File.separator + fileName);
+                    if (directory.exists() && (!isCurrentVersion(version) || version.equals(""))) {
                         OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
                     }
                 }

@@ -58,12 +58,7 @@ public class UseCommand extends Command implements BCommand {
 
         PrintStream printStream = getPrintStream();
         String distribution = useCommands.get(0);
-        String distributionType = distribution.split("-")[0];
-        if (!distributionType.equals("ballerina") && !distributionType.equals("jballerina")) {
-            throw ErrorUtil.createDistributionNotFoundException(distribution);
-        }
-        String distributionVersion = distribution.replace(distributionType + "-", "");
-        if (distributionVersion.equals(ToolUtil.getCurrentBallerinaVersion())) {
+        if (distribution.equals(ToolUtil.getCurrentBallerinaVersion())) {
             printStream.println("'" + distribution + "' is the current active distribution version");
             return;
         }
@@ -73,8 +68,8 @@ public class UseCommand extends Command implements BCommand {
             return;
         }
         printStream.println("Distribution '" + distribution + "' not found");
-        printStream.println("Run 'ballerina dist pull " + distribution + "' to fetch and set the distribution as the " +
-                                    "active distribute");
+        printStream.println("Run 'bal dist pull " + distribution + "' to fetch and set the distribution as the " +
+                                    "active distribution");
     }
 
     @Override
@@ -89,7 +84,7 @@ public class UseCommand extends Command implements BCommand {
 
     @Override
     public void printUsage(StringBuilder out) {
-        out.append("  ballerina dist use\n");
+        out.append("  bal dist use\n");
     }
 
     @Override

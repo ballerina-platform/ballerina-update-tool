@@ -17,6 +17,8 @@
 package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
+import org.ballerinalang.command.util.Channel;
+import org.ballerinalang.command.util.Distribution;
 import org.ballerinalang.command.util.ErrorUtil;
 import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
@@ -62,16 +64,22 @@ public class PullCommand extends Command implements BCommand {
         ToolUtil.handleInstallDirPermission();
         PrintStream printStream = getPrintStream();
         String distribution = pullCommands.get(0);
-        String distributionType = distribution.split("-")[0];
-        if (!distributionType.equals("ballerina") && !distributionType.equals("jballerina")) {
-            throw ErrorUtil.createDistributionNotFoundException(distribution);
+
+        // To handle bal dist pull latest
+        if (distribution.equals(ToolUtil.LATEST_PULL_INPUT)) {
+            printStream.println("Fetching the latest distribution from the remote server...");
+            List<Channel> channels = ToolUtil.getDistributions();
+            // Assume channels are sorted ascending
+            Channel latestChanel = channels.get(channels.size() - 1);
+            List<Distribution> distributions = latestChanel.getDistributions();
+            distribution = ToolUtil.getLatest(distributions.get(distributions.size() - 1).getVersion(), "patch");
         }
-        String distributionVersion = distribution.replace(distributionType + "-", "");
-        if (distributionVersion.equals(ToolUtil.getCurrentBallerinaVersion())) {
+
+        if (distribution.equals(ToolUtil.getCurrentBallerinaVersion())) {
             printStream.println("'" + distribution + "' is already the active distribution");
             return;
         }
-        ToolUtil.downloadDistribution(printStream, distribution, distributionType, distributionVersion, testFlag);
+        ToolUtil.downloadDistribution(printStream, distribution, ToolUtil.getType(distribution), distribution, testFlag);
         ToolUtil.useBallerinaVersion(printStream, distribution);
         printStream.println("'" + distribution + "' successfully set as the active distribution");
     }
@@ -88,7 +96,7 @@ public class PullCommand extends Command implements BCommand {
 
     @Override
     public void printUsage(StringBuilder out) {
-        out.append("  ballerina dist pull\n");
+        out.append("  bal dist pull\n");
     }
 
     @Override

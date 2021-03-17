@@ -33,4 +33,6 @@ public class BallerinaCliCommands {
     public static final String USE = "use";
     public static final String REMOVE = "remove";
     public static final String VERSION = "version";
+    public static final String COMPLETION = "completion";
+    public static final String BASH = "bash";
 }

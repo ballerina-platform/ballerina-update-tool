@@ -1,0 +1,9 @@
+NAME
+       bal-completion-bash - Generate the bash completion script
+
+SYNOPSIS
+       bal completion bash
+
+
+DESCRIPTION
+       Dist enables you to generate the bash completion script

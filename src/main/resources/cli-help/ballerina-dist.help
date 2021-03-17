@@ -1,9 +1,9 @@
 NAME
-       ballerina-dist - Manage Ballerina distributions
+       bal-dist - Manage Ballerina distributions
 
 SYNOPSIS
-       ballerina dist <command> <-h | --help>
-       ballerina dist <command> [<args>]
+       bal dist <command> <-h | --help>
+       bal dist <command> [<args>]
 
 
 DESCRIPTION
@@ -26,4 +26,4 @@ BALLERINA COMMANDS
        remove     Remove distributions in your local environment
 
 
-Use 'ballerina help dist <command>' for more information on a specific command.
+Use 'bal help dist <command>' for more information on a specific command.

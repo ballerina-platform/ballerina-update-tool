@@ -1,8 +1,8 @@
 NAME
-       ballerina-dist-list - List locally and remotely available distributions
+       bal-dist-list - List locally and remotely available distributions
 
 SYNOPSIS
-       ballerina dist list
+       bal dist list
 
 
 DESCRIPTION

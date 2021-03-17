@@ -32,7 +32,7 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
-xcopy /q %CURRENT_PATH%\ballerina-command-@version@\bin\ballerina.bat  %CURRENT_PATH%\..\bin /Y
+xcopy /q %CURRENT_PATH%\ballerina-command-@version@\bin\bal.bat  %CURRENT_PATH%\..\bin /Y
 
 if %errorlevel% neq 0 (
     echo error occurred while copying ballerina.bat
@@ -43,9 +43,15 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
+echo The ‘ballerina’ command was changed to ‘bal’. Please use ‘bal’ command from now onwards.
+echo Ie : $ bal build
+echo      $ bal dist list
+echo      $ bal dist update
+
 echo Tool version updated to the latest version: @version@
 echo Cleaning old files...
 
+del /F/Q %CURRENT_PATH%\..\bin\ballerina.bat
 for %%f in (%CURRENT_PATH%\..\lib\*ballerina-command*.jar) do (
 	echo %%f|find /i "ballerina-command-@version@.jar">nul
     	if errorlevel 1 (

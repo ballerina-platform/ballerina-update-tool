@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+ * Copyright (c) 2021, WSO2 Inc. (http://wso2.com) All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,40 +24,40 @@ import java.io.PrintStream;
 import java.util.List;
 
 /**
- * This class represents the "version" command and it holds arguments and flags specified by the user.
+ * This class represents the "Completion" command and it holds arguments and flags specified by the user.
  */
-@CommandLine.Command(name = "version", description = "Prints Ballerina version")
-public class VersionCommand extends Command implements BCommand {
+@CommandLine.Command(name = "completion", description = "Ballerina completion commands")
+public class CompletionCommand extends Command implements BCommand {
     @CommandLine.Parameters(description = "Command name")
-    private List<String> versionCommands;
+    private List<String> completionCommands;
 
-    @CommandLine.Option(names = {"--help", "-h", "?"}, hidden = true)
+    @CommandLine.Option(names = { "--help", "-h", "?" }, hidden = true, description = "for more information")
     private boolean helpFlag;
 
-    private CommandLine parentCmdParser;
-
-    public VersionCommand(PrintStream printStream) {
+    public CompletionCommand(PrintStream printStream) {
         super(printStream);
     }
 
+    private CommandLine parentCmdParser;
+
+    @Override
     public void execute() {
-        if (helpFlag) {
-            // Ignore since we have nothing to print here.
+        if (helpFlag || completionCommands == null) {
+            printUsageInfo(BallerinaCliCommands.COMPLETION);
             return;
         }
 
-        if (versionCommands == null) {
-            printVersionInfo();
+        if (completionCommands.size() > 1) {
+            throw ErrorUtil.createUsageExceptionWithHelp("too many arguments", BallerinaCliCommands.COMPLETION);
         }
 
-        if (versionCommands != null && versionCommands.size() > 1) {
-            throw ErrorUtil.createUsageExceptionWithHelp("too many arguments", BallerinaCliCommands.VERSION);
-        }
+        throw ErrorUtil.createUsageExceptionWithHelp("unknown command '" + completionCommands.get(0) + "'",
+                BallerinaCliCommands.COMPLETION);
     }
 
     @Override
     public String getName() {
-        return BallerinaCliCommands.VERSION;
+        return BallerinaCliCommands.COMPLETION;
     }
 
     @Override
@@ -67,7 +67,6 @@ public class VersionCommand extends Command implements BCommand {
 
     @Override
     public void printUsage(StringBuilder out) {
-        out.append("  bal version \n");
     }
 
     @Override

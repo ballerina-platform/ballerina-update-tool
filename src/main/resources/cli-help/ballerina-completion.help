@@ -1,0 +1,22 @@
+NAME
+       bal-completion - Manage Ballerina CLI completion
+
+SYNOPSIS
+       bal completion <command>
+
+
+DESCRIPTION
+       Completion enables you to manage Ballerina CLI completion.
+
+OPTIONS
+       -h, --help
+           Print usage details of a command.
+
+
+BALLERINA COMMANDS
+       Here is a list of available subcommands:
+
+       bash     Generate the bash completion script.
+
+
+Use 'bal help completion <command>' for more information on a specific command.

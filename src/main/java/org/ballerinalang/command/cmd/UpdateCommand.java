@@ -59,7 +59,7 @@ public class UpdateCommand extends Command implements BCommand {
 
         if (updateCommands.size() > 0) {
             throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments",
-                                                                       BallerinaCliCommands.UPDATE);
+                    BallerinaCliCommands.UPDATE);
         }
     }
 
@@ -75,7 +75,7 @@ public class UpdateCommand extends Command implements BCommand {
 
     @Override
     public void printUsage(StringBuilder out) {
-        out.append("  ballerina dist command\n");
+        out.append("  bal dist command\n");
     }
 
     @Override
@@ -85,22 +85,22 @@ public class UpdateCommand extends Command implements BCommand {
 
     public static void update(PrintStream printStream) {
         String version = ToolUtil.getCurrentBallerinaVersion();
-        String distVersion = ToolUtil.BALLERINA_TYPE + "-" + version;
+        String distVersion = ToolUtil.getType(version) + "-" + version;
         printStream.println("Fetching the latest patch distribution for '" + distVersion + "' from " +
-                                    "the remote server...");
+                "the remote server...");
         String latestVersion = ToolUtil.getLatest(version, "patch");
         if (latestVersion == null) {
             printStream.println("Failed to find the latest patch distribution for '" + distVersion + "'");
             return;
         }
-        String distribution = ToolUtil.BALLERINA_TYPE + "-" + latestVersion;
+
         if (!latestVersion.equals(version)) {
-            ToolUtil.downloadDistribution(printStream, distribution, ToolUtil.BALLERINA_TYPE, latestVersion, testFlag);
-            ToolUtil.useBallerinaVersion(printStream, distribution);
-            printStream.println("Successfully set the latest patch distribution '" + distribution + "' as the " +
-                                        "active distribution");
+            ToolUtil.downloadDistribution(printStream, latestVersion, ToolUtil.getType(latestVersion), latestVersion, testFlag);
+            ToolUtil.useBallerinaVersion(printStream, latestVersion);
+            printStream.println("Successfully set the latest patch distribution '" + latestVersion + "' as the " +
+                    "active distribution");
             return;
         }
-        printStream.println("The latest patch distribution '" + distribution + "' is already the active distribution");
+        printStream.println("The latest patch distribution '" + latestVersion + "' is already the active distribution");
     }
 }

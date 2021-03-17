@@ -32,7 +32,7 @@ if [ $? -ne '0' ]; then
   exit $?
 fi
 
-\cp $CURRENT_PATH/ballerina-command-@version@/bin/ballerina $CURRENT_PATH/../bin
+\cp $CURRENT_PATH/ballerina-command-@version@/bin/bal $CURRENT_PATH/../bin
 
 if [ $? -ne '0' ]; then
   echo "error occurred while copying ballerina file."
@@ -42,6 +42,30 @@ if [ $? -ne '0' ]; then
   fi
   exit $?
 fi
+
+echo "Updating environment variables"
+if [ -f "/usr/lib/ballerina/bin/ballerina" ] 
+then
+    ln -sf /usr/lib/ballerina/bin/bal /usr/bin/bal
+    echo "export BALLERINA_HOME=/usr/lib/bal" >> /etc/profile.d/wso2.sh
+    rm -f /usr/lib/ballerina/bin/ballerina
+    chmod 755 /usr/lib/ballerina/bin/bal
+elif [ -f "usr/lib64/ballerina/bin/ballerina" ] 
+then
+    ln -sf usr/lib64/ballerina/bin/bal /usr/bin/bal
+    rm -f usr/lib64/ballerina/bin/ballerina
+    chmod 755 usr/lib64/ballerina/bin/bal
+elif [ -f "/Library/Ballerina/bin/ballerina" ]
+then
+    rm -f /Library/Ballerina/bin/ballerina
+    echo "/Library/Ballerina/bin" >> /etc/paths.d/bal
+    chmod 755 /Library/Ballerina/bin/bal
+fi
+
+echo "The ‘ballerina’ command was changed to ‘bal’. Please use ‘bal’ command from now onwards."
+echo "Ie : $ bal build"
+echo "     $ bal dist list"
+echo "     $ bal dist update"
 
 echo "Tool version updated to the latest version: @version@"
 echo "Cleaning old files..."

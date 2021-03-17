@@ -91,7 +91,7 @@ public class UpdateToolCommand extends Command implements BCommand {
         }
         if (latestVersion.equals(version)) {
             printStream.println("The latest tool version '" + latestVersion + "' is already in use");
-            printStream.println("\nIf you want to update the Ballerina distribution, use `ballerina dist update`");
+            printStream.println("\nIf you want to update the Ballerina distribution, use `bal dist update`");
             return;
         }
         ToolUtil.downloadTool(printStream, latestVersion);
