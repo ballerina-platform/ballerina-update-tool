@@ -38,6 +38,9 @@ public class PullCommand extends Command implements BCommand {
     @CommandLine.Option(names = {"--help", "-h", "?"}, hidden = true)
     private boolean helpFlag;
 
+    @CommandLine.Option(names = {"--test", "-t"}, hidden = true)
+    private boolean testFlag;
+
     private CommandLine parentCmdParser;
 
     public PullCommand(PrintStream printStream) {
@@ -76,7 +79,7 @@ public class PullCommand extends Command implements BCommand {
             printStream.println("'" + distribution + "' is already the active distribution");
             return;
         }
-        ToolUtil.downloadDistribution(printStream, distribution, ToolUtil.getType(distribution), distribution);
+        ToolUtil.downloadDistribution(printStream, distribution, ToolUtil.getType(distribution), distribution, testFlag);
         ToolUtil.useBallerinaVersion(printStream, distribution);
         printStream.println("'" + distribution + "' successfully set as the active distribution");
     }

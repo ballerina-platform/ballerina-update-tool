@@ -66,6 +66,8 @@ public class ToolUtil {
     public static final boolean BALLERINA_DEV_UPDATE = Boolean.parseBoolean(
             System.getenv("BALLERINA_DEV_UPDATE"));
     public static final String LATEST_PULL_INPUT = "latest";
+    public static final boolean TEST_MODE = Boolean.parseBoolean(
+            System.getenv("TEST_MODE_ACTIVE"));
 
     /**
      * Provides used Ballerina version.
@@ -421,7 +423,7 @@ public class ToolUtil {
     }
 
     public static boolean downloadDistribution(PrintStream printStream, String distribution, String distributionType,
-                                               String distributionVersion) {
+                                               String distributionVersion, boolean testMode) {
         HttpURLConnection conn = null;
         try {
             if (!ToolUtil.checkDistributionAvailable(distribution)) {
@@ -433,6 +435,9 @@ public class ToolUtil {
                         OSUtils.getUserAgent(getCurrentBallerinaVersion(), ToolUtil.getCurrentToolsVersion(),
                                 distributionType));
                 conn.setRequestProperty("Accept", "application/json");
+                if (testMode || TEST_MODE) {
+                    conn.setRequestProperty("testMode", "true");
+                }
                 if (conn.getResponseCode() == 302) {
                     String newUrl = conn.getHeaderField("Location");
                     conn = (HttpURLConnection) new URL(newUrl).openConnection();

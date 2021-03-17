@@ -36,6 +36,9 @@ public class FetchCommand extends Command implements BCommand {
     @CommandLine.Option(names = {"--help", "-h", "?"}, hidden = true)
     private boolean helpFlag;
 
+    @CommandLine.Option(names = {"--test", "-t"}, hidden = true)
+    private boolean testFlag;
+
     private CommandLine parentCmdParser;
 
     public FetchCommand(PrintStream printStream) {
@@ -70,7 +73,7 @@ public class FetchCommand extends Command implements BCommand {
             printStream.println("'" + distribution + "' is the current distribution in use");
             return;
         }
-        if (ToolUtil.downloadDistribution(printStream, distribution, distributionType, distributionVersion)) {
+        if (ToolUtil.downloadDistribution(printStream, distribution, distributionType, distributionVersion, testFlag)) {
             printStream.println("Distribution '" + distribution + "' is available locally");
         } else {
             printStream.println("Fetched distribution: '" + distribution + "'");
