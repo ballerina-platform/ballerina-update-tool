@@ -25,9 +25,11 @@ import java.io.PrintStream;
 import java.util.List;
 
 /**
- * This class represents the "ZSH" command and it holds arguments and flags specified by the user.
+ * This class represents the "Zsh" command and it holds arguments and flags specified by the user.
+ *
+ * @since 2.0.0
  */
-@CommandLine.Command(name = "zsh", description = "Ballerina bash commands")
+@CommandLine.Command(name = "zsh", description = "Ballerina Z Shell commands")
 public class ZshCommand extends Command implements BCommand {
     @CommandLine.Parameters(description = "Command name")
     private List<String> listCommands;

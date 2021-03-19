@@ -25,6 +25,8 @@ import java.util.List;
 
 /**
  * This class represents the "Completion" command and it holds arguments and flags specified by the user.
+ *
+ * @since 2.0.0
  */
 @CommandLine.Command(name = "completion", description = "Ballerina completion commands")
 public class CompletionCommand extends Command implements BCommand {

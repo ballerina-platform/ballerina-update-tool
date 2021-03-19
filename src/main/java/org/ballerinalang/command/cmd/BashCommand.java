@@ -26,6 +26,8 @@ import java.util.List;
 
 /**
  * This class represents the "Bash" command and it holds arguments and flags specified by the user.
+ *
+ * @since 2.0.0
  */
 @CommandLine.Command(name = "bash", description = "Ballerina bash commands")
 public class BashCommand extends Command implements BCommand {
