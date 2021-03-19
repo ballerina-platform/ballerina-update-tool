@@ -16,7 +16,6 @@ DESCRIPTION
        The <-a | --all> flag removes all the Ballerina distributions except the currently
        active one from your local environment.
 
-
 EXAMPLES
        This command removes the 1.0.5 version in your local machine.
           $ bal dist remove 1.0.5

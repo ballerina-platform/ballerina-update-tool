@@ -829,4 +829,18 @@ public class ToolUtil {
                     + "'");
         }
     }
+
+    /**
+     * Retrieve completion script.
+     *
+     * @return completion script
+     */
+    public static String getCompletionScript() {
+        String fileName = "completion-script/bal_completion.bash";
+        try {
+            return ToolUtil.readFileAsString(fileName);
+        } catch (IOException e) {
+            throw ErrorUtil.createCommandException("failed to read the completion script: " + e.getMessage());
+        }
+    }
 }

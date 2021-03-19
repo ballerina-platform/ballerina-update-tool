@@ -25,10 +25,10 @@ import java.io.PrintStream;
 import java.util.List;
 
 /**
- * This class represents the "Bash" command and it holds arguments and flags specified by the user.
+ * This class represents the "ZSH" command and it holds arguments and flags specified by the user.
  */
-@CommandLine.Command(name = "bash", description = "Ballerina bash commands")
-public class BashCommand extends Command implements BCommand {
+@CommandLine.Command(name = "zsh", description = "Ballerina bash commands")
+public class ZshCommand extends Command implements BCommand {
     @CommandLine.Parameters(description = "Command name")
     private List<String> listCommands;
 
@@ -37,29 +37,31 @@ public class BashCommand extends Command implements BCommand {
 
     private CommandLine parentCmdParser;
 
-    public BashCommand(PrintStream printStream) {
+    public ZshCommand(PrintStream printStream) {
         super(printStream);
     }
 
     public void execute() {
         if (helpFlag) {
-            printUsageInfo("completion-" + BallerinaCliCommands.BASH);
+            printUsageInfo("completion-" + BallerinaCliCommands.ZSH);
             return;
         }
 
         if (listCommands == null) {
+            getPrintStream().println("autoload -U +X bashcompinit && bashcompinit");
+            getPrintStream().println("autoload -U +X compinit && compinit\n");
             getPrintStream().println(ToolUtil.getCompletionScript());
             return;
         }
 
         if (listCommands.size() > 0) {
-            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", BallerinaCliCommands.BASH);
+            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", BallerinaCliCommands.ZSH);
         }
     }
 
     @Override
     public String getName() {
-        return BallerinaCliCommands.BASH;
+        return BallerinaCliCommands.ZSH;
     }
 
     @Override

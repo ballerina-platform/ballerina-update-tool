@@ -5,16 +5,13 @@ SYNOPSIS
        bal dist <command> <-h | --help>
        bal dist <command> [<args>]
 
-
 DESCRIPTION
        Dist enables you to install, update, and switch among Ballerina distributions
        from patch and minor release channels.
 
-
 OPTIONS
        -h, --help
            Print usage details of a command.
-
 
 BALLERINA COMMANDS
        Here is a list of available subcommands:
@@ -24,6 +21,5 @@ BALLERINA COMMANDS
        use        Set a distribution as the active distribution
        list       List locally and remotely available distributions
        remove     Remove distributions in your local environment
-
 
 Use 'bal help dist <command>' for more information on a specific command.

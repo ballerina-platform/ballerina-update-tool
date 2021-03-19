@@ -3,5 +3,4 @@
         dist            Manage Ballerina distributions
         update          Update the Ballerina tool
 
-
 Use 'bal help <command>' for more information on a specific command.
