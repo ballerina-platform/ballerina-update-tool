@@ -21,12 +21,13 @@ import org.ballerinalang.command.util.ErrorUtil;
 import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 
 /**
  * This class represents the "Bash" command and it holds arguments and flags specified by the user.
+ *
+ * @since 2.0.0
  */
 @CommandLine.Command(name = "bash", description = "Ballerina bash commands")
 public class BashCommand extends Command implements BCommand {
@@ -49,7 +50,7 @@ public class BashCommand extends Command implements BCommand {
         }
 
         if (listCommands == null) {
-            getBashContent(getPrintStream());
+            getPrintStream().println(ToolUtil.getCompletionScript());
             return;
         }
 
@@ -75,15 +76,5 @@ public class BashCommand extends Command implements BCommand {
     @Override
     public void setParentCmdParser(CommandLine parentCmdParser) {
         this.parentCmdParser = parentCmdParser;
-    }
-
-    private static void getBashContent(PrintStream printStream) {
-        String bashContent;
-        try {
-            bashContent = ToolUtil.readFileAsString("completion-script/bal_completion.bash");
-        } catch (IOException e) {
-            throw ErrorUtil.createCommandException("failed to read the file: " + e.getMessage());
-        }
-        printStream.println(bashContent);
     }
 }

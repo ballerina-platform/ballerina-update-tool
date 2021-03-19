@@ -22,6 +22,7 @@ import org.ballerinalang.command.cmd.CompletionCommand;
 import org.ballerinalang.command.cmd.HelpCommand;
 import org.ballerinalang.command.cmd.ListCommand;
 import org.ballerinalang.command.cmd.VersionCommand;
+import org.ballerinalang.command.cmd.ZshCommand;
 import org.ballerinalang.command.util.OSUtils;
 import org.junit.Before;
 import org.testng.Assert;
@@ -95,5 +96,12 @@ public class CommandTest {
         BashCommand bashCommand = new BashCommand(testStream);
         bashCommand.execute();
         Assert.assertTrue(outContent.toString().contains("#!/bin/bash"));
+    }
+
+    @Test
+    public void zshCommandTest() {
+        ZshCommand zshCommand = new ZshCommand(testStream);
+        zshCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("bashcompinit && bashcompinit"));
     }
 }

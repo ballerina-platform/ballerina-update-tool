@@ -30,6 +30,7 @@ import org.ballerinalang.command.cmd.UpdateCommand;
 import org.ballerinalang.command.cmd.UpdateToolCommand;
 import org.ballerinalang.command.cmd.UseCommand;
 import org.ballerinalang.command.cmd.VersionCommand;
+import org.ballerinalang.command.cmd.ZshCommand;
 import org.ballerinalang.command.exceptions.CommandException;
 import org.ballerinalang.command.util.ErrorUtil;
 import picocli.CommandLine;
@@ -80,6 +81,10 @@ public class Main {
             BashCommand bashCmd = new BashCommand(outStream);
             completionCmdParser.addSubcommand(BallerinaCliCommands.BASH, bashCmd);
             bashCmd.setParentCmdParser(completionCmdParser);
+
+            ZshCommand zshCmd = new ZshCommand(outStream);
+            completionCmdParser.addSubcommand(BallerinaCliCommands.ZSH, zshCmd);
+            zshCmd.setParentCmdParser(completionCmdParser);
 
             ListCommand listCmd = new ListCommand(outStream);
             distCmdParser.addSubcommand(BallerinaCliCommands.LIST, listCmd);

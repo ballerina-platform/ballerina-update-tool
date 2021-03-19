@@ -18,48 +18,52 @@ package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
 import org.ballerinalang.command.util.ErrorUtil;
+import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
 import java.util.List;
 
 /**
- * This class represents the "Completion" command and it holds arguments and flags specified by the user.
+ * This class represents the "Zsh" command and it holds arguments and flags specified by the user.
  *
  * @since 2.0.0
  */
-@CommandLine.Command(name = "completion", description = "Ballerina completion commands")
-public class CompletionCommand extends Command implements BCommand {
+@CommandLine.Command(name = "zsh", description = "Ballerina Z Shell commands")
+public class ZshCommand extends Command implements BCommand {
     @CommandLine.Parameters(description = "Command name")
-    private List<String> completionCommands;
+    private List<String> listCommands;
 
-    @CommandLine.Option(names = { "--help", "-h", "?" }, hidden = true, description = "for more information")
+    @CommandLine.Option(names = {"--help", "-h", "?"}, hidden = true)
     private boolean helpFlag;
-
-    public CompletionCommand(PrintStream printStream) {
-        super(printStream);
-    }
 
     private CommandLine parentCmdParser;
 
-    @Override
+    public ZshCommand(PrintStream printStream) {
+        super(printStream);
+    }
+
     public void execute() {
-        if (helpFlag || completionCommands == null) {
-            printUsageInfo(BallerinaCliCommands.COMPLETION);
+        if (helpFlag) {
+            printUsageInfo("completion-" + BallerinaCliCommands.ZSH);
             return;
         }
 
-        if (completionCommands.size() > 1) {
-            throw ErrorUtil.createUsageExceptionWithHelp("too many arguments", BallerinaCliCommands.COMPLETION);
+        if (listCommands == null) {
+            getPrintStream().println("autoload -U +X bashcompinit && bashcompinit");
+            getPrintStream().println("autoload -U +X compinit && compinit\n");
+            getPrintStream().println(ToolUtil.getCompletionScript());
+            return;
         }
 
-        throw ErrorUtil.createUsageExceptionWithHelp("unknown command '" + completionCommands.get(0) + "'",
-                BallerinaCliCommands.COMPLETION);
+        if (listCommands.size() > 0) {
+            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", BallerinaCliCommands.ZSH);
+        }
     }
 
     @Override
     public String getName() {
-        return BallerinaCliCommands.COMPLETION;
+        return BallerinaCliCommands.ZSH;
     }
 
     @Override

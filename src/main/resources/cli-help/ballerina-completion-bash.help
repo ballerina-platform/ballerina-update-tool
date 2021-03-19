@@ -4,6 +4,5 @@ NAME
 SYNOPSIS
        bal completion bash
 
-
 DESCRIPTION
-       Dist enables you to generate the bash completion script
+       Bash enables you to generate the bash completion script

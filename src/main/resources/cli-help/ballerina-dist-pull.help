@@ -4,7 +4,6 @@ NAME
 SYNOPSIS
        bal dist pull <distribution>
 
-
 DESCRIPTION
        Pull fetches the specified distribution with its dependencies to your local environment and
        marks it as the active version.
@@ -14,7 +13,6 @@ DESCRIPTION
 
        Following are some sample
        version: 1.1.0, 1.4.0, slp1.
-
 
 EXAMPLES
        This command fetches "1.0.5" and marks it as the active distribution.
