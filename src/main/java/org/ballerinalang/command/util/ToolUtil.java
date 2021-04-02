@@ -37,8 +37,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -46,10 +44,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * Ballerina tool utilities.
@@ -827,20 +821,6 @@ public class ToolUtil {
         } catch (InterruptedException | IOException e) {
             throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" + filePath
                     + "'");
-        }
-    }
-
-    /**
-     * Retrieve completion script.
-     *
-     * @return completion script
-     */
-    public static String getCompletionScript() {
-        String fileName = "completion-script/bal_completion.bash";
-        try {
-            return ToolUtil.readFileAsString(fileName);
-        } catch (IOException e) {
-            throw ErrorUtil.createCommandException("failed to read the completion script: " + e.getMessage());
         }
     }
 }

@@ -1,8 +1,0 @@
-NAME
-       bal-completion-bash - Generate the bash completion script
-
-SYNOPSIS
-       bal completion bash
-
-DESCRIPTION
-       Bash enables you to generate the bash completion script
