@@ -30,11 +30,33 @@ elif test -d "$CURRENT_PATH/../dependencies/jdk8u202-b08-jre"; then
   JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk8u202-b08-jre/bin/java"
 fi
 
+if [ "$1" == "completion" ]
+then
+    if [ "$2" == "bash" ]
+    then
+      printf "#!/usr/bin/env bash\n\n"
+      cat $CURRENT_PATH/../scripts/bal_completion.bash
+    elif [ "$2" == "zsh" ]
+    then
+      printf "#!/usr/bin/env bash\n\n"
+      printf "autoload -U +X bashcompinit && bashcompinit\n"
+      printf "autoload -U +X compinit && compinit\n\n"
+      cat $CURRENT_PATH/../scripts/bal_completion.bash
+    else
+      echo "ballerina: unknown command '$2'"
+      exit 1
+    fi
+    if [ $? -ne '0' ]; then
+      echo "Failed to generate the completion script"
+      EXIT_CODE=$?
+    fi
+    exit 0
+fi
+
 RUN_COMMAND=false
 RUN_BALLERINA=true
 
-if [ "$1" == "dist" ] || [ "$2" == "dist" ] || [ "$1" == "update" ]|| [ "$2" == "update" ] || \
-[ "$1" == "completion" ] || [ "$2" == "completion" ]
+if [ "$1" == "dist" ] || [ "$2" == "dist" ] || [ "$1" == "update" ]|| [ "$2" == "update" ]
 then
     RUN_COMMAND=true
     RUN_BALLERINA=false

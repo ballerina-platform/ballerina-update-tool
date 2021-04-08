@@ -1,8 +1,0 @@
-NAME
-       bal-completion-zsh - Generate the zsh completion script
-
-SYNOPSIS
-       bal completion zsh
-
-DESCRIPTION
-       Zsh enables you to generate the zsh completion script

@@ -43,6 +43,12 @@ if [ $? -ne '0' ]; then
   exit $?
 fi
 
+\cp $CURRENT_PATH/ballerina-command-@version@/scripts/bal_completion.bash $CURRENT_PATH/../scripts
+
+if [ $? -ne '0' ]; then
+  echo "error occurred while copying completion script file."
+fi
+
 echo "Updating environment variables"
 if [ -f "/usr/lib/ballerina/bin/ballerina" ] 
 then
