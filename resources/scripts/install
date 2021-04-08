@@ -47,11 +47,6 @@ fi
 
 if [ $? -ne '0' ]; then
   echo "error occurred while copying completion script file."
-  # remove already copied jar.
-  if [ -f "$CURRENT_PATH/../lib/ballerina-command-@version@.jar" ]; then
-        rm -rf $CURRENT_PATH/../lib/ballerina-command-@version@.jar
-  fi
-  exit $?
 fi
 
 echo "Updating environment variables"
