@@ -194,12 +194,9 @@ public class ListCommand extends Command implements BCommand {
             if (!file.exists()) {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
+                ToolUtil.addExecutablePermissionToFile(new File(OSUtils.getUserHome() + File.separator +
+                        OSUtils.BALLERINA_HOME_DIR));
                 ToolUtil.addExecutablePermissionToFile(file);
-            }
-
-            if (!Files.isWritable(Paths.get(distListFilePath))) {
-                throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" +
-                        distListFilePath + "'");
             }
             Files.write(Paths.get(distListFilePath), distList.toJSONString().getBytes());
         } catch (IOException e) {
