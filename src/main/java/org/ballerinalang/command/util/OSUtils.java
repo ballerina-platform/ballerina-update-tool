@@ -101,21 +101,30 @@ public class OSUtils {
     }
 
     /**
+     * Provides the ballerina home directory path
+     *
+     * @return path to the ballerina home directory
+     */
+    public static String getBallerinaHomePath() {
+        return getUserHome() + File.separator + BALLERINA_HOME_DIR;
+    }
+
+    /**
      * Provides the ballerina version path
      *
      * @return path to the file
      */
     public static String getBallerinaVersionFilePath() throws IOException {
-        String userHome = getUserHome();
-        File ballerinaVersionfile = new File(userHome + File.separator
-                + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG);
+        File ballerinaHome = new File(getBallerinaHomePath());
+        File ballerinaVersionfile = new File(ballerinaHome.getPath() + File.separator + BALLERINA_CONFIG);
         if (!ballerinaVersionfile.exists()) {
             ballerinaVersionfile.getParentFile().mkdirs();
             ballerinaVersionfile.createNewFile();
+            ToolUtil.addExecutablePermissionToFile(ballerinaHome);
             ToolUtil.addExecutablePermissionToFile(ballerinaVersionfile);
             ToolUtil.setVersion(ballerinaVersionfile.getPath(), ToolUtil.getCurrentInstalledBallerinaVersion());
         }
-        return userHome + File.separator + BALLERINA_HOME_DIR + File.separator + BALLERINA_CONFIG;
+        return ballerinaVersionfile.getPath();
     }
 
     /**
@@ -124,9 +133,8 @@ public class OSUtils {
      * @return path to the file
      */
     public static String getInstallerVersionFilePath() throws IOException {
-        String userHome = getUserHome();
-        File installerVersionfile = new File(userHome + File.separator
-                + BALLERINA_HOME_DIR + File.separator + INSTALLER_VERSION);
+        File ballerinaHome = new File(getBallerinaHomePath());
+        File installerVersionfile = new File(ballerinaHome.getPath() + File.separator + INSTALLER_VERSION);
 
         if (!new File(OSUtils.getInstalledInstallerVersionPath()).exists() && installerVersionfile.exists()) {
             installerVersionfile.delete();
@@ -135,6 +143,7 @@ public class OSUtils {
         if (new File(OSUtils.getInstalledInstallerVersionPath()).exists() && !installerVersionfile.exists()) {
             installerVersionfile.getParentFile().mkdirs();
             installerVersionfile.createNewFile();
+            ToolUtil.addExecutablePermissionToFile(ballerinaHome);
             ToolUtil.addExecutablePermissionToFile(installerVersionfile);
             ToolUtil.setInstallerVersion(installerVersionfile.getPath());
             ToolUtil.setVersion(getBallerinaVersionFilePath(), ToolUtil.getCurrentInstalledBallerinaVersion());
@@ -278,7 +287,7 @@ public class OSUtils {
      *
      * @return user home directory
      */
-    private static String getUserHome() {
+    public static String getUserHome() {
         String userHome = System.getenv("HOME");
         if (isUnix() && userHome.contains("root")) {
             userHome = "/home/" + System.getenv("SUDO_USER");
