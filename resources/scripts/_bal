@@ -1,0 +1,153 @@
+#compdef bal
+_bal() { 
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+   
+    _arguments \
+        '1:command:(-v -h --help --version add bindgen build clean dist doc encrypt format grpc help init new openapi pull push run search shell test update version)' \
+        '*:: :->command_flags'
+ 
+    case $state in
+    command_flags)
+        case $words[1] in
+        add)
+        _arguments \
+            '1: :(-t --template)' \
+            '*:: :->templates'
+        ;;
+        bindgen)
+        _arguments \
+            '-cp' \
+            '-m' \
+            '-mvn' \
+            '-o' \
+            '--classpath' \
+            '--maven' \
+            '--modules' \
+            '--output' \
+            '--public' \
+            '*: :_default'
+        ;;
+        build)
+        _arguments \
+            '-c' \
+            '-o' \
+            '--cloud' \
+            '--code-coverage' \
+            '--compile' \
+            '--experimental' \
+            '--list-conflicted-classes' \
+            '--observability-included' \
+            '--offline' \
+            '--output' \
+            '--skiptests' \
+            '--taint-check' \
+            '--test-report' \
+            '*: :_default'
+        ;;
+        dist)
+        _arguments \
+            '1: :(list pull remove update use)' \
+        ;;
+        doc)
+        _arguments \
+            '-c' \
+            '-e' \
+            '-o' \
+            '--combine' \
+            '--exclude' \
+            '--output' \
+            '--experimental' \
+            '*: :_default'
+        ;;
+        format)
+        _arguments \
+            '1: :(-d --dry-run)' \
+            '*: :_default'
+        ;;
+        grpc)
+        _arguments \
+            '--input' \
+            '--mode' \
+            '--output' \
+            '*: :_default'
+        ;;
+        init)
+        _arguments \
+            '-t' \
+            '--template' \
+        ;;
+        new)
+        _arguments \
+            '1: :(-t --template)' \
+            '*:: :->templates'
+        ;;
+        openapi)
+        _arguments \
+            '-i' \
+            '-m' \
+            '-o' \
+            '-s' \
+            '--input' \
+            '--mode' \
+            '--module' \
+            '--output' \
+            '--operation' \
+            '--service' \
+            '--service-name' \
+            '--tags' \
+            '*: :_default'
+        ;;
+        push)
+          _arguments \
+            '--experimental' \
+            '--repository' \
+            '--skip-source-check' \
+            '*: :_default'
+        ;;
+        run)
+        _arguments \
+            '--experimental' \
+            '--observability-included' \
+            '--offline' \
+            '--taint-check' \
+            '*: :_default'
+        ;;
+        shell)
+        _arguments \
+            '-d' \
+            '-f' \
+            '-t' \
+            '--debug' \
+            '--force-dumb' \
+            '--time-out' \
+            '--file' \
+        ;;
+        test) 
+        _arguments \
+            '--code-coverage' \
+            '--disable-groups' \
+            '--experimental' \
+            '--groups' \
+            '--list-groups' \
+            '--observability-included' \
+            '--offline' \
+            '--rerun-failed' \
+            '--taint-check' \
+            '--tests' \
+            '--test-report' \
+            '*: :_default'
+        ;;
+        esac
+    ;;
+    esac
+
+    case $state in
+    templates)
+        _arguments \
+          '1: :(main lib service)' \
+    ;;
+    esac
+}
+ 
+_bal "$@"
