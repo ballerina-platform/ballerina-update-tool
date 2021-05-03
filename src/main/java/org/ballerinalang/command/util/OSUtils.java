@@ -120,8 +120,8 @@ public class OSUtils {
         if (!ballerinaVersionfile.exists()) {
             ballerinaVersionfile.getParentFile().mkdirs();
             ballerinaVersionfile.createNewFile();
-            ToolUtil.addExecutablePermissionToFile(ballerinaHome);
-            ToolUtil.addExecutablePermissionToFile(ballerinaVersionfile);
+            ToolUtil.addWritePermissionToFile(ballerinaHome);
+            ToolUtil.addWritePermissionToFile(ballerinaVersionfile);
             ToolUtil.setVersion(ballerinaVersionfile.getPath(), ToolUtil.getCurrentInstalledBallerinaVersion());
         }
         return ballerinaVersionfile.getPath();
@@ -143,8 +143,8 @@ public class OSUtils {
         if (new File(OSUtils.getInstalledInstallerVersionPath()).exists() && !installerVersionfile.exists()) {
             installerVersionfile.getParentFile().mkdirs();
             installerVersionfile.createNewFile();
-            ToolUtil.addExecutablePermissionToFile(ballerinaHome);
-            ToolUtil.addExecutablePermissionToFile(installerVersionfile);
+            ToolUtil.addWritePermissionToFile(ballerinaHome);
+            ToolUtil.addWritePermissionToFile(installerVersionfile);
             ToolUtil.setInstallerVersion(installerVersionfile.getPath());
             ToolUtil.setVersion(getBallerinaVersionFilePath(), ToolUtil.getCurrentInstalledBallerinaVersion());
         }
