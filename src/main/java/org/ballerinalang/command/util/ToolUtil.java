@@ -716,6 +716,16 @@ public class ToolUtil {
         file.setWritable(true, false);
     }
 
+    /**
+     * Add read and write permission to the given file.
+     *
+     * @param file file path
+     */
+    public static void addWritePermissionToFile(File file) {
+        file.setReadable(true, false);
+        file.setWritable(true, false);
+    }
+
     public static String readFileAsString(String path) throws IOException {
         InputStream is = ClassLoader.getSystemResourceAsStream(path);
         if (is == null) {

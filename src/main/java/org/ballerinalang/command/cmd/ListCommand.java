@@ -194,8 +194,8 @@ public class ListCommand extends Command implements BCommand {
             if (!file.exists()) {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
-                ToolUtil.addExecutablePermissionToFile(new File(OSUtils.getBallerinaHomePath()));
-                ToolUtil.addExecutablePermissionToFile(file);
+                ToolUtil.addWritePermissionToFile(new File(OSUtils.getBallerinaHomePath()));
+                ToolUtil.addWritePermissionToFile(file);
             }
 
             if (!Files.isWritable(Paths.get(distListFilePath))) {
