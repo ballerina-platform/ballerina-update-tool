@@ -44,9 +44,19 @@ if [ $? -ne '0' ]; then
 fi
 
 \cp $CURRENT_PATH/ballerina-command-@version@/scripts/bal_completion.bash $CURRENT_PATH/../scripts
+\cp $CURRENT_PATH/ballerina-command-@version@/scripts/_bal $CURRENT_PATH/../scripts
 
 if [ $? -ne '0' ]; then
-  echo "error occurred while copying completion script file."
+  echo "error occurred while copying completion script files."
+fi
+
+if [ -f "~/.zsh/completion/_bal" ]
+then
+  \cp $CURRENT_PATH/ballerina-command-@version@/scripts/_bal ~/.zsh/completion
+fi
+
+if [ $? -ne '0' ]; then
+  echo "error occurred while updating zsh completion script."
 fi
 
 echo "Updating environment variables"
