@@ -50,7 +50,7 @@ if [ $? -ne '0' ]; then
   echo "error occurred while copying completion script files."
 fi
 
-if [ -f "~/.zsh/completion/_bal" ]
+if [ -f "~/.ballerina/completion/_bal" ]
 then
   \cp $CURRENT_PATH/ballerina-command-@version@/scripts/_bal ~/.zsh/completion
 fi
