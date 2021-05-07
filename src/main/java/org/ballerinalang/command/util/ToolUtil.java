@@ -833,4 +833,22 @@ public class ToolUtil {
                     + "'");
         }
     }
+
+    /**
+     * Update the tool if any latest version available.
+     *
+     * @param printStream stream which messages should be printed
+     */
+    public static void updateTool(PrintStream printStream) {
+        String version = ToolUtil.getCurrentToolsVersion();
+        printStream.println("checking whether any latest tool version is available...");
+        String latestVersion = ToolUtil.getLatestToolVersion();
+        if (latestVersion != null && !latestVersion.equals(version)) {
+            ToolUtil.downloadTool(printStream, latestVersion);
+        }
+
+        if (latestVersion == null) {
+            printStream.println("Failed to find the latest tool version");
+        }
+    }
 }
