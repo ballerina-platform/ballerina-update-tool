@@ -835,20 +835,18 @@ public class ToolUtil {
     }
 
     /**
-     * Update the tool if any latest version available.
+     * Update the update tool if any latest version available.
      *
      * @param printStream stream which messages should be printed
      */
     public static void updateTool(PrintStream printStream) {
         String version = ToolUtil.getCurrentToolsVersion();
-        printStream.println("checking whether any latest tool version is available...");
+        printStream.println("checking whether any latest update tool version is available...");
         String latestVersion = ToolUtil.getLatestToolVersion();
-        if (latestVersion != null && !latestVersion.equals(version)) {
-            ToolUtil.downloadTool(printStream, latestVersion);
-        }
-
         if (latestVersion == null) {
-            printStream.println("Failed to find the latest tool version");
+            printStream.println("Failed to find the latest update tool version");
+        } else if (!latestVersion.equals(version)) {
+            ToolUtil.downloadTool(printStream, latestVersion);
         }
     }
 }

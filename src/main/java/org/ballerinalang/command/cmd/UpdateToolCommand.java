@@ -83,14 +83,14 @@ public class UpdateToolCommand extends Command implements BCommand {
 
     private static void updateCommands(PrintStream printStream) {
         String version = ToolUtil.getCurrentToolsVersion();
-        printStream.println("Fetching the latest tool version from the remote server...");
+        printStream.println("Fetching the latest update tool version from the remote server...");
         String latestVersion = ToolUtil.getLatestToolVersion();
         if (latestVersion == null) {
-            printStream.println("Failed to find the latest tool version");
+            printStream.println("Failed to find the latest update tool version");
             return;
         }
         if (latestVersion.equals(version)) {
-            printStream.println("The latest tool version '" + latestVersion + "' is already in use");
+            printStream.println("The latest update tool version '" + latestVersion + "' is already in use");
             printStream.println("\nIf you want to update the Ballerina distribution, use `bal dist update`");
             return;
         }
