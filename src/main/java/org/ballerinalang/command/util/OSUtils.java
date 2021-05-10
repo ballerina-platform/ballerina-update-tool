@@ -266,7 +266,7 @@ public class OSUtils {
         return distributionType + "/" + ballerinaVersion + " (" + os + ") Updater/" + toolVersion;
     }
 
-    private static boolean isWindows() {
+    static boolean isWindows() {
         return OS.contains("win");
     }
 
@@ -302,11 +302,9 @@ public class OSUtils {
      * Delete files inside directories.
      *
      * @param dirPath   directory path
-     * @param outStream output stream
-     * @param version   version to be deleted
      * @throws IOException throw an exception if an issue occurs
      */
-    public static void deleteFiles(Path dirPath, PrintStream outStream, String version) throws IOException {
+    public static void deleteFiles(Path dirPath) throws IOException {
         if (dirPath == null) {
             return;
         }

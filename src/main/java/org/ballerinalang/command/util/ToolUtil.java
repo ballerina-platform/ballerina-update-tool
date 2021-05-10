@@ -841,12 +841,48 @@ public class ToolUtil {
      */
     public static void updateTool(PrintStream printStream) {
         String version = ToolUtil.getCurrentToolsVersion();
-        printStream.println("checking whether any latest update tool version is available...");
+        printStream.println("Checking whether any latest update tool version is available...");
         String latestVersion = ToolUtil.getLatestToolVersion();
         if (latestVersion == null) {
             printStream.println("Failed to find the latest update tool version");
         } else if (!latestVersion.equals(version)) {
             ToolUtil.downloadTool(printStream, latestVersion);
+            try {
+                executeFile(printStream);
+                printStream.println("Update successfully completed");
+            } catch (IOException | InterruptedException e) {
+                printStream.println("Update failed due to errors");
+            } finally {
+                try {
+                    OSUtils.deleteFiles(Paths.get(getToolUnzipLocation()));
+                } catch (IOException e) {
+                    printStream.println("Error occurred while removing files");
+                }
+            }
+            printStream.println();
+        }
+    }
+
+    /**
+     * Execute the file.
+     *
+     * @param printStream stream which messages should be printed
+     */
+    private static void executeFile(PrintStream printStream) throws IOException, InterruptedException {
+        Path filePath = Paths.get(getToolUnzipLocation(), OSUtils.getInstallScriptFileName());
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command(filePath.toString());
+        Process process = processBuilder.start();
+        StringBuilder output = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            output.append(line).append("\n");
+        }
+
+        int exitCode = process.waitFor();
+        if (exitCode == 0) {
+            printStream.println(output);
         }
     }
 }
