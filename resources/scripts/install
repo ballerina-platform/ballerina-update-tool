@@ -43,8 +43,15 @@ if [ $? -ne '0' ]; then
   exit $?
 fi
 
+if [ -f "$CURRENT_PATH/ballerina-command-@version@/scripts/bal_completion.bash" ]
+then
 \cp $CURRENT_PATH/ballerina-command-@version@/scripts/bal_completion.bash $CURRENT_PATH/../scripts
+fi
+
+if [ -f "$CURRENT_PATH/ballerina-command-@version@/scripts/_bal" ]
+then
 \cp $CURRENT_PATH/ballerina-command-@version@/scripts/_bal $CURRENT_PATH/../scripts
+fi
 
 if [ $? -ne '0' ]; then
   echo "error occurred while copying completion script files."
@@ -83,7 +90,7 @@ echo "Ie : $ bal build"
 echo "     $ bal dist list"
 echo "     $ bal dist update"
 
-echo "Tool version updated to the latest version: @version@"
+echo "Update tool version updated to the latest version: @version@"
 echo "Cleaning old files..."
 
 for file in $CURRENT_PATH/../lib/*; do

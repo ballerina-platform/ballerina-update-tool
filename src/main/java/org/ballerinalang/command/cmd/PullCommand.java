@@ -65,6 +65,9 @@ public class PullCommand extends Command implements BCommand {
         PrintStream printStream = getPrintStream();
         String distribution = pullCommands.get(0);
 
+        // Check and update the tool if any latest version available
+        ToolUtil.updateTool(printStream);
+
         // To handle bal dist pull latest
         if (distribution.equals(ToolUtil.LATEST_PULL_INPUT)) {
             printStream.println("Fetching the latest distribution from the remote server...");

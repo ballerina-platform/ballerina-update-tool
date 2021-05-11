@@ -109,7 +109,7 @@ public class RemoveCommand extends Command implements BCommand {
                 String file = ToolUtil.getType(version) + "-" + version;
                 File directory = new File(ToolUtil.getDistributionsPath() + File.separator + file);
                 if (directory.exists()) {
-                    OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
+                    OSUtils.deleteFiles(directory.toPath());
                     OSUtils.deleteCaches(version, getPrintStream());
                     getPrintStream().println("Distribution '" + version + "' successfully removed");
                 } else {
@@ -140,7 +140,7 @@ public class RemoveCommand extends Command implements BCommand {
                     }
                     File directory = new File(ToolUtil.getDistributionsPath() + File.separator + fileName);
                     if (directory.exists() && (!isCurrentVersion(version) || version.equals(""))) {
-                        OSUtils.deleteFiles(directory.toPath(), getPrintStream(), version);
+                        OSUtils.deleteFiles(directory.toPath());
                     }
                 }
             }
