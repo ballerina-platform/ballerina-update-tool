@@ -213,9 +213,26 @@ task copyFilesForTests(type: Copy) {
     into file("$buildDir/classes/distributions")
 }
 
+task copyBinForTests(type: Copy) {
+    from file("$buildDir/../resources/bin")
+    into file("$buildDir/classes/bin")
+    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
+}
+
+task copyLibForTests(type: Copy) {
+    from file("$buildDir/libs")
+    into file("$buildDir/classes/lib")
+}
+
+task copyScriptsForTests(type: Copy) {
+    from file("$buildDir/../resources/scripts")
+    into file("$buildDir/classes/scripts")
+}
+
 test {
-    useTestNG() {
-    }
+    useTestNG()
+    options.suites('src/test/resources/testng.xml')
+    systemProperty 'COMMAND_VERSION', project.properties['version']
 }
 
 build {
@@ -259,5 +276,14 @@ jacocoTestReport {
     }
 }
 
+processResources {
+    include '**/tool.properties'
+    include 'cli-help/*'
+    filter { String line -> line.replace('${project.version}', "${project.version}")}
+}
+
 test.dependsOn copyFilesForTests
+test.dependsOn copyBinForTests
+test.dependsOn copyLibForTests
+test.dependsOn copyScriptsForTests
 jacocoTestReport.dependsOn test

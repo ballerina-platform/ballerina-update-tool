@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -130,7 +131,17 @@ public class ToolUtil {
      * @return Used Ballerina tools version.
      */
     public static String getCurrentToolsVersion() {
-        return Main.class.getPackage().getImplementationVersion();
+        String version;
+        try (InputStream inputStream = Main.class.getResourceAsStream("/META-INF/tool.properties")) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+
+            version = properties.getProperty("command.version");
+        } catch (Throwable ignore) {
+            // Exception is ignored
+            throw ErrorUtil.createCommandException("version info not available");
+        }
+        return  version;
     }
 
     private static String getVersion(String path) throws IOException {
