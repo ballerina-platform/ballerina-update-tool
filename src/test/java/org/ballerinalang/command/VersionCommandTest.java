@@ -35,13 +35,16 @@ public class VersionCommandTest extends CommandTest{
         VersionCommand versionCommand = new VersionCommand(testStream);
         versionCommand.execute();
         Assert.assertTrue(outContent.toString().contains("Update Tool " + System.getProperty("COMMAND_VERSION")));
-        writeOutput(outContent.toString());
     }
 
-    @Test(expectedExceptions = { CommandException.class })
-    public void versionCommandwithArgs() throws CommandException {
-        VersionCommand versionCommand = new VersionCommand(testStream);
-        new CommandLine(versionCommand).parse("-v", "arg1");
-        versionCommand.execute();
+    @Test
+    public void versionCommandwithArgs() {
+        try {
+            VersionCommand versionCommand = new VersionCommand(testStream);
+            new CommandLine(versionCommand).parse("-v", "arg1");
+            versionCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
+        }
     }
 }

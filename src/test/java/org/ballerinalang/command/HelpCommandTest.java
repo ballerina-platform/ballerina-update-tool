@@ -55,11 +55,15 @@ public class HelpCommandTest extends CommandTest {
         Assert.assertTrue(outContent.toString().contains("bal-dist-pull - Fetch a given distribution and set it as the active version"));
     }
 
-    @Test(expectedExceptions = { CommandException.class })
+    @Test()
     public void helpCommandWithMultipleArgsTest() {
-        HelpCommand helpCommand = new HelpCommand();
-        helpCommand.setPrintStream(testStream);
-        new CommandLine(helpCommand).parse("arg1", "arg2", "arg3");
-        helpCommand.execute();
+        try {
+            HelpCommand helpCommand = new HelpCommand();
+            helpCommand.setPrintStream(testStream);
+            new CommandLine(helpCommand).parse("arg1", "arg2", "arg3");
+            helpCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
+        }
     }
 }

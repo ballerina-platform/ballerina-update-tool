@@ -57,18 +57,26 @@ public class UseCommandTest extends CommandTest {
         Assert.assertTrue(outContent.toString().contains("not found"));
     }
 
-    @Test(expectedExceptions = { CommandException.class })
-    public void useCommandwithMultipleArgsTest() throws CommandException {
-        UseCommand useCommand = new UseCommand(testStream);
-        new CommandLine(useCommand).parse("arg1", "arg2");
-        useCommand.execute();
+    @Test
+    public void useCommandwithMultipleArgsTest() {
+        try {
+            UseCommand useCommand = new UseCommand(testStream);
+            new CommandLine(useCommand).parse("arg1", "arg2");
+            useCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
+        }
     }
 
-    @Test(expectedExceptions = { CommandException.class })
-    public void useCommandwithoutArgsTest() throws CommandException {
-        UseCommand useCommand = new UseCommand(testStream);
-        new CommandLine(useCommand).parse();
-        useCommand.execute();
+    @Test
+    public void useCommandwithoutArgsTest() {
+        try {
+            UseCommand useCommand = new UseCommand(testStream);
+            new CommandLine(useCommand).parse();
+            useCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("a distribution must be specified to use"));
+        }
     }
 
     @Test

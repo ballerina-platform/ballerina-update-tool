@@ -23,7 +23,6 @@ import org.ballerinalang.command.cmd.RemoveCommand;
 import org.ballerinalang.command.cmd.UpdateCommand;
 import org.ballerinalang.command.exceptions.CommandException;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import picocli.CommandLine;
 
@@ -34,42 +33,54 @@ import picocli.CommandLine;
  */
 public class RemoveCommandTest extends CommandTest {
 
-    @Test(expectedExceptions = { CommandException.class })
-    public void removeCommandwithoutArgsTest() throws CommandException {
-        RemoveCommand removeCommand = new RemoveCommand(testStream);
-        new CommandLine(removeCommand).parse();
-        removeCommand.execute();
-    }
-
-    @Test(expectedExceptions = { CommandException.class })
-    public void removeCommandwithMultipleArgsTest() throws CommandException {
-        RemoveCommand removeCommand = new RemoveCommand(testStream);
-        new CommandLine(removeCommand).parse("arg1", "arg2");
-        removeCommand.execute();
+    @Test
+    public void removeCommandwithoutArgsTest() {
+        try {
+            RemoveCommand removeCommand = new RemoveCommand(testStream);
+            new CommandLine(removeCommand).parse();
+            removeCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("a distribution or `--all, -a` must be specified to " +
+                    "remove"));
+        }
     }
 
     @Test
-    public void removeCommandHelpTest() throws CommandException {
+    public void removeCommandwithMultipleArgsTest() {
+        try {
+            RemoveCommand removeCommand = new RemoveCommand(testStream);
+            new CommandLine(removeCommand).parse("arg1", "arg2");
+            removeCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
+        }
+    }
+
+    @Test
+    public void removeCommandHelpTest() {
         RemoveCommand removeCommand = new RemoveCommand(testStream);
         new CommandLine(removeCommand).parse("-h");
         removeCommand.execute();
         Assert.assertTrue(outContent.toString().contains("Remove distributions in your local environment"));
     }
 
-    @Test(expectedExceptions = { CommandException.class })
-    public void removeActiveDistTest() throws CommandException {
+    @Test
+    public void removeActiveDistTest() {
         PullCommand pullCommand = new PullCommand(testStream);
         new CommandLine(pullCommand).parse("1.2.0");
         pullCommand.execute();
 
-        RemoveCommand removeCommand = new RemoveCommand(testStream);
-        new CommandLine(removeCommand).parse("1.2.0");
-        removeCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("The active Ballerina distribution cannot be removed"));
+        try {
+            RemoveCommand removeCommand = new RemoveCommand(testStream);
+            new CommandLine(removeCommand).parse("1.2.0");
+            removeCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("The active Ballerina distribution cannot be removed"));
+        }
     }
 
     @Test
-    public void removeCommandTest() throws CommandException {
+    public void removeCommandTest() {
         PullCommand pullCommand = new PullCommand(testStream);
         new CommandLine(pullCommand).parse("1.2.0");
         pullCommand.execute();
@@ -87,6 +98,14 @@ public class RemoveCommandTest extends CommandTest {
         removeCommand2.execute();
         Assert.assertTrue(outContent.toString().contains("successfully removed"));
 
+        try {
+            RemoveCommand removeCommand = new RemoveCommand(testStream);
+            new CommandLine(removeCommand).parse("slp2");
+            removeCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("distribution 'slp2' not found"));
+        }
+
         RemoveCommand removeCommand3 = new RemoveCommand(testStream);
         new CommandLine(removeCommand3).parse("-a");
         removeCommand3.execute();
@@ -98,10 +117,14 @@ public class RemoveCommandTest extends CommandTest {
         Assert.assertTrue(outContent.toString().contains("There is nothing to remove. Only active distribution is remaining"));
     }
 
-    @Test(expectedExceptions = { CommandException.class })
-    public void removeAllCommandwithMultipleArgsTest() throws CommandException {
-        RemoveCommand removeCommand = new RemoveCommand(testStream);
-        new CommandLine(removeCommand).parse("-a", "arg1");
-        removeCommand.execute();
+    @Test
+    public void removeAllCommandwithMultipleArgsTest() {
+        try {
+            RemoveCommand removeCommand = new RemoveCommand(testStream);
+            new CommandLine(removeCommand).parse("-a", "arg1");
+            removeCommand.execute();
+        }  catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
+        }
     }
 }

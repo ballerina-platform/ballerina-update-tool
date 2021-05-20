@@ -29,25 +29,37 @@ import picocli.CommandLine;
  */
 public class PullCommandTest extends CommandTest {
 
-    @Test(expectedExceptions = { CommandException.class })
-    public void pullCommandwithoutArgsTest() throws CommandException {
-        PullCommand pullCommand = new PullCommand(testStream);
-        new CommandLine(pullCommand).parse();
-        pullCommand.execute();
+    @Test
+    public void pullCommandwithoutArgsTest() {
+        try {
+            PullCommand pullCommand = new PullCommand(testStream);
+            new CommandLine(pullCommand).parse();
+            pullCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("a distribution must be specified to pull"));
+        }
     }
 
-    @Test(expectedExceptions = { CommandException.class })
-    public void pullCommandwithMultipleArgsTest() throws CommandException {
-        PullCommand pullCommand = new PullCommand(testStream);
-        new CommandLine(pullCommand).parse("arg1", "arg2");
-        pullCommand.execute();
+    @Test
+    public void pullCommandwithMultipleArgsTest() {
+        try {
+            PullCommand pullCommand = new PullCommand(testStream);
+            new CommandLine(pullCommand).parse("arg1", "arg2");
+            pullCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
+        }
     }
 
-    @Test(expectedExceptions = { CommandException.class })
-    public void pullNonExistingDist() throws CommandException {
-        PullCommand pullCommand = new PullCommand(testStream);
-        new CommandLine(pullCommand).parse("slp9");
-        pullCommand.execute();
+    @Test
+    public void pullNonExistingDist() {
+        try {
+            PullCommand pullCommand = new PullCommand(testStream);
+            new CommandLine(pullCommand).parse("arg1");
+            pullCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("distribution 'arg1' not found"));
+        }
     }
 
     @Test
@@ -56,7 +68,6 @@ public class PullCommandTest extends CommandTest {
         new CommandLine(pullCommand).parse("-h");
         pullCommand.execute();
         Assert.assertTrue(outContent.toString().contains("Fetch a given distribution and set it as the active version"));
-        writeOutput(outContent.toString());
     }
 
     @Test

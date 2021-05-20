@@ -17,11 +17,11 @@
 package org.ballerinalang.command;
 
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
-import java.io.*;
-import java.nio.file.Files;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * Command tests super class.
@@ -32,28 +32,11 @@ public abstract class CommandTest {
     protected ByteArrayOutputStream outContent;
     protected PrintStream testStream;
 
-    @BeforeClass
-    public void setup() {
-        this.outContent = new ByteArrayOutputStream();
-        this.testStream = new PrintStream(this.outContent);
-    }
-
     @BeforeMethod
     public void beforeMethod() {
         this.outContent = new ByteArrayOutputStream();
         this.testStream = new PrintStream(this.outContent);
         System.setOut(testStream);
-    }
-
-    public void writeOutput(String str) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
-            writer.write(str);
-
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @AfterMethod(alwaysRun = true)

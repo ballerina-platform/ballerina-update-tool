@@ -40,11 +40,15 @@ public class UpdateCommandTest extends CommandTest {
         Assert.assertTrue(outContent.toString().contains("Update to the latest patch version of the active distribution"));
     }
 
-    @Test(expectedExceptions = { CommandException.class })
-    public void UpdateCommandWithArgTest() throws CommandException {
-        UpdateCommand updateCommand = new UpdateCommand(testStream);
-        new CommandLine(updateCommand).parse("arg1");
-        updateCommand.execute();
+    @Test
+    public void UpdateCommandWithArgTest() {
+        try {
+            UpdateCommand updateCommand = new UpdateCommand(testStream);
+            new CommandLine(updateCommand).parse("arg1");
+            updateCommand.execute();
+        }  catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
+        }
     }
 
     @Test

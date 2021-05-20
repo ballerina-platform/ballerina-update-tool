@@ -52,10 +52,14 @@ public class ListCommandTest extends CommandTest {
         Assert.assertTrue(outContent.toString().contains("List locally and remotely available distributions"));
     }
 
-    @Test(expectedExceptions = { CommandException.class })
+    @Test
     public void listCommandWithArgsTest() {
-        ListCommand listCommand = new ListCommand(testStream);
-        new CommandLine(listCommand).parse("arg1");
-        listCommand.execute();
+        try {
+            ListCommand listCommand = new ListCommand(testStream);
+            new CommandLine(listCommand).parse("arg1");
+            listCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
+        }
     }
 }
