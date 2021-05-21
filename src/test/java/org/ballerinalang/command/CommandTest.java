@@ -16,68 +16,32 @@
 
 package org.ballerinalang.command;
 
-import org.ballerinalang.command.cmd.BuildCommand;
-import org.ballerinalang.command.cmd.HelpCommand;
-import org.ballerinalang.command.cmd.ListCommand;
-import org.ballerinalang.command.cmd.VersionCommand;
-import org.ballerinalang.command.util.OSUtils;
-import org.junit.Before;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 
-public class CommandTest {
-    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    private PrintStream testStream = new PrintStream(outContent);
+/**
+ * Command tests super class.
+ *
+ * @since 2.0.0
+ */
+public abstract class CommandTest {
+    protected ByteArrayOutputStream outContent;
+    protected PrintStream testStream;
 
-    @Before
-    public void setUpStreams() {
+    @BeforeMethod
+    public void beforeMethod() {
+        this.outContent = new ByteArrayOutputStream();
+        this.testStream = new PrintStream(this.outContent);
         System.setOut(testStream);
     }
 
-    @Test
-    public void versionCommandTest() {
-        VersionCommand versionCommand = new VersionCommand(testStream);
-        versionCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("Update Tool"));
-        //TODO : Null is returned as implementation version, this needs to fixed
-    }
-
-    @Test
-    public void listCommandTest() {
-        ListCommand listCommand = new ListCommand(testStream);
-        listCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("Distributions available locally"));
-        //TODO : listings are not shown
-    }
-
-    @Test
-    public void buildCommandTest() {
-        //Cleanup the notice file of exists
-        File noticeFile = new File(OSUtils.getUpdateNoticePath());
-        if (noticeFile.exists()) {
-            noticeFile.delete();
-        }
-
-        BuildCommand buildCommand = new BuildCommand(testStream);
-        buildCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("A new version of Ballerina is available:"));
-
-        //Cleanup the notice file created by executing this test method
-        if (noticeFile.exists()) {
-            noticeFile.delete();
-        }
-    }
-
-    @Test
-    public void helpCommandTest() {
-        HelpCommand helpCommand = new HelpCommand();
-        helpCommand.setPrintStream(testStream);
-        helpCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("dist            Manage Ballerina distributions"));
-        Assert.assertTrue(outContent.toString().contains("update          Update the Ballerina tool"));
+    @AfterMethod(alwaysRun = true)
+    public void afterMethod() throws IOException {
+        outContent.close();
+        testStream.close();
     }
 }
