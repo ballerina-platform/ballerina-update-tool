@@ -27,7 +27,6 @@ public class BallerinaCliCommands {
     public static final String HELP = "help";
     public static final String UPDATE = "update";
     public static final String DIST = "dist";
-    public static final String FETCH = "fetch";
     public static final String LIST = "list";
     public static final String PULL = "pull";
     public static final String USE = "use";
