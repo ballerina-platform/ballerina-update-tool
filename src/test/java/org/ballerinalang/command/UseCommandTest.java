@@ -23,7 +23,6 @@ import org.ballerinalang.command.cmd.UpdateCommand;
 import org.ballerinalang.command.cmd.UseCommand;
 import org.ballerinalang.command.exceptions.CommandException;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import picocli.CommandLine;
 

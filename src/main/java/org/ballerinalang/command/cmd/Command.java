@@ -20,9 +20,7 @@ import org.ballerinalang.command.util.ErrorUtil;
 import org.ballerinalang.command.util.ToolUtil;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Properties;
 
 /**
  * Command class with generic methods.

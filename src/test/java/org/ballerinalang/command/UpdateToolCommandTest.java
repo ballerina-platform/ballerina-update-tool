@@ -1,0 +1,60 @@
+/*
+ * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.ballerinalang.command;
+
+import org.ballerinalang.command.cmd.UpdateToolCommand;
+import org.ballerinalang.command.exceptions.CommandException;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import picocli.CommandLine;
+
+/**
+ * Test cases dist update tool command.
+ *
+ * @since 2.0.0
+ */
+public class UpdateToolCommandTest extends CommandTest {
+    @Test
+    public void updateToolCommandHelpTest() {
+        UpdateToolCommand updateToolCommand = new UpdateToolCommand(testStream);
+        new CommandLine(updateToolCommand).parse("-h");
+        updateToolCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("Update the Ballerina tool"));
+    }
+
+    @Test
+    public void updateToolCommandTest() {
+        UpdateToolCommand updateToolCommand = new UpdateToolCommand(testStream);
+        new CommandLine(updateToolCommand).parse();
+        updateToolCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("Fetching the latest update tool version from the remote " +
+                "server..."));
+    }
+
+    @Test
+    public void UpdateCommandWithArgTest() {
+        try {
+            UpdateToolCommand updateToolCommand = new UpdateToolCommand(testStream);
+            new CommandLine(updateToolCommand).parse("arg1");
+            updateToolCommand.execute();
+        }  catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
+        }
+    }
+}

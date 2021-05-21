@@ -28,6 +28,7 @@ under the License.
             <class name="org.ballerinalang.command.PullCommandTest"/>
             <class name="org.ballerinalang.command.RemoveCommandTest"/>
             <class name="org.ballerinalang.command.UpdateCommandTest"/>
+            <class name="org.ballerinalang.command.UpdateToolCommandTest"/>
             <class name="org.ballerinalang.command.UseCommandTest"/>
             <class name="org.ballerinalang.command.VersionCommandTest"/>
         </classes>

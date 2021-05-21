@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 import picocli.CommandLine;
 
 /**
- * Test cases for update tool command.
+ * Test cases for version command.
  *
  * @since 2.0.0
  */
