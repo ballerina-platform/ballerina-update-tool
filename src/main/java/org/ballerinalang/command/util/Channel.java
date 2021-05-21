@@ -23,9 +23,19 @@ public class Channel {
     private String name;
     private List<Distribution> distributions;
 
+    public Channel() {
+        this.name = "";
+        this.distributions = new ArrayList<>();
+    }
+
     public Channel(String name) {
         this.name = name;
         this.distributions = new ArrayList<>();
+    }
+
+    public Channel(String name, List<Distribution> distributions) {
+        this.name = name;
+        this.distributions = distributions;
     }
 
     public String getName() {

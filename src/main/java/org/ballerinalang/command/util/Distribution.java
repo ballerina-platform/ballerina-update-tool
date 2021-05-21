@@ -25,11 +25,25 @@ public class Distribution {
     private String type;
     private String channel;
 
+    public Distribution() {
+        this.name = "";
+        this.version = "";
+        this.type = "";
+        this.channel = "";
+    }
+
     public Distribution(String version) {
         this.name = "";
         this.version = version;
         this.type = "";
         this.channel = "";
+    }
+
+    public Distribution(String name, String version, String type, String channel) {
+        this.name = name;
+        this.version = version;
+        this.type = type;
+        this.channel = channel;
     }
 
     public String getName() {
@@ -46,6 +60,10 @@ public class Distribution {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public void setType(String type) {
