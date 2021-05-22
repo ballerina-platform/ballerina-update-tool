@@ -23,6 +23,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PUBLISH_PAT }}
       run: |
         ./gradlew build jacocoTestReport
-        ./gradlew publish
     - name: Generate Codecov Report
       uses: codecov/codecov-action@v1
