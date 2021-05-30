@@ -34,14 +34,15 @@ _bal() {
             '-o' \
             '--cloud' \
             '--code-coverage' \
+            '--coverage-format' \
             '--compile' \
             '--experimental' \
+            '--jacoco-xml' \
             '--list-conflicted-classes' \
             '--observability-included' \
             '--offline' \
             '--output' \
             '--skiptests' \
-            '--taint-check' \
             '--test-report' \
             '*: :_default'
         ;;
@@ -110,7 +111,6 @@ _bal() {
             '--experimental' \
             '--observability-included' \
             '--offline' \
-            '--taint-check' \
             '*: :_default'
         ;;
         shell)
@@ -126,14 +126,15 @@ _bal() {
         test) 
         _arguments \
             '--code-coverage' \
+            '--coverage-format' \
             '--disable-groups' \
             '--experimental' \
             '--groups' \
+            '--jacoco-xml' \
             '--list-groups' \
             '--observability-included' \
             '--offline' \
             '--rerun-failed' \
-            '--taint-check' \
             '--tests' \
             '--test-report' \
             '*: :_default'
