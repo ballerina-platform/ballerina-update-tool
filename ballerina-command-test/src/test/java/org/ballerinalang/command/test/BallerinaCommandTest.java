@@ -159,11 +159,11 @@ public class BallerinaCommandTest {
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("The active Ballerina distribution cannot be removed"));
         args.remove(args.size() - 1);
-        args.add("1.2.12");
-        output = TestUtils.executeCommand(args);
-        Assert.assertTrue(output.contains("The active Ballerina distribution cannot be removed"));
-        args.add("arg1");
+        args.add("1.2.13");
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("successfully removed"));
+        args.add("arg1");
+        output = TestUtils.executeCommand(args);
+        Assert.assertTrue(output.contains("too many arguments"));
     }
 }
