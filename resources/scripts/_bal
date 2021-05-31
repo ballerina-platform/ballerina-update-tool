@@ -37,7 +37,6 @@ _bal() {
             '--coverage-format' \
             '--compile' \
             '--experimental' \
-            '--jacoco-xml' \
             '--list-conflicted-classes' \
             '--observability-included' \
             '--offline' \
@@ -130,7 +129,6 @@ _bal() {
             '--disable-groups' \
             '--experimental' \
             '--groups' \
-            '--jacoco-xml' \
             '--list-groups' \
             '--observability-included' \
             '--offline' \
