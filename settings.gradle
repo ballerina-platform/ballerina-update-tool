@@ -1,1 +1,6 @@
 rootProject.name = 'ballerina-command'
+include 'ballerina-command'
+include 'ballerina-command-test'
+
+project(':ballerina-command').projectDir = "$rootDir/ballerina-command" as File
+project(':ballerina-command-test').projectDir = "$rootDir/ballerina-command-test" as File
