@@ -123,12 +123,12 @@ public class BallerinaCommandTest {
         pullCmdArgs.add("pull");
         pullCmdArgs.add("--test");
         pullCmdArgs.add("slp1");
-        output = TestUtils.executeCommand(args);
+        output = TestUtils.executeCommand(pullCmdArgs);
         Assert.assertTrue(output.contains("Fetching the 'slp1' distribution from the remote server"));
         Assert.assertTrue(output.contains("Fetching the dependencies for 'slp1' from the remote server"));
         Assert.assertTrue(output.contains("successfully set as the active distribution"));
         output = TestUtils.testInstallation();
-        Assert.assertEquals(output, TestUtils.getVersionOutput("slp1", "v2020-12-17",
+        Assert.assertEquals(output, TestUtils.getVersionOutput("swan-lake-preview1", "v2020-06-18",
                 TestUtils.MAVEN_VERSION, "Preview 1"));
 
         args.remove(args.size() - 1);
