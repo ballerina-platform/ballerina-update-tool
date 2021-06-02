@@ -83,7 +83,7 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("successfully set as the active distribution"));
         Assert.assertTrue(Files.isDirectory(TestUtils.getDistPath(swanLakeVersion)));
         output = TestUtils.testInstallation();
-        Assert.assertEquals(output, TestUtils.getVersionOutput(TestUtils.getVersion(swanLakeVersion), swanLakeSpecVersion,
+        Assert.assertEquals(output, TestUtils.getVersionOutput(swanLakeVersion, swanLakeSpecVersion,
                 TestUtils.MAVEN_VERSION, TestUtils.getDisplayText(swanLakeVersion)));
 
         args.add("1.2.5");
@@ -129,8 +129,8 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("Successfully set the latest patch distribution"));
         Assert.assertTrue(Files.isDirectory(TestUtils.getDistPath(swanLakeLatestVersion)));
         output = TestUtils.testInstallation();
-        Assert.assertEquals(output, TestUtils.getVersionOutput(TestUtils.getVersion(swanLakeLatestVersion),
-                swanLakeLatestSpecVersion, TestUtils.MAVEN_VERSION, TestUtils.getDisplayText(swanLakeLatestVersion)));
+        Assert.assertEquals(output, TestUtils.getVersionOutput(swanLakeLatestVersion, swanLakeLatestSpecVersion,
+                TestUtils.MAVEN_VERSION, TestUtils.getDisplayText(swanLakeLatestVersion)));
 
         List<String> useArgs = new LinkedList<>();
         useArgs.add(TestUtils.PATH_ARG);
@@ -167,6 +167,8 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("successfully set as the active distribution"));
 
         output = TestUtils.testInstallation();
+        System.out.println(TestUtils.getVersionOutput(swanLakeLatestVersion, swanLakeLatestSpecVersion,
+                TestUtils.MAVEN_VERSION, TestUtils.getDisplayText(swanLakeLatestVersion)));
         Assert.assertEquals(output, TestUtils.getVersionOutput(swanLakeLatestVersion, swanLakeLatestSpecVersion,
                 TestUtils.MAVEN_VERSION, TestUtils.getDisplayText(swanLakeLatestVersion)));
 

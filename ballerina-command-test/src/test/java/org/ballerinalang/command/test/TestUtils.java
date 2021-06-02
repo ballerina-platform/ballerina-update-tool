@@ -177,23 +177,23 @@ public class TestUtils {
 
     /**
      * Get version output for version command.
-     *  @param jBallerinaVersion Installed jBallerina version
+     *  @param ballerinaVersion Installed jBallerina version
      *  @param specVersion Installed language specification
      *  @param toolVersion Installed tool version
      *  @param versionDisplayText display text for installed jBallerina version
      *
      * @return version output
      */
-    public static String getVersionOutput(String jBallerinaVersion, String specVersion, String toolVersion,
+    public static String getVersionOutput(String ballerinaVersion, String specVersion, String toolVersion,
                                           String versionDisplayText) {
         String toolText = TestUtils.isOldToolVersion(toolVersion) ? "Ballerina tool" : "Update Tool";
-        if (jBallerinaVersion.contains(SWAN_LAKE_KEYWORD)) {
+        if (ballerinaVersion.contains("sl")) {
             return "Ballerina Swan Lake " + versionDisplayText + "\n" + "Language specification " + specVersion +
                     "\n" + toolText + " " + toolVersion + "\n";
         }
 
-        String ballerinaReference = isSupportedRelease(jBallerinaVersion) ? "jBallerina" : "Ballerina";
-        return ballerinaReference + " " + jBallerinaVersion + "\n" + "Language specification " + specVersion + "\n" +
+        String ballerinaReference = isSupportedRelease(ballerinaVersion) ? "jBallerina" : "Ballerina";
+        return ballerinaReference + " " + ballerinaVersion + "\n" + "Language specification " + specVersion + "\n" +
                 toolText + " " + toolVersion + "\n";
     }
 
@@ -244,20 +244,6 @@ public class TestUtils {
         } else {
             String versionId = version.substring(2, version.length() - 1) + " " + lastChar;
             return versionId.substring(0, 1).toUpperCase() + versionId.substring(1);
-        }
-    }
-
-    /**
-     * Get the version using short version
-     *
-     * @param version distribution version
-     * @return returns version
-     */
-    public static String getVersion(String version) {
-        if (version.contains("slp")) {
-            return version.replace("slp", "swan-lake-preview");
-        } else {
-            return version.replace("sl", "swan-lake-");
         }
     }
 }
