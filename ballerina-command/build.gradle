@@ -214,7 +214,7 @@ tasks.withType(JavaCompile) {
 }
 
 task copyFilesForTests(type: Copy) {
-    from file("$buildDir/../src/test/resources/ballerina-version")
+    from file("$buildDir/../src/test/resources/dist-files")
     into file("$buildDir/classes/distributions")
 }
 

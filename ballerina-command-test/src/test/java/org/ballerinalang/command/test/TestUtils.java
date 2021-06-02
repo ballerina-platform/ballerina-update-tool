@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
@@ -42,11 +43,13 @@ public class TestUtils {
     public static final Path TARGET_DIR = Paths.get(System.getProperty("target.dir"));
     public static final String MAVEN_VERSION = System.getProperty("maven.version");
     public static final Path DISTRIBUTIONS_DIR = Paths.get(System.getProperty("distributions.dir"));
+    public static final Path RESOURCES_DIR = Paths.get(System.getProperty("test.resources.dir"));
     public static final Path TEST_DISTRIBUTION_PATH = TARGET_DIR.resolve("test-distribution");
     private static final String DIST_NAME = "ballerina-command-" + MAVEN_VERSION;
     private static final String SWAN_LAKE_KEYWORD = "swan-lake";
     public static final String PATH_ARG = TEST_DISTRIBUTION_PATH.resolve(DIST_NAME).resolve("bin").resolve("bal").
             toString();
+    private static final Path DIST_PATH = TEST_DISTRIBUTION_PATH.resolve(DIST_NAME).resolve("distributions");
 
     /**
      * Execute ballerina build command.
@@ -102,6 +105,7 @@ public class TestUtils {
         toolUnzipLocation.mkdir();
         Path zipFileLocation = DISTRIBUTIONS_DIR.resolve(DIST_NAME + ".zip");
         unzip(zipFileLocation.toString(), toolUnzipLocation.toString());
+        copyFiles();
     }
 
     private static void unzip(String zipFilePath, String destDirectory) {
@@ -129,8 +133,20 @@ public class TestUtils {
                 entry = zipIn.getNextEntry();
             }
         } catch (IOException e) {
-            System.out.println("failed to unzip zip the file in '" + zipFilePath + "' to '" +
-                    destDirectory + "'");
+            OUT.println("failed to unzip zip the file in '" + zipFilePath + "' to '" + destDirectory + "'");
+        }
+    }
+
+    /**
+     * Copy version files to distributions.
+     */
+    private static void copyFiles() {
+        try {
+            Files.createDirectory(DIST_PATH);
+            Files.copy(RESOURCES_DIR.resolve("ballerina-version"), DIST_PATH.resolve("ballerina-version"));
+            Files.copy(RESOURCES_DIR.resolve("installer-version"), DIST_PATH.resolve("installer-version"));
+        } catch (IOException e) {
+            OUT.println("failed to copy files to '" + DIST_PATH + "'");
         }
     }
 
@@ -203,5 +219,15 @@ public class TestUtils {
 
         String[] versions = version.split("\\.");
         return !(versions[0].equals("1") && versions[1].equals("0"));
+    }
+
+    /**
+     * Get distribution path for the version.
+     *
+     * @return returns distribution path for the version
+     */
+    public static Path getDistPath (String version) {
+        String type = version.contains("sl") ? "ballerina" : "jballerina";
+        return DIST_PATH.resolve(type + "-" + version);
     }
 }
