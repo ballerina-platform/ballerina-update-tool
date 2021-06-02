@@ -48,11 +48,14 @@ task distributionTest {
         systemProperty "target.dir", "$buildDir"
         systemProperty "maven.version", "$version"
         systemProperty "test.resources.dir", "$buildDir/resources/test"
-//        systemProperty "line.check.extensions", ".java, .bal"
-//        systemProperty "short.version", "$shortVersion"
-//        systemProperty "version.display.text", "$versionDisplayText"
-//        systemProperty "spec.version", "$specVersion"
-//        systemProperty "tool.version", "$ballerinaCommandVersion"
+
+        systemProperty "swan-lake-version", project.properties['swan-lake-version']
+        systemProperty "swan-lake-latest-version", project.properties['swan-lake-latest-version']
+        systemProperty "swan-lake-spec-version", project.properties['swan-lake-spec-version']
+        systemProperty "swan-lake-latest-spec-version", project.properties['swan-lake-latest-spec-version']
+        systemProperty "1-x-channel-version", project.properties['1-x-channel-version']
+        systemProperty "1-x-channel-spec-version", project.properties['1-x-channel-spec-version']
+        systemProperty "1-x-channel-latest-version", project.properties['1-x-channel-latest-version']
 
         useTestNG() {
             suites 'src/test/resources/testng.xml'

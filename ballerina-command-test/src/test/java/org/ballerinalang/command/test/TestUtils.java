@@ -230,4 +230,34 @@ public class TestUtils {
         String type = version.contains("sl") ? "ballerina" : "jballerina";
         return DIST_PATH.resolve(type + "-" + version);
     }
+
+    /**
+     * Get the display text using distribution version
+     *
+     * @param version distribution version
+     * @return returns display text
+     */
+    public static String getDisplayText(String version) {
+        char lastChar = version.charAt(version.length() - 1);
+        if (version.contains("slp")) {
+            return "Preview " + lastChar;
+        } else {
+            String versionId = version.substring(2, version.length() - 1) + " " + lastChar;
+            return versionId.substring(0, 1).toUpperCase() + versionId.substring(1);
+        }
+    }
+
+    /**
+     * Get the version using short version
+     *
+     * @param version distribution version
+     * @return returns version
+     */
+    public static String getVersion(String version) {
+        if (version.contains("slp")) {
+            return version.replace("slp", "swan-lake-preview");
+        } else {
+            return version.replace("sl", "swan-lake-");
+        }
+    }
 }
