@@ -50,20 +50,34 @@ public class TestUtils {
     public static final String PATH_ARG = TEST_DISTRIBUTION_PATH.resolve(DIST_NAME).resolve("bin").resolve("bal").
             toString();
     private static final Path DIST_PATH = TEST_DISTRIBUTION_PATH.resolve(DIST_NAME).resolve("distributions");
+    public static final Path TEST_DIR = TEST_DISTRIBUTION_PATH.resolve("test");
 
     /**
      * Execute ballerina build command.
      *
-     * @param args             The arguments to be passed to the build command.
-     * @return True if build is successful, else false.
+     * @param args The arguments to be passed to the build command.
+     * @return Output content of the command execution
      * @throws IOException          Error executing build command.
      * @throws InterruptedException Interrupted error executing build command.
      */
-    public static String executeCommand(List<String> args) throws IOException, InterruptedException {
+    protected static String executeCommand(List<String> args) throws IOException, InterruptedException {
+        return executeCommand(args, TEST_DIR);
+    }
+
+    /**
+     * Execute ballerina build command.
+     *
+     * @param args The arguments to be passed to the build command.
+     * @param testDir Directory where the command should be executed.
+     * @return Output content of the command execution
+     * @throws IOException          Error executing build command.
+     * @throws InterruptedException Interrupted error executing build command.
+     */
+    protected static String executeCommand(List<String> args, Path testDir) throws IOException, InterruptedException {
         addExecutablePermissionToFile(TEST_DISTRIBUTION_PATH.resolve(DIST_NAME).resolve("bin").resolve("bal").toFile());
         OUT.println("Executing: " + String.join(" ", args));
         ProcessBuilder pb = new ProcessBuilder(args);
-        pb.directory(new File(System.getProperty("user.home")));
+        pb.directory(testDir.toFile());
         Process process = pb.start();
         int exitCode = process.waitFor();
         InputStream inputStream = process.getInputStream();;
@@ -78,7 +92,6 @@ public class TestUtils {
             output += line + "\n";
         }
         logOutput(inputStream);
-        System.out.println(output);
         return  output;
     }
 
@@ -142,6 +155,7 @@ public class TestUtils {
      */
     private static void copyFiles() {
         try {
+            Files.createDirectory(TEST_DIR);
             Files.createDirectory(DIST_PATH);
             Files.copy(RESOURCES_DIR.resolve("ballerina-version"), DIST_PATH.resolve("ballerina-version"));
             Files.copy(RESOURCES_DIR.resolve("installer-version"), DIST_PATH.resolve("installer-version"));
@@ -162,12 +176,17 @@ public class TestUtils {
      *
      * @param file file path
      */
-    public static void addExecutablePermissionToFile(File file) {
+    private static void addExecutablePermissionToFile(File file) {
         file.setReadable(true, false);
         file.setExecutable(true, false);
         file.setWritable(true, false);
     }
 
+    /**
+     * Execute version command and get output.
+     *
+     * @return version command output
+     */
     public static String testInstallation() throws IOException, InterruptedException {
         List<String> args = new LinkedList<>();
         args.add(PATH_ARG);
@@ -200,10 +219,10 @@ public class TestUtils {
     /**
      * To check whether older tool version before swan lake support
      *
-     * @param toolVersion
+     * @param toolVersion Tool version.
      * @return returns is a older version
      */
-    public static boolean isOldToolVersion(String toolVersion) {
+    private static boolean isOldToolVersion(String toolVersion) {
         return toolVersion.equals("0.8.5") || toolVersion.equals("0.8.0");
     }
 
@@ -212,7 +231,7 @@ public class TestUtils {
      *
      * @return returns is a 1.0.x release
      */
-    public static boolean isSupportedRelease(String version) {
+    private static boolean isSupportedRelease(String version) {
         if (version.contains(SWAN_LAKE_KEYWORD)) {
             return true;
         }

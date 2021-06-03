@@ -18,6 +18,7 @@ package org.ballerinalang.command.test;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -91,7 +92,41 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("too many arguments"));
     }
 
-    @Test(description = "Test help command.", dependsOnMethods = {"testPullCommand"})
+    @Test(description = "Build and run a project", dependsOnMethods = {"testPullCommand"})
+    public void projectTest() throws IOException, InterruptedException {
+        List<String> args = new LinkedList<>();
+        String output;
+        args.add(TestUtils.PATH_ARG);
+        args.add("new");
+        args.add("project1");
+        TestUtils.executeCommand(args);
+        Path projectPath = TestUtils.TEST_DIR.resolve("project1");
+        Assert.assertTrue(Files.exists(projectPath));
+
+        args.remove(args.size() - 1);
+        args.remove(args.size() - 1);
+        args.add("add");
+        args.add("module1");
+        TestUtils.executeCommand(args, projectPath);
+        Assert.assertTrue(Files.isDirectory(projectPath.resolve("src").resolve("module1")));
+
+        args.remove(args.size() - 2);
+        args.add(1, "build");
+        output = TestUtils.executeCommand(args, projectPath);
+        Assert.assertTrue(output.contains("Compiling source"));
+        Assert.assertTrue(output.contains("Creating balos"));
+        Assert.assertTrue(output.contains("Running Tests"));
+        Assert.assertTrue(output.contains("Generating executables"));
+
+        Assert.assertTrue(Files.exists(projectPath.resolve("target/bin/module1.jar")));
+
+        args.remove(args.size() - 2);
+        args.add(1, "run");
+        output = TestUtils.executeCommand(args, projectPath);
+        Assert.assertTrue(output.contains("Hello World!"));
+    }
+
+    @Test(description = "Test help command.")
     public void testHelpCommand() throws IOException, InterruptedException {
         List<String> args = new LinkedList<>();
         String output;
@@ -115,7 +150,7 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("bal-dist-pull - Fetch a given distribution and set it as the active version"));
     }
 
-    @Test(description = "Test dist update command.", dependsOnMethods = {"testPullCommand"})
+    @Test(description = "Test dist update command.", dependsOnMethods = {"testPullCommand", "projectTest"})
     public void testUpdateCommand() throws IOException, InterruptedException {
         List<String> args = new LinkedList<>();
         String output;
@@ -185,6 +220,38 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("too many arguments"));
     }
 
+    @Test(description = "Build and run a project", dependsOnMethods = {"testUseCommand"})
+    public void projectTestWithLatestSpec() throws IOException, InterruptedException {
+        List<String> args = new LinkedList<>();
+        String output;
+        args.add(TestUtils.PATH_ARG);
+        args.add("new");
+        args.add("project2");
+        TestUtils.executeCommand(args);
+        Path projectPath = TestUtils.TEST_DIR.resolve("project2");
+        Assert.assertTrue(Files.exists(projectPath));
+
+        args.remove(args.size() - 1);
+        args.remove(args.size() - 1);
+        args.add("add");
+        args.add("module1");
+        TestUtils.executeCommand(args, projectPath);
+        Assert.assertTrue(Files.isDirectory(projectPath.resolve("modules").resolve("module1")));
+
+        args.remove(args.size() - 1);
+        args.remove(args.size() - 1);
+        args.add(1, "build");
+        output = TestUtils.executeCommand(args, projectPath);
+        Assert.assertTrue(output.contains("Compiling source"));
+        Assert.assertTrue(output.contains("Generating executable"));
+
+        Assert.assertTrue(Files.exists(projectPath.resolve("target/bin/project2.jar")));
+
+        args.remove(args.size() - 1);
+        args.add("run");
+        output = TestUtils.executeCommand(args, projectPath);
+        Assert.assertTrue(output.contains("Hello World!"));
+    }
 
     @Test(description = "Test dist list command.", dependsOnMethods = {"testUseCommand"})
     public void testListCommand() throws IOException, InterruptedException {
@@ -209,7 +276,7 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("too many arguments"));
     }
 
-    @Test(description = "Test dist remove command.", dependsOnMethods = {"testUseCommand"})
+    @Test(description = "Test dist remove command.", dependsOnMethods = {"testUseCommand", "projectTestWithLatestSpec"})
     public void testRemoveCommand() throws IOException, InterruptedException {
         List<String> args = new LinkedList<>();
         String output;
