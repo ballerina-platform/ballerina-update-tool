@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -39,6 +40,7 @@ import java.util.zip.ZipInputStream;
  * @since 2.0.0
  */
 public class TestUtils {
+    private static final String OS = System.getProperty("os.name").toLowerCase(Locale.getDefault());
     public static final PrintStream OUT = System.out;
     public static final Path TARGET_DIR = Paths.get(System.getProperty("target.dir"));
     public static final String MAVEN_VERSION = System.getProperty("maven.version");
@@ -91,8 +93,36 @@ public class TestUtils {
         while ((line = reader.readLine()) != null) {
             output += line + "\n";
         }
+
+        if (isWindows() && output.isEmpty()) {
+            inputStream =  process.getErrorStream();
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            while ((line = reader.readLine()) != null) {
+                output += line + "\n";
+            }
+        }
+
         logOutput(inputStream);
         return  output;
+    }
+
+    private static boolean isWindows() {
+        return OS.contains("win");
+    }
+
+    /**
+     * Add path to the command arguments.
+     *
+     * @return list of arguments
+     */
+    public static List<String> addPathArg() {
+        List<String> args = new LinkedList<>();
+        if (isWindows()) {
+            args.add(0, "cmd");
+            args.add(1, "/c");
+        }
+        args.add(PATH_ARG);
+        return args;
     }
 
     /**
@@ -188,8 +218,7 @@ public class TestUtils {
      * @return version command output
      */
     public static String testInstallation() throws IOException, InterruptedException {
-        List<String> args = new LinkedList<>();
-        args.add(PATH_ARG);
+        List<String> args = addPathArg();
         args.add("-v");
         return executeCommand(args);
     }

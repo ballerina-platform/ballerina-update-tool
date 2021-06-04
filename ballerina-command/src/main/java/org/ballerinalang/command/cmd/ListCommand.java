@@ -105,7 +105,7 @@ public class ListCommand extends Command implements BCommand {
         try {
             JSONObject distList = new JSONObject();
             JSONArray channelsArr = new JSONArray();
-            List<Channel> channels = ToolUtil.getDistributions();
+            List<Channel> channels = ToolUtil.getDistributions(outStream);
             if (listOfFiles != null) {
                 outStream.println("Distributions available locally: \n");
             }

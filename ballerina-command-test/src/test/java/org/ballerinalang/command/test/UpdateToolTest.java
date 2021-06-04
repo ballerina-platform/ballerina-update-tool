@@ -19,7 +19,6 @@ package org.ballerinalang.command.test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.testng.Assert;
@@ -54,9 +53,8 @@ public class UpdateToolTest {
 
     @Test(description = "Test dist pull command.", dependsOnMethods = {"testVersionCommand"})
     public void testPullCommand() throws IOException, InterruptedException {
-        List<String> args = new LinkedList<>();
+        List<String> args = TestUtils.addPathArg();
         String output;
-        args.add(TestUtils.PATH_ARG);
         args.add("dist");
         args.add("pull");
         output = TestUtils.executeCommand(args);
@@ -94,9 +92,8 @@ public class UpdateToolTest {
 
     @Test(description = "Build and run a project", dependsOnMethods = {"testPullCommand"})
     public void projectTest() throws IOException, InterruptedException {
-        List<String> args = new LinkedList<>();
+        List<String> args = TestUtils.addPathArg();
         String output;
-        args.add(TestUtils.PATH_ARG);
         args.add("new");
         args.add("project1");
         TestUtils.executeCommand(args);
@@ -111,7 +108,7 @@ public class UpdateToolTest {
         Assert.assertTrue(Files.isDirectory(projectPath.resolve("src").resolve("module1")));
 
         args.remove(args.size() - 2);
-        args.add(1, "build");
+        args.add(args.size() - 1, "build");
         output = TestUtils.executeCommand(args, projectPath);
         Assert.assertTrue(output.contains("Compiling source"));
         Assert.assertTrue(output.contains("Creating balos"));
@@ -121,16 +118,15 @@ public class UpdateToolTest {
         Assert.assertTrue(Files.exists(projectPath.resolve("target/bin/module1.jar")));
 
         args.remove(args.size() - 2);
-        args.add(1, "run");
+        args.add(args.size() - 1, "run");
         output = TestUtils.executeCommand(args, projectPath);
         Assert.assertTrue(output.contains("Hello World!"));
     }
 
     @Test(description = "Test help command.")
     public void testHelpCommand() throws IOException, InterruptedException {
-        List<String> args = new LinkedList<>();
+        List<String> args = TestUtils.addPathArg();
         String output;
-        args.add(TestUtils.PATH_ARG);
         args.add("-h");
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("dist            Manage Ballerina distributions"));
@@ -152,9 +148,8 @@ public class UpdateToolTest {
 
     @Test(description = "Test dist update command.", dependsOnMethods = {"testPullCommand", "projectTest"})
     public void testUpdateCommand() throws IOException, InterruptedException {
-        List<String> args = new LinkedList<>();
+        List<String> args = TestUtils.addPathArg();
         String output;
-        args.add(TestUtils.PATH_ARG);
         args.add("dist");
         args.add("update");
         args.add("--test");
@@ -167,8 +162,7 @@ public class UpdateToolTest {
         Assert.assertEquals(output, TestUtils.getVersionOutput(swanLakeLatestVersion, swanLakeLatestSpecVersion,
                 TestUtils.MAVEN_VERSION, TestUtils.getDisplayText(swanLakeLatestVersion)));
 
-        List<String> useArgs = new LinkedList<>();
-        useArgs.add(TestUtils.PATH_ARG);
+        List<String> useArgs = TestUtils.addPathArg();
         useArgs.add("dist");
         useArgs.add("use");
         useArgs.add(previouschannelVersion);
@@ -176,7 +170,8 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("successfully set as the active distribution"));
 
         output = TestUtils.executeCommand(args);
-        Assert.assertTrue(output.contains("Fetching the latest patch distribution"));
+        Assert.assertTrue(output.contains("Fetching the latest patch distribution for 'jballerina-" +
+                previouschannelVersion + "' from the remote server..."));
         Assert.assertTrue(output.contains("Successfully set the latest patch distribution"));
         Assert.assertTrue(Files.isDirectory(TestUtils.getDistPath(previousChanneLatestVersion)));
         output = TestUtils.testInstallation();
@@ -192,9 +187,8 @@ public class UpdateToolTest {
 
     @Test(description = "Test dist use command.", dependsOnMethods = {"testUpdateCommand"})
     public void testUseCommand() throws IOException, InterruptedException {
-        List<String> args = new LinkedList<>();
+        List<String> args = TestUtils.addPathArg();
         String output;
-        args.add(TestUtils.PATH_ARG);
         args.add("dist");
         args.add("use");
         args.add(swanLakeLatestVersion);
@@ -202,8 +196,6 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("successfully set as the active distribution"));
 
         output = TestUtils.testInstallation();
-        System.out.println(TestUtils.getVersionOutput(swanLakeLatestVersion, swanLakeLatestSpecVersion,
-                TestUtils.MAVEN_VERSION, TestUtils.getDisplayText(swanLakeLatestVersion)));
         Assert.assertEquals(output, TestUtils.getVersionOutput(swanLakeLatestVersion, swanLakeLatestSpecVersion,
                 TestUtils.MAVEN_VERSION, TestUtils.getDisplayText(swanLakeLatestVersion)));
 
@@ -222,9 +214,8 @@ public class UpdateToolTest {
 
     @Test(description = "Build and run a project", dependsOnMethods = {"testUseCommand"})
     public void projectTestWithLatestSpec() throws IOException, InterruptedException {
-        List<String> args = new LinkedList<>();
+        List<String> args = TestUtils.addPathArg();
         String output;
-        args.add(TestUtils.PATH_ARG);
         args.add("new");
         args.add("project2");
         TestUtils.executeCommand(args);
@@ -240,7 +231,7 @@ public class UpdateToolTest {
 
         args.remove(args.size() - 1);
         args.remove(args.size() - 1);
-        args.add(1, "build");
+        args.add("build");
         output = TestUtils.executeCommand(args, projectPath);
         Assert.assertTrue(output.contains("Compiling source"));
         Assert.assertTrue(output.contains("Generating executable"));
@@ -255,14 +246,13 @@ public class UpdateToolTest {
 
     @Test(description = "Test dist list command.", dependsOnMethods = {"testUseCommand"})
     public void testListCommand() throws IOException, InterruptedException {
-        List<String> args = new LinkedList<>();
+        List<String> args = TestUtils.addPathArg();
         String output;
-        args.add(TestUtils.PATH_ARG);
         args.add("dist");
         args.add("list");
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("Distributions available locally"));
-        Assert.assertTrue(output.contains("* [" + swanLakeLatestVersion + "] "  +
+        Assert.assertTrue(output.contains("* [" + swanLakeLatestVersion + "] " +
                 TestUtils.getDisplayText(swanLakeLatestVersion)));
         Assert.assertTrue(output.contains("Distributions available remotely"));
         Assert.assertTrue(output.contains("1.* channel"));
@@ -278,9 +268,8 @@ public class UpdateToolTest {
 
     @Test(description = "Test dist remove command.", dependsOnMethods = {"testUseCommand", "projectTestWithLatestSpec"})
     public void testRemoveCommand() throws IOException, InterruptedException {
-        List<String> args = new LinkedList<>();
+        List<String> args = TestUtils.addPathArg();
         String output;
-        args.add(TestUtils.PATH_ARG);
         args.add("dist");
         args.add("remove");
         output = TestUtils.executeCommand(args);

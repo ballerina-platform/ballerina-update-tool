@@ -192,7 +192,7 @@ public class ToolUtil {
         return dependencyLocation.exists();
     }
 
-    public static List<Channel> getDistributions() {
+    public static List<Channel> getDistributions(PrintStream printStream) {
         HttpURLConnection conn = null;
         List<Channel> channels = new ArrayList<>();
         List<Distribution> distributions = new ArrayList<>();
@@ -241,7 +241,7 @@ public class ToolUtil {
                         channel = channels.stream().filter(e -> e.getName().equals(distribution.getChannel()))
                                 .findFirst().orElse(null);
                     } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        printStream.println(e.getMessage());
                     }
 
                     if (channel == null) {

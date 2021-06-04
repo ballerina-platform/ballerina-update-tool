@@ -36,7 +36,6 @@ configurations {
 
 dependencies {
     testImplementation "org.testng:testng:6.14.3"
-    testImplementation "net.lingala.zip4j:zip4j:2.3.2"
 
     ballerinaCommand project(path: ":ballerina-command", configuration: "ballerinaCommand")
 }
