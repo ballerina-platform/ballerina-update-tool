@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ballerinalang.command.test;
+package org.ballerinalang.distribution;
 
 import java.io.IOException;
 import java.nio.file.Files;

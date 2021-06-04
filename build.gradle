@@ -17,9 +17,293 @@
 
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'net.researchgate.release' version '2.8.1'
+    id 'jacoco'
+    id 'de.undercouch.download' version '4.1.1'
 }
 
-group 'org.ballerinalang'
-version '1.3.6-SNAPSHOT'
-
 sourceCompatibility = 1.8
+
+group = project.group
+version = project.version
+
+ext {
+    jreLocation = "downloads/ballerina-jre-artifacts-zip/"
+}
+
+configurations {
+    jacocoRuntime
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'org.ballerinalang.command.Main',
+                'Implementation-Title': 'Ballerina Update Tool',
+                'Implementation-Version': version
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task copyBin(type: Copy) {
+    from file("resources/bin")
+    into file("build/resources/bin")
+    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
+}
+
+task copyScripts(type: Copy) {
+    from file("resources/scripts")
+    into file("build/resources/scripts")
+    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
+}
+
+task copyLib(type: Copy) {
+    from file("build/libs")
+    into file("build/resources/lib")
+}
+
+task createZip(type:Zip) {
+    dependsOn jar
+    dependsOn copyBin
+    dependsOn copyScripts
+    dependsOn copyLib
+    from ('build/resources')
+    into(project.name + "-" + project.version)
+}
+
+task unpackBallerinaJre(type: Download) {
+    group = "unpack_dependencies"
+    def jreBaseURL = "https://github.com/ballerina-platform/ballerina-custom-jre/releases/download/${project.ballerinaJreVersion}"
+    src([
+            "${jreBaseURL}/ballerina-jre-linux-${project.ballerinaJreVersion}.zip",
+            "${jreBaseURL}/ballerina-jre-macos-${project.ballerinaJreVersion}.zip",
+            "${jreBaseURL}/ballerina-jre-windows-${project.ballerinaJreVersion}.zip"
+    ])
+    onlyIfModified true
+    dest "${jreLocation}"
+}
+
+task extractJreForLinux(type: Copy) {
+    dependsOn unpackBallerinaJre
+    group = "extract_jre"
+    from zipTree { "${jreLocation}/ballerina-jre-linux-${project.ballerinaJreVersion}.zip" }
+    into("${buildDir}/target/extracted-jre-linux")
+}
+
+task extractJreForMac(type: Copy) {
+    dependsOn unpackBallerinaJre
+    group = "extract_jre"
+    from zipTree { "${jreLocation}/ballerina-jre-macos-${project.ballerinaJreVersion}.zip" }
+    into("${buildDir}/target/extracted-jre-macos")
+}
+
+task extractJreForWindows(type: Copy) {
+    dependsOn unpackBallerinaJre
+    group = "extract_jre"
+    from zipTree { "${jreLocation}/ballerina-jre-windows-${project.ballerinaJreVersion}.zip" }
+    into("${buildDir}/target/extracted-jre-windows")
+}
+
+task createZipLinux(type:Zip) {
+    def distName = "${project.name}-linux-${project.version}"
+    dependsOn extractJreForLinux
+    dependsOn jar
+    dependsOn copyBin
+    dependsOn copyScripts
+    dependsOn copyLib
+    from ("${buildDir}/target/extracted-jre-linux") {
+        into "${distName}/dependencies/jdk-11.0.8+10-jre"
+    }
+
+    from('build/resources') {
+        into "${distName}"
+    }
+
+    archiveName "${distName}.zip"
+}
+
+task createZipMac(type:Zip) {
+    def distName = "${project.name}-macos-${project.version}"
+    dependsOn extractJreForMac
+    dependsOn jar
+    dependsOn copyBin
+    dependsOn copyScripts
+    dependsOn copyLib
+    from ("${buildDir}/target/extracted-jre-macos") {
+        into "${distName}/dependencies/jdk-11.0.8+10-jre"
+    }
+
+    from('build/resources') {
+        into "${distName}"
+    }
+
+    archiveName "${distName}.zip"
+}
+
+task createZipWindows(type:Zip) {
+    def distName = "${project.name}-windows-${project.version}"
+    dependsOn extractJreForWindows
+    dependsOn jar
+    dependsOn copyBin
+    dependsOn copyScripts
+    dependsOn copyLib
+    from ("${buildDir}/target/extracted-jre-windows") {
+        into "${distName}/dependencies/jdk-11.0.8+10-jre"
+    }
+
+    from('build/resources') {
+        into "${distName}"
+    }
+
+    archiveName "${distName}.zip"
+}
+
+dependencies {
+    implementation 'info.picocli:picocli:4.0.1'
+    implementation 'me.tongfei:progressbar:0.7.4'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    testImplementation 'org.testng:testng:6.14.3'
+    jacocoRuntime "org.jacoco:org.jacoco.agent:0.8.6:runtime"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version = project.version
+            artifact  source: createZip, extension: 'zip'
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ballerina-platform/ballerina-update-tool")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+release {
+    buildTasks = ['build']
+    failOnSnapshotDependencies = true
+    versionPropertyFile = 'gradle.properties'
+    tagTemplate = 'v${version}'
+    git {
+        // To release from any branch
+        requireBranch = ''
+        pushToRemote = 'origin'
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+task copyFilesForTests(type: Copy) {
+    from file("$buildDir/../src/test/resources/dist-files")
+    into file("$buildDir/classes/distributions")
+}
+
+task copyBinForTests(type: Copy) {
+    from file("$buildDir/../resources/bin")
+    into file("$buildDir/classes/bin")
+    filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
+}
+
+task copyLibForTests(type: Copy) {
+    from file("$buildDir/libs")
+    into file("$buildDir/classes/lib")
+}
+
+task copyScriptsForTests(type: Copy) {
+    from file("$buildDir/../resources/scripts")
+    into file("$buildDir/classes/scripts")
+}
+
+test {
+    useTestNG()
+    options.suites('src/test/resources/testng.xml')
+    systemProperty "maven.version", "$version"
+
+    systemProperty "target.dir", "$buildDir"
+    systemProperty "distributions.dir", "$buildDir/distributions"
+    systemProperty "test.resources.dir", "$buildDir/resources/test/dist-files"
+
+    systemProperty "swan-lake-version", project.properties['swan-lake-version']
+    systemProperty "swan-lake-latest-version", project.properties['swan-lake-latest-version']
+    systemProperty "swan-lake-spec-version", project.properties['swan-lake-spec-version']
+    systemProperty "swan-lake-latest-spec-version", project.properties['swan-lake-latest-spec-version']
+    systemProperty "1-x-channel-version", project.properties['1-x-channel-version']
+    systemProperty "1-x-channel-spec-version", project.properties['1-x-channel-spec-version']
+    systemProperty "1-x-channel-latest-version", project.properties['1-x-channel-latest-version']
+
+    useTestNG() {
+        suites 'src/test/resources/testng.xml'
+    }
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+build {
+    dependsOn createZip
+    dependsOn createZipLinux
+    dependsOn createZipMac
+    dependsOn createZipWindows
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = 'https://maven.wso2.org/nexus/content/repositories/releases/'
+    }
+
+    maven {
+        url = 'https://maven.wso2.org/nexus/content/repositories/snapshots/'
+    }
+
+    maven {
+        url = 'https://maven.wso2.org/nexus/content/groups/wso2-public/'
+    }
+
+    maven {
+        url = 'https://repo.maven.apache.org/maven2'
+    }
+
+    maven {
+        url = 'https://maven.pkg.github.com/ballerina-platform/ballerina-update-tool'
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        csv.enabled = true
+        xml.destination = new File("${buildDir}/reports/jacoco/report.xml")
+        html.destination = new File("${buildDir}/reports/jacoco/report.html")
+        csv.destination = new File("${buildDir}/reports/jacoco/report.csv")
+    }
+}
+
+processResources {
+    include '**/tool.properties'
+    include 'cli-help/*'
+    filter { String line -> line.replace('${project.version}', "${project.version}")}
+}
+
+test.dependsOn copyFilesForTests
+test.dependsOn copyBinForTests
+test.dependsOn copyLibForTests
+test.dependsOn copyScriptsForTests
+test.dependsOn createZip
+jacocoTestReport.dependsOn test

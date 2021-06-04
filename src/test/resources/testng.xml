@@ -22,7 +22,17 @@ under the License.
 <suite name="commands-test-suite">
     <test name="command-tests" preserve-order="true" parallel="false">
         <classes>
-            <class name="org.ballerinalang.command.test.UpdateToolTest"/>
+            <class name="org.ballerinalang.command.BuildCommandTest"/>
+            <class name="org.ballerinalang.command.DistributionCommandTest"/>
+            <class name="org.ballerinalang.command.HelpCommandTest"/>
+            <class name="org.ballerinalang.command.ListCommandTest"/>
+            <class name="org.ballerinalang.command.PullCommandTest"/>
+            <class name="org.ballerinalang.command.RemoveCommandTest"/>
+            <class name="org.ballerinalang.command.UseCommandTest"/>
+            <class name="org.ballerinalang.command.UpdateCommandTest"/>
+            <class name="org.ballerinalang.command.UpdateToolCommandTest"/>
+            <class name="org.ballerinalang.command.VersionCommandTest"/>
+            <class name="org.ballerinalang.distribution.UpdateToolTest"/>
         </classes>
     </test>
 </suite>
