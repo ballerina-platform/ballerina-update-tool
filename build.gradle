@@ -208,8 +208,13 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-task copyFilesForTests(type: Copy) {
-    from file("$buildDir/../src/test/resources/dist-files")
+task copyBallerinaVersionFilesForTests(type: Copy) {
+    from file("$buildDir/../src/test/resources/ballerina-version")
+    into file("$buildDir/classes/distributions")
+}
+
+task copyInstallerVersionFilesForTests(type: Copy) {
+    from file("$buildDir/../src/test/resources/installer-version")
     into file("$buildDir/classes/distributions")
 }
 
@@ -236,7 +241,7 @@ test {
 
     systemProperty "target.dir", "$buildDir"
     systemProperty "distributions.dir", "$buildDir/distributions"
-    systemProperty "test.resources.dir", "$buildDir/resources/test/dist-files"
+    systemProperty "test.resources.dir", "$buildDir/resources/test"
 
     systemProperty "swan-lake-version", project.properties['swan-lake-version']
     systemProperty "swan-lake-latest-version", project.properties['swan-lake-latest-version']
@@ -301,7 +306,8 @@ processResources {
     filter { String line -> line.replace('${project.version}', "${project.version}")}
 }
 
-test.dependsOn copyFilesForTests
+test.dependsOn copyBallerinaVersionFilesForTests
+test.dependsOn copyInstallerVersionFilesForTests
 test.dependsOn copyBinForTests
 test.dependsOn copyLibForTests
 test.dependsOn copyScriptsForTests
