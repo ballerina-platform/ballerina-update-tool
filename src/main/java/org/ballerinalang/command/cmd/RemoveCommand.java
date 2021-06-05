@@ -126,6 +126,7 @@ public class RemoveCommand extends Command implements BCommand {
             File folder = new File(ToolUtil.getDistributionsPath());
             File[] listOfFiles;
             listOfFiles = folder.listFiles();
+            // checking for 2 files for zip pack and 3 files for installers
             if (listOfFiles.length == 2 || (listOfFiles.length == 3 && folder.toPath().resolve("installer-version").
                     toFile().exists())) {
                 getPrintStream().println("There is nothing to remove. Only active distribution is remaining");
