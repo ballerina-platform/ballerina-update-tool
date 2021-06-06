@@ -84,8 +84,10 @@ public class UpdateCommand extends Command implements BCommand {
     }
 
     public static void update(PrintStream printStream) {
-        // Check and update the tool if any latest version available
-        ToolUtil.updateTool(printStream);
+        if (!testFlag) {
+            // Check and update the tool if any latest version available
+            ToolUtil.updateTool(printStream);
+        }
         String version = ToolUtil.getCurrentBallerinaVersion();
         String distVersion = ToolUtil.getType(version) + "-" + version;
         printStream.println("Fetching the latest patch distribution for '" + distVersion + "' from " +

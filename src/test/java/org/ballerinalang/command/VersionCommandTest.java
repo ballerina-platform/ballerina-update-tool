@@ -34,7 +34,7 @@ public class VersionCommandTest extends CommandTest{
     public void versionCommandTest() {
         VersionCommand versionCommand = new VersionCommand(testStream);
         versionCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("Update Tool " + System.getProperty("COMMAND_VERSION")));
+        Assert.assertTrue(outContent.toString().contains("Update Tool " + System.getProperty("maven.version")));
     }
 
     @Test

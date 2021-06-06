@@ -32,6 +32,7 @@ under the License.
             <class name="org.ballerinalang.command.UpdateCommandTest"/>
             <class name="org.ballerinalang.command.UpdateToolCommandTest"/>
             <class name="org.ballerinalang.command.VersionCommandTest"/>
+            <class name="org.ballerinalang.distribution.UpdateToolTest"/>
         </classes>
     </test>
 </suite>
