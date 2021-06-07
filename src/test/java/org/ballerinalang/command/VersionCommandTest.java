@@ -41,7 +41,7 @@ public class VersionCommandTest extends CommandTest{
     public void versionCommandwithArgs() {
         try {
             VersionCommand versionCommand = new VersionCommand(testStream);
-            new CommandLine(versionCommand).parse("version", "arg1");
+            new CommandLine(versionCommand).parse( "arg1");
             versionCommand.execute();
         } catch (CommandException e) {
             Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));

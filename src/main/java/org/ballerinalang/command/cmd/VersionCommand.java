@@ -50,7 +50,7 @@ public class VersionCommand extends Command implements BCommand {
             printVersionInfo();
         }
 
-        if (versionCommands != null && versionCommands.size() > 1) {
+        if (versionCommands != null && versionCommands.size() > 0) {
             throw ErrorUtil.createUsageExceptionWithHelp("too many arguments", BallerinaCliCommands.VERSION);
         }
     }
