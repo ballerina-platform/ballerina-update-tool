@@ -18,33 +18,30 @@
 
 package org.ballerinalang.command;
 
-import org.ballerinalang.command.cmd.VersionCommand;
-import org.ballerinalang.command.exceptions.CommandException;
+import org.ballerinalang.command.cmd.DefaultCommand;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import picocli.CommandLine;
 
 /**
- * Test cases for version command.
+ * Test cases for default command.
  *
  * @since 2.0.0
  */
-public class VersionCommandTest extends CommandTest{
+public class DefaultCommandTest extends CommandTest{
     @Test
-    public void versionCommandTest() {
-        VersionCommand versionCommand = new VersionCommand(testStream);
-        versionCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("Update Tool " + System.getProperty("maven.version")));
+    public void defaultCommandTest() {
+        DefaultCommand defaultCommand = new DefaultCommand(testStream);
+        defaultCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("dist            Manage Ballerina distributions"));
+        Assert.assertTrue(outContent.toString().contains("update          Update the Ballerina tool"));
     }
 
     @Test
-    public void versionCommandwithArgs() {
-        try {
-            VersionCommand versionCommand = new VersionCommand(testStream);
-            new CommandLine(versionCommand).parse("version", "arg1");
-            versionCommand.execute();
-        } catch (CommandException e) {
-            Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
-        }
+    public void defaultCommandwithVersionArg() {
+        DefaultCommand defaultCommand = new DefaultCommand(testStream);
+        new CommandLine(defaultCommand).parse("-v");
+        defaultCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("Update Tool " + System.getProperty("maven.version")));
     }
 }
