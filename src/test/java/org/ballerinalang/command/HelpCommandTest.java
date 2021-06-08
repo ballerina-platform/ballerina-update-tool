@@ -66,4 +66,16 @@ public class HelpCommandTest extends CommandTest {
             Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
         }
     }
+
+    @Test()
+    public void helpCommandWithInvalidArgsTest() {
+        try {
+            HelpCommand helpCommand = new HelpCommand();
+            helpCommand.setPrintStream(testStream);
+            new CommandLine(helpCommand).parse("dist", "build");
+            helpCommand.execute();
+        } catch (CommandException e) {
+            Assert.assertTrue(e.getMessages().get(0).contains("unknown help topic `dist-build`"));
+        }
+    }
 }
