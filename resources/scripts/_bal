@@ -36,6 +36,7 @@ _bal() {
             '--code-coverage' \
             '--coverage-format' \
             '--compile' \
+            '--dump-build-time' \
             '--experimental' \
             '--list-conflicted-classes' \
             '--observability-included' \
