@@ -852,7 +852,7 @@ public class ToolUtil {
      */
     public static void updateTool(PrintStream printStream) {
         String version = ToolUtil.getCurrentToolsVersion();
-        printStream.println("Checking whether any latest update tool version is available...");
+        printStream.println("Checking for newer versions of the update tool...");
         String latestVersion = ToolUtil.getLatestToolVersion();
         if (latestVersion == null) {
             printStream.println("Failed to find the latest update tool version");
