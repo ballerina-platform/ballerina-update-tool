@@ -43,6 +43,7 @@ _bal() {
             '--offline' \
             '--output' \
             '--skip-tests' \
+            '--sticky' \
             '--test-report' \
             '*: :_default'
         ;;
