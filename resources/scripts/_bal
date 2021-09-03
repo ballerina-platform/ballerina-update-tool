@@ -42,7 +42,8 @@ _bal() {
             '--observability-included' \
             '--offline' \
             '--output' \
-            '--skiptests' \
+            '--skip-tests' \
+            '--sticky' \
             '--test-report' \
             '*: :_default'
         ;;
