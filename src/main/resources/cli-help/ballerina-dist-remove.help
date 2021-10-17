@@ -6,7 +6,8 @@ SYNOPSIS
 
 OPTIONS
        -a, --all
-          Remove all the Ballerina distributions
+          Remove all the Ballerina distributions except the currently active one
+       from your local machine. 
 
 DESCRIPTION
        Remove the specified Ballerina distribution or all the available 
