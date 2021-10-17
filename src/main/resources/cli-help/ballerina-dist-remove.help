@@ -3,22 +3,21 @@ NAME
 
 SYNOPSIS
        bal dist remove <distribution>
-       bal dist remove <-a | --all>
+
+OPTIONS
+       -a, --all
+          Remove all the Ballerina distributions
 
 DESCRIPTION
-       Removes the specified Ballerina distribution from your local environment.
+       Remove the specified Ballerina distribution or all the available 
+       distributions from your local environment.
 
-       However, you are not allowed to remove the distribution, which is currently active.
-
-       Following are some sample
-       version: 1.1.0, 1.4.0, slp1.
-
-       The <-a | --all> flag removes all the Ballerina distributions except the currently
-       active one from your local environment.
+       However, you are not allowed to remove the currently active distribution.
 
 EXAMPLES
-       This command removes the 1.0.5 version in your local machine.
-          $ bal dist remove 1.0.5
-       This command removes all the distributions except the currently active one
-       in your local machine.
+       Remove the 1.2.19 version from your local machine.
+          $ bal dist remove 1.2.19
+
+       Remove all the Ballerina distributions except the currently active one
+       from your local machine.
           $ bal dist remove -a

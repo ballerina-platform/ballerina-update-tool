@@ -5,15 +5,15 @@ SYNOPSIS
        bal dist pull <distribution>
 
 DESCRIPTION
-       Pull fetches the specified distribution with its dependencies to your local environment and
-       marks it as the active version.
+       Fetch the specified distribution with its dependencies to your local environment, and
+       mark it as the active version.
 
-       The update command always fetches the latest patch version whereas the pull command gives
-       you the flexibility to fetch and use any distribution.
-
-       Following are some sample
-       version: 1.1.0, 1.4.0, slp1.
+       The `bal dist update` update command always fetches the latest patch version whereas 
+       this command allows you to fetch and use any distribution.
 
 EXAMPLES
-       This command fetches "1.0.5" and marks it as the active distribution.
-          $ bal dist pull 1.0.5
+       Fetch Ballerina `1.2.19` version and mark it as the active distribution.
+          $ bal dist pull 1.2.19
+
+       Fetch Ballerina `slbeta3` version and mark it as the active distribution.
+          $ bal dist pull slbeta3
