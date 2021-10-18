@@ -5,11 +5,8 @@ SYNOPSIS
        bal dist use <distribution>
 
 DESCRIPTION
-       Use marks the given Ballerina distribution as the active distribution.
-
-       Following are some sample
-       version: 1.1.0, 1.4.0, slp1.
+       Mark the specified Ballerina distribution as the active distribution.
 
 EXAMPLES
-       This command marks 1.0.5 as the active distribution.
-          $ bal dist use 1.0.5
+       Mark 1.2.19 as the active distribution.
+          $ bal dist use 1.2.19
