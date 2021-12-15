@@ -204,23 +204,16 @@ public class ListCommand extends Command implements BCommand {
      * @return Marked output
      */
     private static String markVersion(String used, String current, String ... latest) {
-        if (latest.length==1) {
+        if (latest.length == 1) {
+            String usedMarker = "  ";
+            String latestMarker = "";
             if (used.equals(current)) {
-                if (current.equals(latest[0])){
-                    return "* " + current + " - latest" ;
-                }
-                else{
-                    return "* " + current ;
-                }
-            } else {
-                if (current.equals(latest[0])){
-                    return "  " + current + " - latest" ;
-                }
-                else{
-                    return "  " + current ;
-                }
-
+                usedMarker = "* ";
             }
+            if (current.equals(latest[0])) {
+                latestMarker = " - latest" ;
+            }
+            return usedMarker + current + latestMarker;
         }
         else{
             if (used.equals(current)) {

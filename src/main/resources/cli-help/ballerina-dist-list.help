@@ -6,20 +6,20 @@ SYNOPSIS
 
 OPTIONS
        -pr, --pre-releases
-          List the distributions available for you to download under pre-releases channel.
+          List the distributions that are available for you to download under the pre-releases channel.
 
        -a, --all
-          List all the distributions available for you to download under each channel.
+          List all the distributions that are available for you to download under each channel.
 
 DESCRIPTION
        List all the distributions installed in your local environment
        as well as the distributions that are available for you to download.
 
 EXAMPLES
-       List latest distributions under major channels.
+       List the latest distributions under the major channels.
          $ bal dist list
 
-       List all the distributions under major channels.
+       List all the distributions under the major channels.
          $ bal dist list -a
 
        List all the distributions under all the channels (including pre-releases).
