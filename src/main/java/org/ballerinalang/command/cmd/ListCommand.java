@@ -70,7 +70,7 @@ public class ListCommand extends Command implements BCommand {
         }
 
         if (listCommands == null) {
-            listDistributions(getPrintStream(), allFlag );
+            listDistributions(getPrintStream(), allFlag, prFlag);
             return;
         }
 
@@ -104,7 +104,7 @@ public class ListCommand extends Command implements BCommand {
      *
      * @param outStream stream outputs need to be printed
      */
-    private static void listDistributions(PrintStream outStream, boolean allFlag) {
+    private static void listDistributions(PrintStream outStream, boolean allFlag, boolean prFlag) {
         String currentBallerinaVersion = ToolUtil.getCurrentBallerinaVersion();
         File folder = new File(ToolUtil.getDistributionsPath());
         File[] listOfFiles = folder.listFiles();
