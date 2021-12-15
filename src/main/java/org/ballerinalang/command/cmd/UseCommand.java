@@ -17,6 +17,8 @@
 package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
+import org.ballerinalang.command.util.Channel;
+import org.ballerinalang.command.util.Distribution;
 import org.ballerinalang.command.util.ErrorUtil;
 import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
@@ -68,8 +70,23 @@ public class UseCommand extends Command implements BCommand {
             return;
         }
         printStream.println("Distribution '" + distribution + "' not found");
-        printStream.println("Run 'bal dist pull " + distribution + "' to fetch and set the distribution as the " +
-                                    "active distribution");
+
+        List<Channel> channels = ToolUtil.getDistributions(printStream);
+        boolean validDistribution = false;
+        for (Channel channel : channels) {
+            for (Distribution dist : channel.getDistributions()) {
+                if (distribution.equals(dist.getVersion()) ) {
+                    validDistribution = true;
+                    printStream.println("Run 'bal dist pull " + distribution + "' to fetch and set the distribution " +
+                            "as the active distribution");
+                    break;
+                }
+            }
+        }
+        if (!validDistribution){
+            printStream.println( "'" + distribution + "' is not a valid distribution. Use 'bal dist list -a' for the " +
+                    "available distributions list");
+        }
     }
 
     @Override
