@@ -1,18 +1,6 @@
 
-NAME
-       bal-help - Display information on all the commands of the `bal` tool.
+   Update Commands:
+        dist            Manage Ballerina distributions
+        update          Update the Ballerina tool
 
-SYNOPSIS
-       bal help
-       bal help <command>
-       bal help <command> <sub-command>
-
-DESCRIPTION
-       Display all the information about the `bal` tool and its supported commands.
-
-EXAMPLES
-       Display information about the `bal update` command.
-          $ bal help update
-
-       Display information about the `bal dist update` command.
-          $ bal help dist update
+Use 'bal help <command>' for more information on a specific command.
