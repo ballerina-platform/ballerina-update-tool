@@ -38,9 +38,8 @@ public class ListCommandTest extends CommandTest {
         Assert.assertTrue(outContent.toString().contains("Distributions available locally"));
         Assert.assertTrue(outContent.toString().contains("Distributions available remotely"));
         Assert.assertTrue(outContent.toString().contains("1.* channel"));
-        Assert.assertTrue(outContent.toString().contains("[1.0.1] jballerina version 1.0.1"));
+        Assert.assertTrue(outContent.toString().contains("1.2.20"));
         Assert.assertTrue(outContent.toString().contains("Swan Lake channel"));
-        Assert.assertTrue(outContent.toString().contains("[slp5] Preview 5"));
     }
 
     @Test
