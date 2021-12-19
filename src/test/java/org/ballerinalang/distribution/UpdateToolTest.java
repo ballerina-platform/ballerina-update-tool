@@ -241,7 +241,7 @@ public class UpdateToolTest {
         args.remove(args.size() - 1);
         args.add("run");
         output = TestUtils.executeCommand(args, projectPath);
-        Assert.assertTrue(output.contains("Hello World!"));
+        Assert.assertTrue(output.contains("Hello, World!"));
     }
 
     @Test(description = "Test dist list command.", dependsOnMethods = {"testUseCommand"})
@@ -252,14 +252,13 @@ public class UpdateToolTest {
         args.add("list");
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("Distributions available locally"));
-        Assert.assertTrue(output.contains("* [" + swanLakeLatestVersion + "] " +
-                TestUtils.getDisplayText(swanLakeLatestVersion)));
+        Assert.assertTrue(output.contains("* " + swanLakeLatestVersion));
         Assert.assertTrue(output.contains("Distributions available remotely"));
         Assert.assertTrue(output.contains("1.* channel"));
-        Assert.assertTrue(output.contains("[1.0.1] jballerina version 1.0.1"));
+        Assert.assertTrue(output.contains("1.2.16"));
         Assert.assertTrue(output.contains("Swan Lake channel"));
-        Assert.assertTrue(output.contains("[slp5] Preview 5"));
-        Assert.assertTrue(output.contains("[slalpha1] Alpha 1"));
+//        Assert.assertTrue(output.contains("slp5"));            Should be added after the release
+//        Assert.assertTrue(output.contains("[slalpha1] Alpha 1"));
 
         args.add("arg1");
         output = TestUtils.executeCommand(args);

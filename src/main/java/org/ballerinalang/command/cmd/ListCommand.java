@@ -51,6 +51,12 @@ public class ListCommand extends Command implements BCommand {
     @CommandLine.Option(names = {"--help", "-h", "?"}, hidden = true)
     private boolean helpFlag;
 
+    @CommandLine.Option(names = {"--all", "-a"}, hidden = true)
+    private boolean allFlag;
+
+    @CommandLine.Option(names = {"--pre-releases", "-pr"}, hidden = true)
+    private boolean prFlag;
+
     private CommandLine parentCmdParser;
 
     public ListCommand(PrintStream printStream) {
@@ -64,7 +70,7 @@ public class ListCommand extends Command implements BCommand {
         }
 
         if (listCommands == null) {
-            listDistributions(getPrintStream());
+            listDistributions(getPrintStream(), allFlag, prFlag);
             return;
         }
 
@@ -98,7 +104,7 @@ public class ListCommand extends Command implements BCommand {
      *
      * @param outStream stream outputs need to be printed
      */
-    private static void listDistributions(PrintStream outStream) {
+    private static void listDistributions(PrintStream outStream, boolean allFlag, boolean prFlag) {
         String currentBallerinaVersion = ToolUtil.getCurrentBallerinaVersion();
         File folder = new File(ToolUtil.getDistributionsPath());
         File[] listOfFiles = folder.listFiles();
@@ -130,8 +136,7 @@ public class ListCommand extends Command implements BCommand {
                                         JSONObject versionInfo = new JSONObject();
                                         versionInfo.put("name", versionName);
                                         versionInfo.put("version", versionId);
-                                        outStream.println(markVersion(currentBallerinaVersion, versionId)
-                                                + " " + versionName);
+                                        outStream.println(markVersion(currentBallerinaVersion, versionId));
                                         releases.add(versionInfo);
                                     }
                                 }
@@ -145,10 +150,35 @@ public class ListCommand extends Command implements BCommand {
             writeLocalDistsIntoJson(distList);
             outStream.println("\nDistributions available remotely:");
             for (Channel channel : channels) {
-                outStream.println("\n" + channel.getName() + "\n");
-                for (Distribution distribution : channel.getDistributions()) {
-                    outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion())
-                            + " " + distribution.getName());
+                if (channel.getName().contains("pre-release") && !prFlag) {
+                    continue;
+                }
+                else {
+                    outStream.println("\n" + channel.getName() + "\n");
+                    if (!allFlag){
+                        if (channel.getDistributions().size() > 10) {
+                            outStream.println("... To list all the previous distributions execute `bal dist list -a`");
+                            int numDistributions = channel.getDistributions().size();
+                            List<Distribution> recentDistributions = channel.getDistributions().subList(numDistributions-10,
+                                    numDistributions);
+                            for (Distribution distribution : recentDistributions) {
+                                outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
+                                        channel.getDistributions().get(numDistributions-1).getVersion()));
+                            }
+                        }
+                        else{
+                            for (Distribution distribution : channel.getDistributions()) {
+                                outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
+                                        channel.getDistributions().get(channel.getDistributions().size()-1).getVersion()));
+                            }
+                        }
+                    }
+                    else{
+                        for (Distribution distribution : channel.getDistributions()) {
+                            outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
+                                    channel.getDistributions().get(channel.getDistributions().size()-1).getVersion()));
+                        }
+                    }
                 }
             }
         } catch (CommandException e) {
@@ -173,11 +203,24 @@ public class ListCommand extends Command implements BCommand {
      * @param current Version needs to be checked
      * @return Marked output
      */
-    private static String markVersion(String used, String current) {
-        if (used.equals(current)) {
-            return "* [" + current + "]";
-        } else {
-            return "  [" + current + "]";
+    private static String markVersion(String used, String current, String ... latest) {
+        if (latest.length == 1) {
+            String usedMarker = "  ";
+            String latestMarker = "";
+            if (used.equals(current)) {
+                usedMarker = "* ";
+            }
+            if (current.equals(latest[0])) {
+                latestMarker = " - latest" ;
+            }
+            return usedMarker + current + latestMarker;
+        }
+        else{
+            if (used.equals(current)) {
+                return "* " + current ;
+            } else {
+                return "  " + current ;
+            }
         }
     }
 
@@ -225,8 +268,7 @@ public class ListCommand extends Command implements BCommand {
                 JSONArray releases = (JSONArray) channelObj.get("releases");
                 for (Object release : releases) {
                     JSONObject versionInfo = (JSONObject) release;
-                    outStream.println(markVersion(currentBallerinaVersion, versionInfo.get("version").toString()) +
-                            " " + versionInfo.get("name").toString());
+                    outStream.println(markVersion(currentBallerinaVersion, versionInfo.get("version").toString()));
                 }
             }
         } catch (IOException | ParseException e) {
@@ -249,7 +291,7 @@ public class ListCommand extends Command implements BCommand {
                 if (parts.length == 2) {
                     version = parts[1];
                 }
-                outStream.println(markVersion(currentBallerinaVersion, version) + " " + ToolUtil.getTypeName(version));
+                outStream.println(markVersion(currentBallerinaVersion, version));
             }
         }
     }
