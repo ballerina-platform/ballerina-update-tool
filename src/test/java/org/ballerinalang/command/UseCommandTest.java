@@ -54,6 +54,11 @@ public class UseCommandTest extends CommandTest {
         new CommandLine(useCmd).parse("slp3");
         useCmd.execute();
         Assert.assertTrue(outContent.toString().contains("not found"));
+
+        UseCommand useCommandInvalidDist = new UseCommand(testStream);
+        new CommandLine(useCommandInvalidDist).parse("slbeta7");
+        useCommandInvalidDist.execute();
+        Assert.assertTrue(outContent.toString().contains("not a valid distribution"));
     }
 
     @Test
