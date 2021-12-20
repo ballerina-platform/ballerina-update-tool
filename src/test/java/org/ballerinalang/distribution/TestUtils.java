@@ -176,7 +176,7 @@ public class TestUtils {
                 entry = zipIn.getNextEntry();
             }
         } catch (IOException e) {
-            OUT.println("failed to unzip zip the file in '" + zipFilePath + "' to '" + destDirectory + "'");
+            OUT.println("failed to unzip the zip file in '" + zipFilePath + "' to '" + destDirectory + "'");
         }
     }
 

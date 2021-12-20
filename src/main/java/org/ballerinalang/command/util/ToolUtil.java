@@ -698,7 +698,7 @@ public class ToolUtil {
                 entry = zipIn.getNextEntry();
             }
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException("failed to unzip zip the file in '" + zipFilePath + "' to '" +
+            throw ErrorUtil.createCommandException("failed to unzip the zip file in '" + zipFilePath + "' to '" +
                     destDirectory + "'");
         }
     }
