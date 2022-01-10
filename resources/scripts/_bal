@@ -4,7 +4,7 @@ _bal() {
     typeset -A opt_args
    
     _arguments \
-        '1:command:(-v -h --help --version add bindgen build clean dist doc encrypt format grpc help init new openapi pull push run search shell test update version)' \
+        '1:command:(-v -h --help --version add bindgen build clean dist doc encrypt format grpc help init new openapi pack pull push run search shell test update version)' \
         '*:: :->command_flags'
  
     case $state in
@@ -30,7 +30,6 @@ _bal() {
         ;;
         build)
         _arguments \
-            '-c' \
             '-o' \
             '--cloud' \
             '--code-coverage' \
@@ -47,6 +46,11 @@ _bal() {
             '--test-report' \
             '*: :_default'
         ;;
+        clean)
+        _arguments \
+            '--target-dir' \
+            '*: :_default'
+        ;;
         dist)
         _arguments \
             '1: :(list pull remove update use)' \
@@ -60,6 +64,7 @@ _bal() {
             '--exclude' \
             '--output' \
             '--experimental' \
+            '--target-dir' \
             '*: :_default'
         ;;
         format)
@@ -112,6 +117,7 @@ _bal() {
             '--experimental' \
             '--observability-included' \
             '--offline' \
+            '--target-dir' \
             '*: :_default'
         ;;
         shell)
@@ -137,6 +143,7 @@ _bal() {
             '--rerun-failed' \
             '--tests' \
             '--test-report' \
+            '--target-dir' \
             '*: :_default'
         ;;
         esac
