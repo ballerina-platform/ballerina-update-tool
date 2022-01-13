@@ -54,7 +54,7 @@ public class ListCommand extends Command implements BCommand {
     @CommandLine.Option(names = {"--all", "-a"}, hidden = true)
     private boolean allFlag;
 
-    @CommandLine.Option(names = {"--pre-releases", "-pr"}, hidden = true)
+    @CommandLine.Option(names = {"--pre-releases", "-p"}, hidden = true)
     private boolean prFlag;
 
     private CommandLine parentCmdParser;
