@@ -432,7 +432,6 @@ public class ToolUtil {
         HttpURLConnection conn = null;
         try {
             if (!ToolUtil.checkDistributionAvailable(distribution)) {
-                printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
                 URL url = new URL(ToolUtil.getServerURL() + "/distributions/" + distributionVersion);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -444,6 +443,7 @@ public class ToolUtil {
                     conn.setRequestProperty("testMode", "true");
                 }
                 if (conn.getResponseCode() == 302) {
+                    printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
                     String newUrl = conn.getHeaderField("Location");
                     conn = (HttpURLConnection) new URL(newUrl).openConnection();
                     conn.setRequestProperty("content-type", "binary/data");
@@ -451,6 +451,7 @@ public class ToolUtil {
                     ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
                     return false;
                 } else if (conn.getResponseCode() == 200) {
+                    printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
                     ToolUtil.downloadAndSetupDist(printStream, conn, distribution);
                     ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
                     return false;
