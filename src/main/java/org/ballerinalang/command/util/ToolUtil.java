@@ -815,7 +815,7 @@ public class ToolUtil {
      * @param version distribution version
      */
     public static String getType(String version) {
-        return version.contains("1.") ? "jballerina" : "ballerina";
+        return version.split(".")[0].equals("1") ? "jballerina" : "ballerina";
     }
 
     /**
