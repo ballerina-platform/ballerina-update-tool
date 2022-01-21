@@ -23,4 +23,4 @@ EXAMPLES
          $ bal dist list -a
 
        List all the distributions under all the channels (including pre-releases).
-         $ bal dist list -a -pr
+         $ bal dist list -a -p

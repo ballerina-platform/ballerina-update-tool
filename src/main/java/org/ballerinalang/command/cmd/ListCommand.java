@@ -157,7 +157,7 @@ public class ListCommand extends Command implements BCommand {
                     outStream.println("\n" + channel.getName() + "\n");
                     if (!allFlag){
                         if (channel.getDistributions().size() > 10) {
-                            outStream.println("... To list all the previous distributions execute `bal dist list -a`");
+                            outStream.println("... To list all the previous distributions execute 'bal dist list -a'");
                             int numDistributions = channel.getDistributions().size();
                             List<Distribution> recentDistributions = channel.getDistributions().subList(numDistributions-10,
                                     numDistributions);
