@@ -86,10 +86,9 @@ if "%RUN_BALLERINA%" == "true" (
     )
 
     SetLocal EnableDelayedExpansion
-    for /f %%a in (!FILE_PATH!) do (
-        if exist %CURRENT_PATH%..\distributions\%%a (
-            set BALLERINA_HOME=%%a
-        )
+    set /p CURRENT_VERSION=< "!FILE_PATH!"
+    if exist %CURRENT_PATH%..\distributions\%CURRENT_VERSION% (
+        set BALLERINA_HOME=%CURRENT_VERSION%
     )
 
     if exist %CURRENT_PATH%..\distributions\!BALLERINA_HOME!\bin\bal.bat (
