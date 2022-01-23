@@ -27,9 +27,9 @@ set RUN_BALLERINA=true
 set FILE_PATH=%CURRENT_PATH%..\distributions\ballerina-version
 set JAVA_CMD=java
 if "%1" == "dist" set dist=true
-if "%~2" == "dist" set dist=true
+if "%2" == "dist" set dist=true
 if "%1" == "update" set dist=true
-if "%~2" == "update" set dist=true
+if "%2" == "update" set dist=true
 if "%1" == "build" set dist=true
 if "%1" == "update" set update=true
 if "%1" == "build" set build=true
@@ -100,7 +100,7 @@ if "%RUN_BALLERINA%" == "true" (
 )
 set merge=false
 if "%1" == "help" (
-	if "%~2" == "" set merge=true
+	if "%2" == "" set merge=true
 )
 if "%1" == "-h" set merge=true
 if "%1" == "--help" set merge=true
