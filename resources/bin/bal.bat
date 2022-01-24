@@ -86,7 +86,7 @@ if "%RUN_BALLERINA%" == "true" (
     )
 
     SetLocal EnableDelayedExpansion
-    set /p CURRENT_VERSION=< "!FILE_PATH!"
+    set /p CURRENT_VERSION =< "!FILE_PATH!"
     if exist %CURRENT_PATH%..\distributions\%CURRENT_VERSION% (
         set BALLERINA_HOME=!CURRENT_VERSION!
     )
