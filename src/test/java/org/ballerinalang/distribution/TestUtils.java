@@ -310,7 +310,7 @@ public class TestUtils {
      * @return is a Swan Lake GA or later release
      */
     public static boolean isSwanLakeGA(String version) {
-        String[] versions = version.split(".");
+        String[] versions = version.split("\\.");
         if (versions.length == 3) {
             int releaseVersion = Integer.parseInt(versions[0]);
             if(releaseVersion >= 2201) {
