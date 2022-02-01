@@ -85,11 +85,6 @@ then
     chmod 755 /Library/Ballerina/bin/bal
 fi
 
-echo "The ‘ballerina’ command was changed to ‘bal’. Please use ‘bal’ command from now onwards."
-echo "Ie : $ bal build"
-echo "     $ bal dist list"
-echo "     $ bal dist update"
-
 echo "Update tool version updated to the latest version: @version@"
 echo "Cleaning old files..."
 

@@ -240,6 +240,11 @@ public class TestUtils {
                     "\n" + toolText + " " + toolVersion + "\n";
         }
 
+        if (isSwanLakeGA(ballerinaVersion)) {
+            return "Ballerina " + versionDisplayText + " (Swan Lake)\n" + "Language specification " + specVersion +
+                    "\n" + toolText + " " + toolVersion + "\n";
+        }
+
         String ballerinaReference = isSupportedRelease(ballerinaVersion) ? "jBallerina" : "Ballerina";
         return ballerinaReference + " " + ballerinaVersion + "\n" + "Language specification " + specVersion + "\n" +
                 toolText + " " + toolVersion + "\n";
@@ -275,7 +280,7 @@ public class TestUtils {
      * @return returns distribution path for the version
      */
     public static Path getDistPath (String version) {
-        String type = version.contains("sl") ? "ballerina" : "jballerina";
+        String type = version.contains("sl") ? "ballerina" : isSwanLakeGA(version) ? "ballerina" : "jballerina";
         return DIST_PATH.resolve(type + "-" + version);
     }
 
@@ -286,6 +291,10 @@ public class TestUtils {
      * @return returns display text
      */
     public static String getDisplayText(String version) {
+        if (isSwanLakeGA(version)) {
+            return version;
+        }
+
         char lastChar = version.charAt(version.length() - 1);
         if (version.contains("slp")) {
             return "Preview " + lastChar;
@@ -293,5 +302,21 @@ public class TestUtils {
             String versionId = version.substring(2, version.length() - 1) + " " + lastChar;
             return versionId.substring(0, 1).toUpperCase() + versionId.substring(1);
         }
+    }
+
+    /**
+     * Check current version is a Swan Lake GA or later release
+     * @param version current version text
+     * @return is a Swan Lake GA or later release
+     */
+    public static boolean isSwanLakeGA(String version) {
+        String[] versions = version.split("\\.");
+        if (versions.length == 3) {
+            int releaseVersion = Integer.parseInt(versions[0]);
+            if(releaseVersion >= 2201) {
+                return true;
+            }
+        }
+        return false;
     }
 }
