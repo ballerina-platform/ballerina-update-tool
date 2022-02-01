@@ -240,6 +240,11 @@ public class TestUtils {
                     "\n" + toolText + " " + toolVersion + "\n";
         }
 
+        if (ballerinaVersion.contains("22")) {
+            return "Ballerina " + versionDisplayText + " (Swan Lake)\n" + "Language specification " + specVersion +
+                    "\n" + toolText + " " + toolVersion + "\n";
+        }
+
         String ballerinaReference = isSupportedRelease(ballerinaVersion) ? "jBallerina" : "Ballerina";
         return ballerinaReference + " " + ballerinaVersion + "\n" + "Language specification " + specVersion + "\n" +
                 toolText + " " + toolVersion + "\n";
@@ -275,7 +280,7 @@ public class TestUtils {
      * @return returns distribution path for the version
      */
     public static Path getDistPath (String version) {
-        String type = version.contains("sl") ? "ballerina" : "jballerina";
+        String type = version.contains("sl") ? "ballerina" : version.contains("22") ? "ballerina" : "jballerina";
         return DIST_PATH.resolve(type + "-" + version);
     }
 
@@ -286,6 +291,10 @@ public class TestUtils {
      * @return returns display text
      */
     public static String getDisplayText(String version) {
+        if (version.contains("22")) {
+            return version;
+        }
+
         char lastChar = version.charAt(version.length() - 1);
         if (version.contains("slp")) {
             return "Preview " + lastChar;
