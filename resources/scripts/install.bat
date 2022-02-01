@@ -43,11 +43,6 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
-echo The ‘ballerina’ command was changed to ‘bal’. Please use ‘bal’ command from now onwards.
-echo Ie : $ bal build
-echo      $ bal dist list
-echo      $ bal dist update
-
 echo Tool version updated to the latest version: @version@
 echo Cleaning old files...
 
