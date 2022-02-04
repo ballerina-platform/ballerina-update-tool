@@ -81,15 +81,17 @@ if "%RUN_BALLERINA%" == "true" (
     for /f %%a in (%CURRENT_PATH%\..\distributions\ballerina-version) do (
         set BALLERINA_HOME=%%a
     )
-    if exist %userprofile%\.ballerina\ballerina-version (
+    if exist "%userprofile%\.ballerina\ballerina-version" (
         set "FILE_PATH=%userprofile%\.ballerina\ballerina-version"
     )
 
     SetLocal EnableDelayedExpansion
-    for /f %%a in (!FILE_PATH!) do (
-        if exist %CURRENT_PATH%..\distributions\%%a (
-            set BALLERINA_HOME=%%a
-        )
+    set CURRENT_VERSION=
+    for /F "tokens=* delims=" %%a in ('Type "!FILE_PATH!"') do (
+        set CURRENT_VERSION=%%a
+    )
+    if exist %CURRENT_PATH%..\distributions\%CURRENT_VERSION% (
+        set BALLERINA_HOME=!CURRENT_VERSION!
     )
 
     if exist %CURRENT_PATH%..\distributions\!BALLERINA_HOME!\bin\bal.bat (
