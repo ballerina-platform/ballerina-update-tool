@@ -3,7 +3,7 @@ name: Build pull request
 on: pull_request
 
 jobs:
-  ubutu-build:
+  ubuntu-build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -15,6 +15,8 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build jacocoTestReport
+      env:
+        TEST_MODE_ACTIVE: true
     - name: Generate Codecov Report
       uses: codecov/codecov-action@v1
 
@@ -30,6 +32,8 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew clean build
+        env:
+          TEST_MODE_ACTIVE: true
 
   windows-build:
     runs-on: windows-latest
@@ -43,3 +47,5 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew clean build
+        env:
+          TEST_MODE_ACTIVE: true
