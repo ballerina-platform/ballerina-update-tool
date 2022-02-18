@@ -37,6 +37,7 @@ configurations {
 }
 
 jar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
         attributes(
                 'Main-Class': 'org.ballerinalang.command.Main',
