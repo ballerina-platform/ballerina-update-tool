@@ -65,7 +65,7 @@ public class ListCommand extends Command implements BCommand {
 
     public void execute() {
         if (helpFlag) {
-            printUsageInfo(ToolUtil.CLI_HELP_FILE_PREFIX + BallerinaCliCommands.LIST);
+            printUsageInfo(ToolUtil.CLI_HELP_FILE_PREFIX + getName());
             return;
         }
 
@@ -75,7 +75,7 @@ public class ListCommand extends Command implements BCommand {
         }
 
         if (listCommands.size() > 0) {
-            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", BallerinaCliCommands.LIST);
+            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", getName());
         }
     }
 

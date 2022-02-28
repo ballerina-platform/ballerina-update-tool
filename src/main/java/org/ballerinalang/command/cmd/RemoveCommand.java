@@ -50,7 +50,7 @@ public class RemoveCommand extends Command implements BCommand {
 
     public void execute() {
         if (helpFlag) {
-            printUsageInfo(ToolUtil.CLI_HELP_FILE_PREFIX + BallerinaCliCommands.REMOVE);
+            printUsageInfo(ToolUtil.CLI_HELP_FILE_PREFIX + getName());
             return;
         }
 
@@ -60,8 +60,7 @@ public class RemoveCommand extends Command implements BCommand {
                 removeAll();
                 return;
             }
-            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments",
-                    BallerinaCliCommands.REMOVE);
+            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", getName());
         }
 
         if (removeCommands == null || removeCommands.size() == 0) {
