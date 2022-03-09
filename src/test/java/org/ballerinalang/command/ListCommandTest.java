@@ -19,10 +19,14 @@
 package org.ballerinalang.command;
 
 import org.ballerinalang.command.cmd.ListCommand;
+import org.ballerinalang.command.cmd.PullCommand;
 import org.ballerinalang.command.exceptions.CommandException;
+import org.ballerinalang.command.util.ToolUtil;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import picocli.CommandLine;
+
+import java.io.File;
 
 /**
  * Test cases for dist list command.
@@ -51,6 +55,14 @@ public class ListCommandTest extends CommandTest {
     }
 
     @Test
+    public void listAllCommandTest(){
+        ListCommand listCommand = new ListCommand(testStream);
+        new CommandLine(listCommand).parse("-a");
+        listCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("1.2.1"));
+    }
+
+    @Test
     public void listCommandWithArgsTest() {
         try {
             ListCommand listCommand = new ListCommand(testStream);
@@ -59,5 +71,16 @@ public class ListCommandTest extends CommandTest {
         } catch (CommandException e) {
             Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
         }
+    }
+
+    @Test
+    public void listCommandWithLocalDistributionTest(){
+        PullCommand pullCommand = new PullCommand(testStream);
+        new CommandLine(pullCommand).parse("1.2.1");
+        pullCommand.execute();
+
+        ListCommand listCommand = new ListCommand(testStream);
+        listCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("1.2.1"));
     }
 }

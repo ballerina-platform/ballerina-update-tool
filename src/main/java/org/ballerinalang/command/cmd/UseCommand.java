@@ -46,7 +46,7 @@ public class UseCommand extends Command implements BCommand {
 
     public void execute() {
         if (helpFlag) {
-            printUsageInfo(ToolUtil.CLI_HELP_FILE_PREFIX + BallerinaCliCommands.USE);
+            printUsageInfo(ToolUtil.CLI_HELP_FILE_PREFIX + getName());
             return;
         }
 
@@ -55,7 +55,7 @@ public class UseCommand extends Command implements BCommand {
         }
 
         if (useCommands.size() > 1) {
-            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", BallerinaCliCommands.USE);
+            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", getName());
         }
 
         PrintStream printStream = getPrintStream();

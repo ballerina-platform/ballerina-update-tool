@@ -47,7 +47,7 @@ public class UpdateCommand extends Command implements BCommand {
 
     public void execute() {
         if (helpFlag) {
-            printUsageInfo(ToolUtil.CLI_HELP_FILE_PREFIX + BallerinaCliCommands.UPDATE);
+            printUsageInfo(ToolUtil.CLI_HELP_FILE_PREFIX + getName());
             return;
         }
 
@@ -58,8 +58,7 @@ public class UpdateCommand extends Command implements BCommand {
         }
 
         if (updateCommands.size() > 0) {
-            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments",
-                    BallerinaCliCommands.UPDATE);
+            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", getName());
         }
     }
 

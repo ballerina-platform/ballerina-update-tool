@@ -50,7 +50,7 @@ public class PullCommand extends Command implements BCommand {
 
     public void execute() {
         if (helpFlag) {
-            printUsageInfo(ToolUtil.CLI_HELP_FILE_PREFIX + BallerinaCliCommands.PULL);
+            printUsageInfo(ToolUtil.CLI_HELP_FILE_PREFIX + getName());
             return;
         }
 
@@ -59,7 +59,7 @@ public class PullCommand extends Command implements BCommand {
         }
 
         if (pullCommands.size() > 1) {
-            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", BallerinaCliCommands.PULL);
+            throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", getName());
         }
         ToolUtil.handleInstallDirPermission();
         PrintStream printStream = getPrintStream();
