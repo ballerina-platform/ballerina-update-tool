@@ -1,8 +1,8 @@
 NAME
-       bal-dist - Manage Ballerina distributions
+       bal dist - Manage Ballerina distributions
 
 SYNOPSIS
-       bal-dist
+       bal dist
        bal dist <command> [<-h> | <--help>]
        bal dist <command> <args>
 

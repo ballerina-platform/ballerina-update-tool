@@ -105,22 +105,21 @@ public class UpdateToolTest {
         args.add("add");
         args.add("module1");
         TestUtils.executeCommand(args, projectPath);
-        Assert.assertTrue(Files.isDirectory(projectPath.resolve("src").resolve("module1")));
+        Assert.assertTrue(Files.isDirectory(projectPath.resolve("modules").resolve("module1")));
 
-        args.remove(args.size() - 2);
-        args.add(args.size() - 1, "build");
+        args.remove(args.size() - 1);
+        args.remove(args.size() - 1);
+        args.add("build");
         output = TestUtils.executeCommand(args, projectPath);
         Assert.assertTrue(output.contains("Compiling source"));
-        Assert.assertTrue(output.contains("Creating balos"));
-        Assert.assertTrue(output.contains("Running Tests"));
-        Assert.assertTrue(output.contains("Generating executables"));
+        Assert.assertTrue(output.contains("Generating executable"));
 
-        Assert.assertTrue(Files.exists(projectPath.resolve("target/bin/module1.jar")));
+        Assert.assertTrue(Files.exists(projectPath.resolve("target/bin/project1.jar")));
 
-        args.remove(args.size() - 2);
-        args.add(args.size() - 1, "run");
+        args.remove(args.size() - 1);
+        args.add("run");
         output = TestUtils.executeCommand(args, projectPath);
-        Assert.assertTrue(output.contains("Hello World!"));
+        Assert.assertTrue(output.contains("Hello, World!"));
     }
 
     @Test(description = "Test help command.")

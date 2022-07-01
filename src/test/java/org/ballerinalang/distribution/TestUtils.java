@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -241,8 +242,15 @@ public class TestUtils {
         }
 
         if (isSwanLakeGA(ballerinaVersion)) {
-            return "Ballerina " + versionDisplayText + " (Swan Lake)\n" + "Language specification " + specVersion +
-                    "\n" + toolText + " " + toolVersion + "\n";
+            String updateVersion = ballerinaVersion.split("\\.")[1];
+            if (Objects.equals(updateVersion, "0")) {
+                return "Ballerina " + versionDisplayText + " (Swan Lake)\n" + "Language specification " + specVersion +
+                        "\n" + toolText + " " + toolVersion + "\n";
+            } else {
+                return "Ballerina " + versionDisplayText + " (Swan Lake Update " + updateVersion + ")\n" + "Language specification " + specVersion +
+                        "\n" + toolText + " " + toolVersion + "\n";
+            }
+
         }
 
         String ballerinaReference = isSupportedRelease(ballerinaVersion) ? "jBallerina" : "Ballerina";
