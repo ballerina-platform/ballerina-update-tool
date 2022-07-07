@@ -20,16 +20,7 @@ import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
 import org.ballerinalang.command.Main;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -37,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -477,31 +470,59 @@ public class ToolUtil {
             String distPath = getDistributionsPath();
             String zipFileLocation = getDistributionsPath() + File.separator + distribution + ".zip";
             downloadFile(conn, zipFileLocation, distribution, printStream);
-            unzip(zipFileLocation, distPath);
-            addExecutablePermissionToFile(new File(distPath + File.separator + ToolUtil.getType(distribution)
-                    + "-" + distribution + File.separator + "bin"
-                    + File.separator + OSUtils.getExecutableFileName(distribution)));
+            String downloadedDistSha = calcDistSHA(zipFileLocation);
+            String remoteDistSha = conn.getHeaderField("hash");
+            if (downloadedDistSha.equals(remoteDistSha)) {
+                unzip(zipFileLocation, distPath);
+                addExecutablePermissionToFile(new File(distPath + File.separator
+                        + ToolUtil.getType(distribution) + "-" + distribution + File.separator + "bin"
+                        + File.separator + OSUtils.getExecutableFileName(distribution)));
 
+                String langServerPath = distPath + File.separator + distribution + File.separator + "lib"
+                        + File.separator + "tools";
+                File launcherServer = new File(langServerPath + File.separator + "lang-server"
+                        + File.separator + "launcher" + File.separator + OSUtils.getLangServerLauncherName());
+                File debugAdpater = new File(langServerPath + File.separator + "debug-adapter"
+                        + File.separator + "launcher" + File.separator + OSUtils.getDebugAdapterName());
 
-            String langServerPath = distPath + File.separator + distribution + File.separator + "lib"
-                    + File.separator + "tools";
-            File launcherServer = new File(langServerPath + File.separator + "lang-server"
-                    + File.separator + "launcher" + File.separator + OSUtils.getLangServerLauncherName());
-            File debugAdpater = new File(langServerPath + File.separator + "debug-adapter"
-                    + File.separator + "launcher" + File.separator + OSUtils.getDebugAdapterName());
+                if (debugAdpater.exists()) {
+                    addExecutablePermissionToFile(debugAdpater);
+                }
 
-            if (debugAdpater.exists()) {
-                addExecutablePermissionToFile(debugAdpater);
+                if (launcherServer.exists()) {
+                    addExecutablePermissionToFile(launcherServer);
+                }
+            } else {
+                printStream.println("Distribution is not activated due to integrity checks failure");
             }
-
-            if (launcherServer.exists()) {
-                addExecutablePermissionToFile(launcherServer);
-            }
-
             new File(zipFileLocation).delete();
+
+        } catch (NoSuchAlgorithmException e) {
+            throw ErrorUtil.createCommandException("unable to generate hashes for the distribution: " + e.getMessage());
+        } catch (IOException e) {
+            throw ErrorUtil.createCommandException("Ballerina distribution not found: " + e.getMessage());
         } finally {
             conn.disconnect();
         }
+    }
+
+    private static String calcDistSHA(String zipFileLocation) throws NoSuchAlgorithmException, IOException {
+        File zipFilePath = new File(zipFileLocation);
+        MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        InputStream inputStream = new FileInputStream(zipFilePath);
+        int n = 0;
+        byte[] buffer = new byte[8192];
+        while (n != -1) {
+            n = inputStream.read(buffer);
+            if (n > 0) {
+                digest.update(buffer, 0, n);
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        for (byte b : digest.digest()) {
+            result.append(String.format("%02x", b));
+        }
+        return result.toString();
     }
 
     public static void getDependency(PrintStream printStream, String distribution, String distributionType,
