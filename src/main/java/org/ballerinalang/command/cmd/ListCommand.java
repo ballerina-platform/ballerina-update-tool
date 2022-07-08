@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -158,7 +157,7 @@ public class ListCommand extends Command implements BCommand {
                 else {
                     outStream.println("\n" + channel.getName() + "\n");
                     List<Distribution> channelDistList = channel.getDistributions();
-                    if (channel.getName().contains("Swan Lake")) {
+                    if (channel.getName().equals("Swan Lake channel")) {
                         channelDistList.sort(Comparator.comparing(Distribution::getVersion));
                     }
                     if (!allFlag){
