@@ -164,24 +164,24 @@ public class ListCommand extends Command implements BCommand {
                         if (channelDistList.size() > 10) {
                             outStream.println("... To list all the previous distributions execute 'bal dist list -a'");
                             int numDistributions = channelDistList.size();
-                            List<Distribution> recentDistributions = channelDistList.subList(numDistributions-10,
+                            List<Distribution> recentDistributions = channelDistList.subList(numDistributions - 10,
                                     numDistributions);
                             for (Distribution distribution : recentDistributions) {
                                 outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
-                                        channelDistList.get(numDistributions-1).getVersion()));
+                                        channelDistList.get(numDistributions - 1).getVersion()));
                             }
                         }
                         else{
                             for (Distribution distribution : channelDistList) {
                                 outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
-                                        channelDistList.get(channelDistList.size()-1).getVersion()));
+                                        channelDistList.get(channelDistList.size() - 1).getVersion()));
                             }
                         }
                     }
                     else{
                         for (Distribution distribution : channelDistList) {
                             outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
-                                    channelDistList.get(channelDistList.size()-1).getVersion()));
+                                    channelDistList.get(channelDistList.size() - 1).getVersion()));
                         }
                     }
                 }
