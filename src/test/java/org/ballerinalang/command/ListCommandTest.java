@@ -42,7 +42,7 @@ public class ListCommandTest extends CommandTest {
         Assert.assertTrue(outContent.toString().contains("Distributions available locally"));
         Assert.assertTrue(outContent.toString().contains("Distributions available remotely"));
         Assert.assertTrue(outContent.toString().contains("1.* channel"));
-        Assert.assertTrue(outContent.toString().contains("1.2.20"));
+        Assert.assertTrue(outContent.toString().contains("1.2.30"));
         Assert.assertTrue(outContent.toString().contains("Swan Lake channel"));
     }
 

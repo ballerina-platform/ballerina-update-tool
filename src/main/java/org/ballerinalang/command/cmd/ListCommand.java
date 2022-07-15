@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -155,28 +156,32 @@ public class ListCommand extends Command implements BCommand {
                 }
                 else {
                     outStream.println("\n" + channel.getName() + "\n");
+                    List<Distribution> channelDistList = channel.getDistributions();
+                    if (channel.getName().equals("Swan Lake channel")) {
+                        channelDistList.sort(Comparator.comparing(Distribution::getVersion));
+                    }
                     if (!allFlag){
-                        if (channel.getDistributions().size() > 10) {
+                        if (channelDistList.size() > 10) {
                             outStream.println("... To list all the previous distributions execute 'bal dist list -a'");
-                            int numDistributions = channel.getDistributions().size();
-                            List<Distribution> recentDistributions = channel.getDistributions().subList(numDistributions-10,
+                            int numDistributions = channelDistList.size();
+                            List<Distribution> recentDistributions = channelDistList.subList(numDistributions - 10,
                                     numDistributions);
                             for (Distribution distribution : recentDistributions) {
                                 outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
-                                        channel.getDistributions().get(numDistributions-1).getVersion()));
+                                        channelDistList.get(numDistributions - 1).getVersion()));
                             }
                         }
                         else{
-                            for (Distribution distribution : channel.getDistributions()) {
+                            for (Distribution distribution : channelDistList) {
                                 outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
-                                        channel.getDistributions().get(channel.getDistributions().size()-1).getVersion()));
+                                        channelDistList.get(channelDistList.size() - 1).getVersion()));
                             }
                         }
                     }
                     else{
-                        for (Distribution distribution : channel.getDistributions()) {
+                        for (Distribution distribution : channelDistList) {
                             outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
-                                    channel.getDistributions().get(channel.getDistributions().size()-1).getVersion()));
+                                    channelDistList.get(channelDistList.size() - 1).getVersion()));
                         }
                     }
                 }
