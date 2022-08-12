@@ -471,7 +471,7 @@ public class ToolUtil {
             String zipFileLocation = getDistributionsPath() + File.separator + distribution + ".zip";
             downloadFile(conn, zipFileLocation, distribution, printStream);
             String downloadedDistSha = calcDistSHA(zipFileLocation);
-            String remoteDistSha = conn.getHeaderField("hash");
+            String remoteDistSha = getDistSHA(distribution);
             if (downloadedDistSha.equals(remoteDistSha)) {
                 unzip(zipFileLocation, distPath);
                 addExecutablePermissionToFile(new File(distPath + File.separator
@@ -504,6 +504,53 @@ public class ToolUtil {
         } finally {
             conn.disconnect();
         }
+    }
+
+    private static String getDistSHA(String distribution) {
+        HttpURLConnection conn = null;
+        String hash = "";
+        try {
+            URL url = new URL(getServerURL() + "/distributions");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("user-agent",
+                    OSUtils.getUserAgent(getCurrentBallerinaVersion(),
+                            getCurrentToolsVersion(), "jballerina"));
+            conn.setRequestProperty("Accept", "application/json");
+            if (conn.getResponseCode() != 200) {
+                conn.disconnect();
+                throw ErrorUtil.createCommandException(getServerRequestFailedErrorMessage(conn));
+            } else {
+                String json = convertStreamToString(conn.getInputStream());
+                Matcher matcher = Pattern.compile("\"version\":\"(.*?)\"").matcher(json);
+                int i = 0;
+                while (matcher.find()) {
+                    if (!matcher.group(1).equals(distribution)) {
+                        i++;
+                    } else {
+                        break;
+                    }
+                }
+
+                matcher = Pattern.compile("\"hash\":\"(.*?)\"").matcher(json);
+                int j = 0;
+                while (matcher.find()) {
+                    if (j==i) {
+                        hash = matcher.group(1);
+                        break;
+                    } else {
+                        j++;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        return hash;
     }
 
     private static String calcDistSHA(String zipFileLocation) throws NoSuchAlgorithmException, IOException {
