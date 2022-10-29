@@ -246,9 +246,9 @@ public class ToolUtil {
 
                     if (channel == null) {
                         channel = new Channel(distribution.getChannel());
-                        channels.add(channel);
+                        channels.add(0, channel);
                     }
-                    channel.getDistributions().add(distribution);
+                    channel.getDistributions().add(0, distribution);
                 }
             }
         } catch (IOException e) {
