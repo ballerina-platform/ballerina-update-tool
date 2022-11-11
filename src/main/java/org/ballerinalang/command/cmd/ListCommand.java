@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -109,6 +110,7 @@ public class ListCommand extends Command implements BCommand {
         String currentBallerinaVersion = ToolUtil.getCurrentBallerinaVersion();
         File folder = new File(ToolUtil.getDistributionsPath());
         File[] listOfFiles = folder.listFiles();
+        int maxListingDistributions = 10;
         try {
             JSONObject distList = new JSONObject();
             JSONArray channelsArr = new JSONArray();
@@ -159,29 +161,28 @@ public class ListCommand extends Command implements BCommand {
                     List<Distribution> channelDistList = channel.getDistributions();
                     if (channel.getName().equals("Swan Lake channel")) {
                         channelDistList.sort(Comparator.comparing(Distribution::getVersion));
+                        Collections.reverse(channelDistList);
                     }
                     if (!allFlag){
-                        if (channelDistList.size() > 10) {
-                            outStream.println("... To list all the previous distributions execute 'bal dist list -a'");
-                            int numDistributions = channelDistList.size();
-                            List<Distribution> recentDistributions = channelDistList.subList(numDistributions - 10,
-                                    numDistributions);
+                        if (channelDistList.size() > maxListingDistributions) {
+                            List<Distribution> recentDistributions = channelDistList.subList(0,
+                                    maxListingDistributions);
                             for (Distribution distribution : recentDistributions) {
                                 outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
-                                        channelDistList.get(numDistributions - 1).getVersion()));
+                                        channelDistList.get(0).getVersion()));
                             }
                         }
                         else{
                             for (Distribution distribution : channelDistList) {
                                 outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
-                                        channelDistList.get(channelDistList.size() - 1).getVersion()));
+                                        channelDistList.get(0).getVersion()));
                             }
                         }
                     }
                     else{
                         for (Distribution distribution : channelDistList) {
                             outStream.println(markVersion(currentBallerinaVersion, distribution.getVersion(),
-                                    channelDistList.get(channelDistList.size() - 1).getVersion()));
+                                    channelDistList.get(0).getVersion()));
                         }
                     }
                 }
@@ -197,6 +198,9 @@ public class ListCommand extends Command implements BCommand {
             ErrorUtil.printLauncherException(e, outStream);
         } finally {
             outStream.println();
+            if(!allFlag) {
+                outStream.println("Use 'bal dist list -a' to list all the distributions under each channel. ");
+            }
             outStream.println("Use 'bal help dist' for more information on specific commands.");
         }
     }
