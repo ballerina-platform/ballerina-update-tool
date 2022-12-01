@@ -36,14 +36,14 @@ public class UseCommandTest extends CommandTest {
     @Test
     public void useCommandTest() {
         PullCommand pullCommand = new PullCommand(testStream);
-        new CommandLine(pullCommand).parse("slp1");
+        new CommandLine(pullCommand).parse("slbeta6");
         pullCommand.execute();
         UpdateCommand updateCommand = new UpdateCommand(testStream);
         new CommandLine(updateCommand).parse();
         updateCommand.execute();
 
         UseCommand useCommand = new UseCommand(testStream);
-        new CommandLine(useCommand).parse("slp1");
+        new CommandLine(useCommand).parse("slbeta6");
         useCommand.execute();
         Assert.assertTrue(outContent.toString().contains("successfully set as the active distribution"));
 
