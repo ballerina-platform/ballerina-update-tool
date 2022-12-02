@@ -22,7 +22,7 @@ else
 fi
 
 JAVA_COMMAND=java
-if tset -d "$CURRENT_PATH/../dependencies/jdk-11.0.15+10-jre"; then
+if test -d "$CURRENT_PATH/../dependencies/jdk-11.0.15+10-jre"; then
   JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.15+10-jre/bin/java"
 elif test -d "$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre"; then
   JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre/bin/java"
