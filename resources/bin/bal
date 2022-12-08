@@ -54,22 +54,18 @@ then
     else
        echo "Completion scripts not found"
     fi
-
     if [ $? -ne '0' ]; then
       echo "Failed to generate the completion script"
       EXIT_CODE=$?
     fi
     exit 0
 fi
-
 RUN_COMMAND=false
 RUN_BALLERINA=true
-
 if [ "$1" == "dist" ] || [ "$2" == "dist" ] || [ "$1" == "update" ]|| [ "$2" == "update" ]
 then
     RUN_COMMAND=true
     RUN_BALLERINA=false
-
 fi
 if [ "$1" == "build" ]
 then
