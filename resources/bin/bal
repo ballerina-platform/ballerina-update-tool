@@ -23,9 +23,9 @@ fi
 
 JAVA_COMMAND=java
 if test -d "$CURRENT_PATH/../dependencies/jdk-11.0.15+10-jre";then
-JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.15+10-jre/bin/java"
+ JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.15+10-jre/bin/java"
 elif test -d "$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre";then
-JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre/bin/java"
+ JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre/bin/java"
 elif test -d "$CURRENT_PATH/../dependencies/jdk8u265-b01-jre"; then
   JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk8u265-b01-jre/bin/java"
 fi
