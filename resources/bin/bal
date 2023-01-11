@@ -13,124 +13,125 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+{
+  if [ "$(uname)" == "Darwin" ]
+  then
+      CURRENT_PATH=$(dirname "$0")
+  else
+      CURRENT_PATH="$(dirname "$(readlink -f "$0")")"
+  fi
 
-if [ "$(uname)" == "Darwin" ]
-then
-    CURRENT_PATH=$(dirname "$0")
-else
-    CURRENT_PATH="$(dirname "$(readlink -f "$0")")"
-fi
+  JAVA_COMMAND=java
+  if test -d "$CURRENT_PATH/../dependencies/jdk-11.0.15+10-jre";then
+   JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.15+10-jre/bin/java"
+  elif test -d "$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre";then
+   JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre/bin/java"
+  elif test -d "$CURRENT_PATH/../dependencies/jdk8u265-b01-jre"; then
+    JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk8u265-b01-jre/bin/java"
+  fi
 
-JAVA_COMMAND=java
-if test -d "$CURRENT_PATH/../dependencies/jdk-11.0.15+10-jre";then
- JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.15+10-jre/bin/java"
-elif test -d "$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre";then
- JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-11.0.8+10-jre/bin/java"
-elif test -d "$CURRENT_PATH/../dependencies/jdk8u265-b01-jre"; then
-  JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk8u265-b01-jre/bin/java"
-fi
-
-if [ "$1" == "completion" ]
-then
-    if test -f "$CURRENT_PATH/../scripts/bal_completion.bash"; then
-        if [ "$2" == "bash" ]
-        then
-          printf "#!/usr/bin/env bash\n\n"
-          cat $CURRENT_PATH/../scripts/bal_completion.bash
-        elif [ "$2" == "zsh" ]
-        then
-          printf "#!/usr/bin/env bash\n\n"
-          printf "autoload -U +X bashcompinit && bashcompinit\n"
-          printf "autoload -U +X compinit && compinit\n\n"
-          cat $CURRENT_PATH/../scripts/bal_completion.bash
-        else
-          echo "ballerina: unknown command '$2'"
-          exit 1
-        fi
-    else
-       echo "Completion scripts not found"
-    fi
-
-    if [ $? -ne '0' ]; then
-      echo "Failed to generate the completion script"
-      EXIT_CODE=$?
-    fi
-    exit 0
-fi
-
-RUN_COMMAND=false
-RUN_BALLERINA=true
-
-if [ "$1" == "dist" ] || [ "$2" == "dist" ] || [ "$1" == "update" ]|| [ "$2" == "update" ]
-then
-    RUN_COMMAND=true
-    RUN_BALLERINA=false
-
-fi
-if [ "$1" == "build" ]
-then
-    RUN_COMMAND=true
-fi
-
-if [ "$RUN_COMMAND" == "true" ]
-then
-    if [ "$1" == "build" ]
-    then
-        $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar build
-    else
-        $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar "$@"
-        EXIT_CODE=$?
-    fi
-
-    if [ "$1" == "update" ] && [ -d "$CURRENT_PATH/../ballerina-command-tmp" ]; then
-        $CURRENT_PATH/../ballerina-command-tmp/install
-        if [ $? -ne '0' ]; then
-          echo "Update failed due to errors"
-          rm -rf $CURRENT_PATH/../ballerina-command-tmp
-          EXIT_CODE=$?
-        fi
-        rm -rf $CURRENT_PATH/../ballerina-command-tmp
-        echo "Update successfully completed"
-        echo
-        echo "If you want to update the Ballerina distribution, use 'bal dist update'"
-        exit 0
-    fi
-fi
-
-if [ "$RUN_BALLERINA" == "true" ]
-then
-    FILE=$CURRENT_PATH/../distributions/ballerina-version
-    if test -f "$FILE"; then
-        BALLERINA_VERSION=`cat $CURRENT_PATH/../distributions/ballerina-version`
-    fi
-
-    FILE=~/.ballerina/ballerina-version
-    if test -f "$FILE"; then
-       BALLERINA_USER_VERSION=`cat $FILE`
-       if test -d "$CURRENT_PATH/../distributions/$BALLERINA_USER_VERSION"; then
-            BALLERINA_VERSION=$BALLERINA_USER_VERSION
-       fi
-    fi
-    BALLERINA_HOME="$CURRENT_PATH/../distributions/$BALLERINA_VERSION"
-    export BALLERINA_HOME
-
-    if test -f "$BALLERINA_HOME/bin/./bal"; then
-      $BALLERINA_HOME/bin/./bal "$@"
-    else
-      if test -f "$BALLERINA_HOME/bin/./ballerina"; then
-        $BALLERINA_HOME/bin/./ballerina "$@"
+  if [ "$1" == "completion" ]
+  then
+      if test -f "$CURRENT_PATH/../scripts/bal_completion.bash"; then
+          if [ "$2" == "bash" ]
+          then
+            printf "#!/usr/bin/env bash\n\n"
+            cat $CURRENT_PATH/../scripts/bal_completion.bash
+          elif [ "$2" == "zsh" ]
+          then
+            printf "#!/usr/bin/env bash\n\n"
+            printf "autoload -U +X bashcompinit && bashcompinit\n"
+            printf "autoload -U +X compinit && compinit\n\n"
+            cat $CURRENT_PATH/../scripts/bal_completion.bash
+          else
+            echo "ballerina: unknown command '$2'"
+            exit 1
+          fi
       else
-        echo "Distribution does not exist, use 'bal dist pull <version>'"
+         echo "Completion scripts not found"
       fi
-    fi
-    EXIT_CODE=$?
-fi
 
-if [ "$1" == "help" ] && [ "$2" == "" ]  || [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] || \
-   [ "$1" == "version" ] || [ "$1" == "-v" ] || [ "$1" == "--version" ]
-then
-    $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar "$@"
-    exit $?
-else
-    exit $EXIT_CODE
-fi
+      if [ $? -ne '0' ]; then
+        echo "Failed to generate the completion script"
+        EXIT_CODE=$?
+      fi
+      exit 0
+  fi
+
+  RUN_COMMAND=false
+  RUN_BALLERINA=true
+
+  if [ "$1" == "dist" ] || [ "$2" == "dist" ] || [ "$1" == "update" ]|| [ "$2" == "update" ]
+  then
+      RUN_COMMAND=true
+      RUN_BALLERINA=false
+
+  fi
+  if [ "$1" == "build" ]
+  then
+      RUN_COMMAND=true
+  fi
+
+  if [ "$RUN_COMMAND" == "true" ]
+  then
+      if [ "$1" == "build" ]
+      then
+          $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar build
+      else
+          $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar "$@"
+          EXIT_CODE=$?
+      fi
+
+      if [ "$1" == "update" ] && [ -d "$CURRENT_PATH/../ballerina-command-tmp" ]; then
+          $CURRENT_PATH/../ballerina-command-tmp/install
+          if [ $? -ne '0' ]; then
+            echo "Update failed due to errors"
+            rm -rf $CURRENT_PATH/../ballerina-command-tmp
+            EXIT_CODE=$?
+          fi
+          rm -rf $CURRENT_PATH/../ballerina-command-tmp
+          echo "Update successfully completed"
+          echo
+          echo "If you want to update the Ballerina distribution, use 'bal dist update'"
+          exit 0
+      fi
+  fi
+
+  if [ "$RUN_BALLERINA" == "true" ]
+  then
+      FILE=$CURRENT_PATH/../distributions/ballerina-version
+      if test -f "$FILE"; then
+          BALLERINA_VERSION=`cat $CURRENT_PATH/../distributions/ballerina-version`
+      fi
+
+      FILE=~/.ballerina/ballerina-version
+      if test -f "$FILE"; then
+         BALLERINA_USER_VERSION=`cat $FILE`
+         if test -d "$CURRENT_PATH/../distributions/$BALLERINA_USER_VERSION"; then
+              BALLERINA_VERSION=$BALLERINA_USER_VERSION
+         fi
+      fi
+      BALLERINA_HOME="$CURRENT_PATH/../distributions/$BALLERINA_VERSION"
+      export BALLERINA_HOME
+
+      if test -f "$BALLERINA_HOME/bin/./bal"; then
+        $BALLERINA_HOME/bin/./bal "$@"
+      else
+        if test -f "$BALLERINA_HOME/bin/./ballerina"; then
+          $BALLERINA_HOME/bin/./ballerina "$@"
+        else
+          echo "Distribution does not exist, use 'bal dist pull <version>'"
+        fi
+      fi
+      EXIT_CODE=$?
+  fi
+
+  if [ "$1" == "help" ] && [ "$2" == "" ]  || [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] || \
+     [ "$1" == "version" ] || [ "$1" == "-v" ] || [ "$1" == "--version" ]
+  then
+      $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar "$@"
+      exit $?
+  else
+      exit $EXIT_CODE
+  fi
+}; exit
