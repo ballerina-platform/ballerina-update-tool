@@ -265,7 +265,7 @@ public class OSUtils {
             if (isArmArchitecture()) {
                 os = "macos-arm-64";
             } else {
-                os = "macos-x86-64";
+                os = "macos-64";
             }
         }
         return distributionType + "/" + ballerinaVersion + " (" + os + ") Updater/" + toolVersion;
