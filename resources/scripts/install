@@ -34,6 +34,7 @@ fi
 
 rm -rf $CURRENT_PATH/../bin/bal
 \cp $CURRENT_PATH/ballerina-command-@version@/bin/bal $CURRENT_PATH/../bin
+chmod 755 $CURRENT_PATH/../bin
 
 if [ $? -ne '0' ]; then
   echo "error occurred while copying ballerina file."
