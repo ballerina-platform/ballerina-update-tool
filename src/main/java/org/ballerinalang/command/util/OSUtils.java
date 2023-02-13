@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 public class OSUtils {
 
     private static final String OS = System.getProperty("os.name").toLowerCase(Locale.getDefault());
+    private static final String ARCHITECTURE = System.getProperty("os.arch").toLowerCase(Locale.getDefault());
     public static final String BALLERINA_HOME_DIR = ".ballerina";
     private static final String BALLERINA_CONFIG = "ballerina-version";
     private static final String INSTALLER_VERSION = "installer-version";
@@ -261,7 +262,11 @@ public class OSUtils {
         } else if (OSUtils.isUnix() || OSUtils.isSolaris()) {
             os = "linux-64";
         } else if (OSUtils.isMac()) {
-            os = "macos-64";
+            if (isArmArchitecture()) {
+                os = "macos-arm-64";
+            } else {
+                os = "macos-64";
+            }
         }
         return distributionType + "/" + ballerinaVersion + " (" + os + ") Updater/" + toolVersion;
     }
@@ -281,6 +286,8 @@ public class OSUtils {
     private static boolean isSolaris() {
         return OS.contains("sunos");
     }
+
+    private static boolean isArmArchitecture() { return ARCHITECTURE.contains("arm64"); }
 
     /**
      * Provide user home directory based on command.
