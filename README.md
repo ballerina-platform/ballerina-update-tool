@@ -1,5 +1,5 @@
-# ballerina-update-tool
-Ballerina Update Tool implementation to manage Ballerina versions
+# Ballerina Update Tool
+Ballerina Update Tool client implementation to manage Ballerina versions
 
 ![Build master branch](https://github.com/ballerina-platform/ballerina-update-tool/workflows/Build%20master%20branch/badge.svg)
 [![codecov](https://codecov.io/gh/ballerina-platform/ballerina-update-tool/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/ballerina-update-tool/branch)
