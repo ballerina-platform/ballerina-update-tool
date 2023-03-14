@@ -62,6 +62,7 @@ if exist %CURRENT_PATH%..\dependencies\jdk-11.0.18+10-jre (
             )
         )
     )
+)
 
 if "%dist%" == "true" (
    if not "%build%" == "true" (
