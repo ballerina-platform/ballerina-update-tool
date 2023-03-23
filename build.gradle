@@ -80,9 +80,10 @@ task unpackBallerinaJre(type: Download) {
     group = "unpack_dependencies"
     def jreBaseURL = "https://github.com/ballerina-platform/ballerina-custom-jre/releases/download/${project.ballerinaJreVersion}"
     src([
-            "${jreBaseURL}/ballerina-jre-linux-${project.ballerinaJreVersion}.zip",
-            "${jreBaseURL}/ballerina-jre-macos-${project.ballerinaJreVersion}.zip",
-            "${jreBaseURL}/ballerina-jre-windows-${project.ballerinaJreVersion}.zip"
+            "${jreBaseURL}/ballerina-jre-linux-64-${project.ballerinaJreVersion}.zip",
+            "${jreBaseURL}/ballerina-jre-macos-64-${project.ballerinaJreVersion}.zip",
+            "${jreBaseURL}/ballerina-jre-macos-arm-64-${project.ballerinaJreVersion}.zip",
+            "${jreBaseURL}/ballerina-jre-windows-64-${project.ballerinaJreVersion}.zip"
     ])
     onlyIfModified true
     dest "${jreLocation}"
@@ -91,21 +92,28 @@ task unpackBallerinaJre(type: Download) {
 task extractJreForLinux(type: Copy) {
     dependsOn unpackBallerinaJre
     group = "extract_jre"
-    from zipTree { "${jreLocation}/ballerina-jre-linux-${project.ballerinaJreVersion}.zip" }
+    from zipTree { "${jreLocation}/ballerina-jre-linux-64-${project.ballerinaJreVersion}.zip" }
     into("${buildDir}/target/extracted-jre-linux")
 }
 
 task extractJreForMac(type: Copy) {
     dependsOn unpackBallerinaJre
     group = "extract_jre"
-    from zipTree { "${jreLocation}/ballerina-jre-macos-${project.ballerinaJreVersion}.zip" }
+    from zipTree { "${jreLocation}/ballerina-jre-macos-64-${project.ballerinaJreVersion}.zip" }
     into("${buildDir}/target/extracted-jre-macos")
+}
+
+task extractJreForMacARM(type: Copy) {
+    dependsOn unpackBallerinaJre
+    group = "extract_jre"
+    from zipTree { "${jreLocation}/ballerina-jre-macos-arm-64-${project.ballerinaJreVersion}.zip" }
+    into("${buildDir}/target/extracted-jre-macos-arm")
 }
 
 task extractJreForWindows(type: Copy) {
     dependsOn unpackBallerinaJre
     group = "extract_jre"
-    from zipTree { "${jreLocation}/ballerina-jre-windows-${project.ballerinaJreVersion}.zip" }
+    from zipTree { "${jreLocation}/ballerina-jre-windows-64-${project.ballerinaJreVersion}.zip" }
     into("${buildDir}/target/extracted-jre-windows")
 }
 
@@ -117,7 +125,7 @@ task createZipLinux(type:Zip) {
     dependsOn copyScripts
     dependsOn copyLib
     from ("${buildDir}/target/extracted-jre-linux") {
-        into "${distName}/dependencies/jdk-11.0.8+10-jre"
+        into "${distName}/dependencies/${project.jreVersion}"
     }
 
     from('build/resources') {
@@ -135,7 +143,25 @@ task createZipMac(type:Zip) {
     dependsOn copyScripts
     dependsOn copyLib
     from ("${buildDir}/target/extracted-jre-macos") {
-        into "${distName}/dependencies/jdk-11.0.8+10-jre"
+        into "${distName}/dependencies/${project.jreVersion}"
+    }
+
+    from('build/resources') {
+        into "${distName}"
+    }
+
+    archiveName "${distName}.zip"
+}
+
+task createZipMacARM(type:Zip) {
+    def distName = "${project.name}-macos-arm-${project.version}"
+    dependsOn extractJreForMacARM
+    dependsOn jar
+    dependsOn copyBin
+    dependsOn copyScripts
+    dependsOn copyLib
+    from ("${buildDir}/target/extracted-jre-macos-arm") {
+        into "${distName}/dependencies/${project.jreVersion}"
     }
 
     from('build/resources') {
@@ -153,7 +179,7 @@ task createZipWindows(type:Zip) {
     dependsOn copyScripts
     dependsOn copyLib
     from ("${buildDir}/target/extracted-jre-windows") {
-        into "${distName}/dependencies/jdk-11.0.8+10-jre"
+        into "${distName}/dependencies/${project.jreVersion}"
     }
 
     from('build/resources') {
@@ -264,6 +290,7 @@ build {
     dependsOn createZip
     dependsOn createZipLinux
     dependsOn createZipMac
+    dependsOn createZipMacARM
     dependsOn createZipWindows
 }
 
