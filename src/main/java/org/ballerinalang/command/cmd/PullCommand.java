@@ -74,10 +74,10 @@ public class PullCommand extends Command implements BCommand {
         if (distribution.equals(ToolUtil.LATEST_PULL_INPUT)) {
             printStream.println("Fetching the latest distribution from the remote server...");
             List<Channel> channels = ToolUtil.getDistributions(printStream);
-            // Assume channels are sorted ascending
-            Channel latestChanel = channels.get(channels.size() - 1);
+            // Assume channels are sorted descending
+            Channel latestChanel = channels.get(0);
             List<Distribution> distributions = latestChanel.getDistributions();
-            distribution = ToolUtil.getLatest(distributions.get(distributions.size() - 1).getVersion(), "patch");
+            distribution = ToolUtil.getLatest(distributions.get(0).getVersion(), "patch");
         }
 
         if (distribution.equals(ToolUtil.getCurrentBallerinaVersion())) {
