@@ -287,7 +287,7 @@ public class OSUtils {
         return OS.contains("sunos");
     }
 
-    private static boolean isArmArchitecture() { return ARCHITECTURE.contains("arm64"); }
+    private static boolean  isArmArchitecture() { return ARCHITECTURE.contains("aarch64"); }
 
     /**
      * Provide user home directory based on command.
