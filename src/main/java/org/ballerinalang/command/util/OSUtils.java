@@ -21,6 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,7 +39,6 @@ import java.util.stream.Collectors;
 public class OSUtils {
 
     private static final String OS = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-    private static final String ARCHITECTURE = System.getProperty("os.arch").toLowerCase(Locale.getDefault());
     public static final String BALLERINA_HOME_DIR = ".ballerina";
     private static final String BALLERINA_CONFIG = "ballerina-version";
     private static final String INSTALLER_VERSION = "installer-version";
@@ -287,7 +289,23 @@ public class OSUtils {
         return OS.contains("sunos");
     }
 
-    private static boolean  isArmArchitecture() { return ARCHITECTURE.contains("aarch64"); }
+    private static boolean  isArmArchitecture() {
+        try {
+            ProcessBuilder builder = new ProcessBuilder("uname", "-m");
+            builder.redirectErrorStream(true);
+            Process process = builder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            String commandOutput = "";
+            while ((line = reader.readLine()) != null) {
+                commandOutput += line;
+            }
+            int exitCode = process.waitFor();
+            return exitCode == 0 && commandOutput.contains("arm");
+        } catch (IOException | InterruptedException e) {
+            return false;
+        }
+    }
 
     /**
      * Provide user home directory based on command.
