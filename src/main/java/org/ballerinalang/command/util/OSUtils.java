@@ -21,8 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -291,18 +289,11 @@ public class OSUtils {
 
     private static boolean  isArmArchitecture() {
         try {
-            ProcessBuilder builder = new ProcessBuilder("uname", "-m");
-            builder.redirectErrorStream(true);
-            Process process = builder.start();
+            Process process = Runtime.getRuntime().exec("uname -m");
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            String commandOutput = "";
-            while ((line = reader.readLine()) != null) {
-                commandOutput += line;
-            }
-            int exitCode = process.waitFor();
-            return exitCode == 0 && commandOutput.contains("arm");
-        } catch (IOException | InterruptedException e) {
+            String architecture = reader.readLine();
+            return architecture.contains("arm");
+        } catch (IOException e) {
             return false;
         }
     }
