@@ -858,6 +858,7 @@ public class ToolUtil {
         if (latestVersion == null) {
             printStream.println("Failed to find the latest update tool version");
         } else if (!latestVersion.equals(version)) {
+            ToolUtil.handleInstallDirPermission();
             ToolUtil.downloadTool(printStream, latestVersion);
             try {
                 executeFile(printStream);
