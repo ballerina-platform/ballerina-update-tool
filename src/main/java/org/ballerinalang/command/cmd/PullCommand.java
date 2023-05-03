@@ -61,7 +61,6 @@ public class PullCommand extends Command implements BCommand {
         if (pullCommands.size() > 1) {
             throw ErrorUtil.createDistSubCommandUsageExceptionWithHelp("too many arguments", getName());
         }
-        ToolUtil.handleInstallDirPermission();
         PrintStream printStream = getPrintStream();
         String distribution = pullCommands.get(0);
 
@@ -80,10 +79,29 @@ public class PullCommand extends Command implements BCommand {
             distribution = ToolUtil.getLatest(distributions.get(0).getVersion(), "patch");
         }
 
+        // To check whether the distribution is a valid one
+        if (!distribution.equals(ToolUtil.LATEST_PULL_INPUT)) {
+            boolean validDist = false;
+            List<Channel> channels = ToolUtil.getDistributions(printStream);
+            for (Channel channel : channels) {
+                List<Distribution> distributions = channel.getDistributions();
+                for (Distribution dist : distributions) {
+                    if (dist.getVersion().equals(distribution)) {
+                        validDist = true;
+                        break;
+                    }
+                }
+            }
+            if (!validDist) {
+                throw ErrorUtil.createDistributionNotFoundException(distribution);
+            }
+        }
+
         if (distribution.equals(ToolUtil.getCurrentBallerinaVersion())) {
             printStream.println("'" + distribution + "' is already the active distribution");
             return;
         }
+        ToolUtil.handleInstallDirPermission();
         ToolUtil.downloadDistribution(printStream, distribution, ToolUtil.getType(distribution), distribution, testFlag);
         ToolUtil.useBallerinaVersion(printStream, distribution);
         printStream.println("'" + distribution + "' successfully set as the active distribution");
