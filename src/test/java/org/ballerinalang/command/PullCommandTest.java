@@ -28,6 +28,7 @@ import picocli.CommandLine;
  * @since 2.0.0
  */
 public class PullCommandTest extends CommandTest {
+    String swanLakeLatestVersion = System.getProperty("swan-lake-latest-version");
 
     @Test
     public void pullCommandwithoutArgsTest() {
@@ -79,14 +80,18 @@ public class PullCommandTest extends CommandTest {
         Assert.assertTrue(outContent.toString().contains("Fetching the 'slp1' distribution from the remote server"));
         Assert.assertTrue(outContent.toString().contains("Fetching the dependencies for 'slp1' from the remote server"));
         Assert.assertTrue(outContent.toString().contains("successfully set as the active distribution"));
+    }
 
-        PullCommand pullCmd = new PullCommand(testStream);
-        new CommandLine(pullCmd).parse("latest");
-        pullCmd.execute();
+    @Test
+    public void pullLatestDistributionTest() {
+        PullCommand pullCommand = new PullCommand(testStream);
+        new CommandLine(pullCommand).parse("latest");
+        pullCommand.execute();
         Assert.assertTrue(outContent.toString().contains("Fetching the latest distribution from the remote server"));
+        Assert.assertTrue(outContent.toString().contains("Fetching the '" + swanLakeLatestVersion + "' distribution from the remote server"));
         Assert.assertTrue(outContent.toString().contains("successfully set as the active distribution"));
 
         pullCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("is already available locally"));
+        Assert.assertTrue(outContent.toString().contains("is already the active distribution"));
     }
 }
