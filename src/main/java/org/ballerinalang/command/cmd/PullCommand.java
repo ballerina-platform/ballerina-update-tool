@@ -24,6 +24,8 @@ import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -76,6 +78,8 @@ public class PullCommand extends Command implements BCommand {
             // Assume channels are sorted descending
             Channel latestChanel = channels.get(0);
             List<Distribution> distributions = latestChanel.getDistributions();
+            distributions.sort(Comparator.comparing(Distribution::getVersion));
+            Collections.reverse(distributions);
             distribution = ToolUtil.getLatest(distributions.get(0).getVersion(), "patch");
         }
 
