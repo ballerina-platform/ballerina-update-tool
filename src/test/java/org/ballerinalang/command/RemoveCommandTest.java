@@ -82,28 +82,27 @@ public class RemoveCommandTest extends CommandTest {
     @Test
     public void removeCommandTest() {
         PullCommand pullCommand = new PullCommand(testStream);
-        new CommandLine(pullCommand).parse("1.2.0");
+        new CommandLine(pullCommand).parse("2201.5.0");
         pullCommand.execute();
         UpdateCommand updateCommand = new UpdateCommand(testStream);
         new CommandLine(updateCommand).parse();
         updateCommand.execute();
 
         PullCommand pullCmd = new PullCommand(testStream);
-        new CommandLine(pullCmd).parse("slp1");
+        new CommandLine(pullCmd).parse("2201.4.2");
         pullCmd.execute();
-        updateCommand.execute();
 
         RemoveCommand removeCommand2 = new RemoveCommand(testStream);
-        new CommandLine(removeCommand2).parse("1.2.0");
+        new CommandLine(removeCommand2).parse("2201.5.0");
         removeCommand2.execute();
         Assert.assertTrue(outContent.toString().contains("successfully removed"));
 
         try {
             RemoveCommand removeCommand = new RemoveCommand(testStream);
-            new CommandLine(removeCommand).parse("slp2");
+            new CommandLine(removeCommand).parse("2201.3.5");
             removeCommand.execute();
         } catch (CommandException e) {
-            Assert.assertTrue(e.getMessages().get(0).contains("distribution 'slp2' not found"));
+            Assert.assertTrue(e.getMessages().get(0).contains("distribution '2201.3.5' not found"));
         }
 
         RemoveCommand removeCommand3 = new RemoveCommand(testStream);

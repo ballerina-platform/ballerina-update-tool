@@ -74,11 +74,11 @@ public class PullCommandTest extends CommandTest {
     @Test
     public void pullDistributionTest() {
         PullCommand pullCommand = new PullCommand(testStream);
-        new CommandLine(pullCommand).parse("slp1");
+        new CommandLine(pullCommand).parse("2201.4.0");
         pullCommand.execute();
         Assert.assertTrue(outContent.toString().contains("Checking for newer versions of the update tool"));
-        Assert.assertTrue(outContent.toString().contains("Fetching the 'slp1' distribution from the remote server"));
-        Assert.assertTrue(outContent.toString().contains("Fetching the dependencies for 'slp1' from the remote server"));
+        Assert.assertTrue(outContent.toString().contains("Fetching the '2201.4.0' distribution from the remote server"));
+        Assert.assertTrue(outContent.toString().contains("Fetching the dependencies for '2201.4.0' from the remote server"));
         Assert.assertTrue(outContent.toString().contains("successfully set as the active distribution"));
     }
 
