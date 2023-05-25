@@ -8,5 +8,5 @@ DESCRIPTION
        Mark the specified Ballerina distribution as the active distribution.
 
 EXAMPLES
-       Mark 1.2.19 as the active distribution.
-          $ bal dist use 1.2.19
+       Mark 2201.5.0 as the active distribution.
+          $ bal dist use 2201.5.0

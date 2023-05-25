@@ -89,21 +89,19 @@ public class UpdateCommand extends Command implements BCommand {
         }
         String version = ToolUtil.getCurrentBallerinaVersion();
         String distVersion = ToolUtil.getType(version) + "-" + version;
-        printStream.println("Fetching the latest patch distribution for '" + distVersion + "' from " +
-                "the remote server...");
+        printStream.println("Fetching the latest distribution from the remote server...");
         String latestVersion = ToolUtil.getLatest(version, "patch");
         if (latestVersion == null) {
-            printStream.println("Failed to find the latest patch distribution for '" + distVersion + "'");
+            printStream.println("Failed to find the latest Ballerina distribution");
             return;
         }
 
         if (!latestVersion.equals(version)) {
             ToolUtil.downloadDistribution(printStream, latestVersion, ToolUtil.getType(latestVersion), latestVersion, testFlag);
             ToolUtil.useBallerinaVersion(printStream, latestVersion);
-            printStream.println("Successfully set the latest patch distribution '" + latestVersion + "' as the " +
-                    "active distribution");
+            printStream.println("Successfully set the distribution '" + latestVersion + "' as the active distribution");
             return;
         }
-        printStream.println("The latest patch distribution '" + latestVersion + "' is already the active distribution");
+        printStream.println("The latest distribution '" + latestVersion + "' is already the active distribution");
     }
 }

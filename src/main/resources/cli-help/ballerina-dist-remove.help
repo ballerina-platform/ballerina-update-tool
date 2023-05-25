@@ -16,8 +16,8 @@ DESCRIPTION
        However, you are not allowed to remove the currently active distribution.
 
 EXAMPLES
-       Remove the 1.2.19 version from your local machine.
-          $ bal dist remove 1.2.19
+       Remove the 2201.5.0 version from your local machine.
+          $ bal dist remove 2201.5.0
 
        Remove all the Ballerina distributions except the currently active one
        from your local machine.

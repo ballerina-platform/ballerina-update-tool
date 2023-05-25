@@ -7,15 +7,13 @@ SYNOPSIS
 DESCRIPTION
        Fetch the specified distribution with its dependencies to your local environment, and
        mark it as the active version.
-       
-       The `bal dist pull latest` command fetches the latest ballerina version.
 
-       The `bal dist update` update command always fetches the latest patch version whereas 
+       The `bal dist update` update command always fetches the latest distribution version whereas
        this command allows you to fetch and use any distribution.
 
 EXAMPLES
-       Fetch Ballerina `1.2.19` version and mark it as the active distribution.
-          $ bal dist pull 1.2.19
+       Fetch Ballerina `2201.4.2` version and mark it as the active distribution.
+          $ bal dist pull 2201.4.2
 
-       Fetch Ballerina `slbeta3` version and mark it as the active distribution.
-          $ bal dist pull slbeta3
+       Fetch Ballerina `2201.5.0` version and mark it as the active distribution.
+          $ bal dist pull 2201.5.0
