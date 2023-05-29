@@ -167,19 +167,19 @@ public class UpdateToolTest {
         output = TestUtils.executeCommand(useArgs);
         Assert.assertTrue(output.contains("successfully set as the active distribution"));
 
-//        output = TestUtils.executeCommand(args);
-//        Assert.assertTrue(output.contains("Fetching the latest distribution from the remote server..."));
-//        Assert.assertTrue(output.contains("Successfully set the distribution"));
-//        Assert.assertTrue(Files.isDirectory(TestUtils.getDistPath(previousChanneLatestVersion)));
-//        output = TestUtils.testInstallation();
-//        Assert.assertEquals(output, TestUtils.getVersionOutput(previousChanneLatestVersion,
-//                previousChannelSpecVersion, TestUtils.MAVEN_VERSION, previousChanneLatestVersion));
+        output = TestUtils.executeCommand(args);
+        Assert.assertTrue(output.contains("Fetching the latest distribution from the remote server..."));
+        Assert.assertTrue(output.contains("Successfully set the distribution"));
+        Assert.assertTrue(Files.isDirectory(TestUtils.getDistPath(previousChanneLatestVersion)));
+        output = TestUtils.testInstallation();
+        Assert.assertEquals(output, TestUtils.getVersionOutput(previousChanneLatestVersion,
+                previousChannelSpecVersion, TestUtils.MAVEN_VERSION, previousChanneLatestVersion));
 
-//        output = TestUtils.executeCommand(args);
-//        Assert.assertTrue(output.contains("is already the active distribution"));
-//        args.add("arg1");
-//        output = TestUtils.executeCommand(args);
-//        Assert.assertTrue(output.contains("too many arguments"));
+        output = TestUtils.executeCommand(args);
+        Assert.assertTrue(output.contains("is already the active distribution"));
+        args.add("arg1");
+        output = TestUtils.executeCommand(args);
+        Assert.assertTrue(output.contains("too many arguments"));
     }
 
     @Test(description = "Test dist use command.", dependsOnMethods = {"testUpdateCommand"})
