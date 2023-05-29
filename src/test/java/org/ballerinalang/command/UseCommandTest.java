@@ -36,14 +36,14 @@ public class UseCommandTest extends CommandTest {
     @Test
     public void useCommandTest() {
         PullCommand pullCommand = new PullCommand(testStream);
-        new CommandLine(pullCommand).parse("slbeta6");
+        new CommandLine(pullCommand).parse("2201.5.0");
         pullCommand.execute();
         UpdateCommand updateCommand = new UpdateCommand(testStream);
         new CommandLine(updateCommand).parse();
         updateCommand.execute();
 
         UseCommand useCommand = new UseCommand(testStream);
-        new CommandLine(useCommand).parse("slbeta6");
+        new CommandLine(useCommand).parse("2201.5.0");
         useCommand.execute();
         Assert.assertTrue(outContent.toString().contains("successfully set as the active distribution"));
 
@@ -51,7 +51,7 @@ public class UseCommandTest extends CommandTest {
         Assert.assertTrue(outContent.toString().contains("is the current active distribution version"));
 
         UseCommand useCmd = new UseCommand(testStream);
-        new CommandLine(useCmd).parse("slp3");
+        new CommandLine(useCmd).parse("2201.4.0");
         useCmd.execute();
         Assert.assertTrue(outContent.toString().contains("not found"));
 

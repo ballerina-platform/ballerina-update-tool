@@ -1,14 +1,12 @@
 NAME
-       bal-dist-update - Update to the latest patch version of the active distribution
+       bal-dist-update - Update to the latest Ballerina version
 
 SYNOPSIS
        bal dist update
 
 DESCRIPTION
-       Fetch the latest patch version of your active distribution with its dependencies 
-       (when your active distribution is another version),
+       Fetch the latest version with its dependencies (when your active distribution is another version),
        and mark it as the active version.
 
-       However, this will not fetch the latest minor version if any.
 
 

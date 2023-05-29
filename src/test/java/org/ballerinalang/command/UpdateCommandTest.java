@@ -36,7 +36,7 @@ public class UpdateCommandTest extends CommandTest {
         UpdateCommand updateCommand = new UpdateCommand(testStream);
         new CommandLine(updateCommand).parse("-h");
         updateCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("Update to the latest patch version of the active distribution"));
+        Assert.assertTrue(outContent.toString().contains("Update to the latest Ballerina version"));
     }
 
     @Test
@@ -53,13 +53,13 @@ public class UpdateCommandTest extends CommandTest {
     @Test
     public void updateCommandTest() {
         PullCommand pullCommand = new PullCommand(testStream);
-        new CommandLine(pullCommand).parse("slp1");
+        new CommandLine(pullCommand).parse("2201.4.1");
         pullCommand.execute();
         UpdateCommand updateCommand = new UpdateCommand(testStream);
         new CommandLine(updateCommand).parse();
         updateCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("Fetching the latest patch distribution"));
-        Assert.assertTrue(outContent.toString().contains("Successfully set the latest patch distribution"));
+        Assert.assertTrue(outContent.toString().contains("Fetching the latest distribution"));
+        Assert.assertTrue(outContent.toString().contains("Successfully set the distribution"));
 
         UpdateCommand updateCmd = new UpdateCommand(testStream);
         new CommandLine(updateCmd).parse();
