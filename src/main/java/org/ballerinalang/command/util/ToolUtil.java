@@ -443,6 +443,9 @@ public class ToolUtil {
                     conn.setRequestProperty("testMode", "true");
                 }
                 if (conn.getResponseCode() == 302) {
+                    if (!testMode) {
+                        ToolUtil.updateTool(printStream);
+                    }
                     printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
                     String newUrl = conn.getHeaderField("Location");
                     conn = (HttpURLConnection) new URL(newUrl).openConnection();
@@ -451,6 +454,9 @@ public class ToolUtil {
                     ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
                     return false;
                 } else if (conn.getResponseCode() == 200) {
+                    if (!testMode) {
+                        ToolUtil.updateTool(printStream);
+                    }
                     printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
                     ToolUtil.downloadAndSetupDist(printStream, conn, distribution);
                     ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
@@ -459,6 +465,9 @@ public class ToolUtil {
                     throw ErrorUtil.createDistributionNotFoundException(distribution);
                 }
             } else {
+                if (!testMode) {
+                    ToolUtil.updateTool(printStream);
+                }
                 printStream.println("'" + distribution + "' is already available locally");
                 return true;
             }
