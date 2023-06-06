@@ -37,6 +37,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -477,31 +479,107 @@ public class ToolUtil {
             String distPath = getDistributionsPath();
             String zipFileLocation = getDistributionsPath() + File.separator + distribution + ".zip";
             downloadFile(conn, zipFileLocation, distribution, printStream);
-            unzip(zipFileLocation, distPath);
-            addExecutablePermissionToFile(new File(distPath + File.separator + ToolUtil.getType(distribution)
-                    + "-" + distribution + File.separator + "bin"
-                    + File.separator + OSUtils.getExecutableFileName(distribution)));
+            String downloadedDistHash = generateDistributionHash(zipFileLocation);
+            String remoteDistHash = getDistHash(distribution);
+            if (downloadedDistHash.equals(remoteDistHash)) {
+                unzip(zipFileLocation, distPath);
+                addExecutablePermissionToFile(new File(distPath + File.separator
+                        + ToolUtil.getType(distribution) + "-" + distribution + File.separator + "bin"
+                        + File.separator + OSUtils.getExecutableFileName(distribution)));
 
+                String langServerPath = distPath + File.separator + distribution + File.separator + "lib"
+                        + File.separator + "tools";
+                File launcherServer = new File(langServerPath + File.separator + "lang-server"
+                        + File.separator + "launcher" + File.separator + OSUtils.getLangServerLauncherName());
+                File debugAdpater = new File(langServerPath + File.separator + "debug-adapter"
+                        + File.separator + "launcher" + File.separator + OSUtils.getDebugAdapterName());
 
-            String langServerPath = distPath + File.separator + distribution + File.separator + "lib"
-                    + File.separator + "tools";
-            File launcherServer = new File(langServerPath + File.separator + "lang-server"
-                    + File.separator + "launcher" + File.separator + OSUtils.getLangServerLauncherName());
-            File debugAdpater = new File(langServerPath + File.separator + "debug-adapter"
-                    + File.separator + "launcher" + File.separator + OSUtils.getDebugAdapterName());
+                if (debugAdpater.exists()) {
+                    addExecutablePermissionToFile(debugAdpater);
+                }
 
-            if (debugAdpater.exists()) {
-                addExecutablePermissionToFile(debugAdpater);
+                if (launcherServer.exists()) {
+                    addExecutablePermissionToFile(launcherServer);
+                }
+            } else {
+                printStream.println("Distribution is not activated due to integrity checks failure");
             }
-
-            if (launcherServer.exists()) {
-                addExecutablePermissionToFile(launcherServer);
-            }
-
             new File(zipFileLocation).delete();
+
+        } catch (NoSuchAlgorithmException e) {
+            throw ErrorUtil.createCommandException("unable to generate hashes for the distribution: " + e.getMessage());
+        } catch (IOException e) {
+            throw ErrorUtil.createCommandException("Ballerina distribution not found: " + e.getMessage());
         } finally {
             conn.disconnect();
         }
+    }
+
+    private static String getDistHash(String distribution) {
+        HttpURLConnection conn = null;
+        String hash = "";
+        try {
+            URL url = new URL(getServerURL() + "/distributions");
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("user-agent",
+                    OSUtils.getUserAgent(getCurrentBallerinaVersion(),
+                            getCurrentToolsVersion(), "jballerina"));
+            conn.setRequestProperty("Accept", "application/json");
+            if (conn.getResponseCode() != 200) {
+                conn.disconnect();
+                throw ErrorUtil.createCommandException(getServerRequestFailedErrorMessage(conn));
+            } else {
+                String json = convertStreamToString(conn.getInputStream());
+                Matcher matcher = Pattern.compile("\"version\":\"(.*?)\"").matcher(json);
+                int i = 0;
+                while (matcher.find()) {
+                    if (!matcher.group(1).equals(distribution)) {
+                        i++;
+                    } else {
+                        break;
+                    }
+                }
+
+                matcher = Pattern.compile("\"hash\":\"(.*?)\"").matcher(json);
+                int j = 0;
+                while (matcher.find()) {
+                    if (j==i) {
+                        hash = matcher.group(1);
+                        break;
+                    } else {
+                        j++;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        return hash;
+    }
+
+    private static String generateDistributionHash(String zipFileLocation) throws NoSuchAlgorithmException, IOException {
+        File zipFilePath = new File(zipFileLocation);
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        try (InputStream inputStream = new FileInputStream(zipFilePath)) {
+            int n = 0;
+            byte[] buffer = new byte[8192];
+            while (n != -1) {
+                n = inputStream.read(buffer);
+                if (n > 0) {
+                    digest.update(buffer, 0, n);
+                }
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        for (byte b : digest.digest()) {
+            result.append(String.format("%02x", b));
+        }
+        return result.toString();
     }
 
     public static void getDependency(PrintStream printStream, String distribution, String distributionType,
