@@ -297,7 +297,7 @@ public class ToolUtil {
         return null;
     }
 
-    public static String getLatestToolVersion() {
+    public static Tool getLatestToolVersion() {
         HttpURLConnection conn = null;
         try {
             URL url = new URL(getServerURL() + "/versions/latest");
@@ -307,15 +307,19 @@ public class ToolUtil {
                     getCurrentToolsVersion(), "jballerina"));
             conn.setRequestProperty("Accept", "application/json");
             if (conn.getResponseCode() == 200) {
+                Tool tool = new Tool();
                 String json = convertStreamToString(conn.getInputStream());
-                Pattern p = Pattern.compile("\"version\":\"(.*?)\"");
-                Matcher matcher = p.matcher(json);
-                if (matcher.find()) {
-                    conn.disconnect();
-                    return matcher.group(1);
-                } else {
-                    return null;
+                Matcher matcher = Pattern.compile("\"version\":\"(.*?)\"").matcher(json);
+                while (matcher.find()) {
+                    tool.setVersion(matcher.group(1));
                 }
+
+                matcher = Pattern.compile("\"compatibility\":\"(.*?)\"").matcher(json);
+                while (matcher.find()) {
+                    tool.setCompatibility(matcher.group(1));
+                }
+                conn.disconnect();
+                return tool;
             }
             if (conn.getResponseCode() == 404) {
                 return null;
@@ -854,25 +858,36 @@ public class ToolUtil {
     public static void updateTool(PrintStream printStream) {
         String version = ToolUtil.getCurrentToolsVersion();
         printStream.println("Checking for newer versions of the update tool...");
-        String latestVersion = ToolUtil.getLatestToolVersion();
+        Tool latestVersionInfo = ToolUtil.getLatestToolVersion();
+        String latestVersion = latestVersionInfo == null ? null : latestVersionInfo.getVersion();
+        String backwardCompatibility = latestVersionInfo == null ? null : latestVersionInfo.getCompatibility();
         if (latestVersion == null) {
             printStream.println("Failed to find the latest update tool version");
         } else if (!latestVersion.equals(version)) {
-            ToolUtil.handleInstallDirPermission();
-            ToolUtil.downloadTool(printStream, latestVersion);
-            try {
-                executeFile(printStream);
-                printStream.println("Update successfully completed");
-            } catch (IOException | InterruptedException e) {
-                printStream.println("Update failed due to errors");
-            } finally {
+            if (backwardCompatibility == null) {
+                printStream.println("Failed to find the compatibility of the latest update tool version");
+                return;
+            } else if (!backwardCompatibility.equals("true")) {
+                printStream.println("The latest update tool version is not compatible with the current version");
+                printStream.println("Use `bal update` command to update the update tool to the latest version");
+                return;
+            } else {
+                ToolUtil.handleInstallDirPermission();
+                ToolUtil.downloadTool(printStream, latestVersion);
                 try {
-                    OSUtils.deleteFiles(Paths.get(getToolUnzipLocation()));
-                } catch (IOException e) {
-                    printStream.println("Error occurred while removing files");
+                    executeFile(printStream);
+                    printStream.println("Update successfully completed");
+                } catch (IOException | InterruptedException e) {
+                    printStream.println("Update failed due to errors");
+                } finally {
+                    try {
+                        OSUtils.deleteFiles(Paths.get(getToolUnzipLocation()));
+                    } catch (IOException e) {
+                        printStream.println("Error occurred while removing files");
+                    }
                 }
+                printStream.println();
             }
-            printStream.println();
         }
     }
 
