@@ -855,7 +855,7 @@ public class ToolUtil {
      *
      * @param printStream stream which messages should be printed
      */
-    public static void updateTool(PrintStream printStream) {
+    public Tool void updateTool(PrintStream printStream) {
         String version = ToolUtil.getCurrentToolsVersion();
         printStream.println("Checking for newer versions of the update tool...");
         Tool latestVersionInfo = ToolUtil.getLatestToolVersion();

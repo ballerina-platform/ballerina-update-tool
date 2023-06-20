@@ -18,6 +18,7 @@ package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
 import org.ballerinalang.command.util.ErrorUtil;
+import org.ballerinalang.command.util.Tool;
 import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
 
@@ -85,7 +86,10 @@ public class UpdateCommand extends Command implements BCommand {
     public static void update(PrintStream printStream) {
         if (!testFlag) {
             // Check and update the tool if any latest version available
-            ToolUtil.updateTool(printStream);
+            Tool toolDetails = ToolUtil.updateTool(printStream);
+            if (toolDetails.getCompatibility().equals("false")) {
+                return;
+            }
         }
         String version = ToolUtil.getCurrentBallerinaVersion();
         String distVersion = ToolUtil.getType(version) + "-" + version;
