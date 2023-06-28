@@ -855,22 +855,26 @@ public class ToolUtil {
      *
      * @param printStream stream which messages should be printed
      */
-    public Tool void updateTool(PrintStream printStream) {
+    public static Tool updateTool(PrintStream printStream) {
         String version = ToolUtil.getCurrentToolsVersion();
+        Tool toolDetails = new Tool();
         printStream.println("Checking for newer versions of the update tool...");
         Tool latestVersionInfo = ToolUtil.getLatestToolVersion();
         String latestVersion = latestVersionInfo == null ? null : latestVersionInfo.getVersion();
         String backwardCompatibility = latestVersionInfo == null ? null : latestVersionInfo.getCompatibility();
+        toolDetails.setVersion(latestVersion);
+        toolDetails.setCompatibility(backwardCompatibility);
         if (latestVersion == null) {
             printStream.println("Failed to find the latest update tool version");
         } else if (!latestVersion.equals(version)) {
             if (backwardCompatibility == null) {
                 printStream.println("Failed to find the compatibility of the latest update tool version");
-                return;
             } else if (!backwardCompatibility.equals("true")) {
-                printStream.println("The latest update tool version is not compatible with the current version");
-                printStream.println("Use `bal update` command to update the update tool to the latest version");
-                return;
+                printStream.println();
+                printStream.println("ERROR: Outdated Ballerina update tool version found");
+                printStream.println("Use the following command to update the Ballerina update tool");
+                printStream.println("   bal update");
+                printStream.println();
             } else {
                 ToolUtil.handleInstallDirPermission();
                 ToolUtil.downloadTool(printStream, latestVersion);
@@ -889,6 +893,7 @@ public class ToolUtil {
                 printStream.println();
             }
         }
+        return toolDetails;
     }
 
     /**

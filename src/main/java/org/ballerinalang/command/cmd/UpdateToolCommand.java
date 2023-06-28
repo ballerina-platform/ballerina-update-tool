@@ -18,6 +18,7 @@ package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
 import org.ballerinalang.command.util.ErrorUtil;
+import org.ballerinalang.command.util.Tool;
 import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
 
@@ -84,7 +85,8 @@ public class UpdateToolCommand extends Command implements BCommand {
     private static void updateCommands(PrintStream printStream) {
         String version = ToolUtil.getCurrentToolsVersion();
         printStream.println("Fetching the latest update tool version from the remote server...");
-        String latestVersion = ToolUtil.getLatestToolVersion();
+        Tool latestVersionDetails = ToolUtil.getLatestToolVersion();
+        String latestVersion = latestVersionDetails.getVersion();
         if (latestVersion == null) {
             printStream.println("Failed to find the latest update tool version");
             return;
