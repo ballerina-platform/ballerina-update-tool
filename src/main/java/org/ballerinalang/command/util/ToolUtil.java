@@ -314,7 +314,7 @@ public class ToolUtil {
                     tool.setVersion(matcher.group(1));
                 }
 
-                matcher = Pattern.compile("\"compatibility\":\"(.*?)\"").matcher(json);
+                matcher = Pattern.compile("\"compatibility\":(true|false)").matcher(json);
                 while (matcher.find()) {
                     tool.setCompatibility(matcher.group(1));
                 }

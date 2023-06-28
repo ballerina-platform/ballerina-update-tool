@@ -87,7 +87,7 @@ public class UpdateCommand extends Command implements BCommand {
         if (!testFlag) {
             // Check and update the tool if any latest version available
             Tool toolDetails = ToolUtil.updateTool(printStream);
-            if (toolDetails.getCompatibility().equals("false")) {
+            if (!toolDetails.getCompatibility().equals("true")) {
                 return;
             }
         }

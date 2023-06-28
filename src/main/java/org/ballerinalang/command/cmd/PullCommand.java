@@ -17,7 +17,11 @@
 package org.ballerinalang.command.cmd;
 
 import org.ballerinalang.command.BallerinaCliCommands;
-import org.ballerinalang.command.util.*;
+import org.ballerinalang.command.util.Channel;
+import org.ballerinalang.command.util.Distribution;
+import org.ballerinalang.command.util.ErrorUtil;
+import org.ballerinalang.command.util.Tool;
+import org.ballerinalang.command.util.ToolUtil;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
@@ -66,7 +70,7 @@ public class PullCommand extends Command implements BCommand {
         if (!testFlag) {
             // Check and update the tool if any latest version available
             Tool toolDetails = ToolUtil.updateTool(printStream);
-            if (toolDetails.getCompatibility().equals("false")) {
+            if (!toolDetails.getCompatibility().equals("true")) {
                 return;
             }
         }
