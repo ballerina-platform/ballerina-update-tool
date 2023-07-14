@@ -33,6 +33,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -558,7 +559,8 @@ public class ToolUtil {
                                            String dependency, String distributionType,
                                            String distributionVersion) {
         try {
-            String url = ToolUtil.getServerURL() + "/dependencies/" + dependency;
+            String encodedDependencyName = encodePlusCharacters(dependency);
+            String url = ToolUtil.getServerURL() + "/dependencies/" + encodedDependencyName;
             conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
@@ -836,6 +838,21 @@ public class ToolUtil {
         } else {
             String versionId = version.substring(2, version.length() - 1) + " " + lastChar;
             return versionId.substring(0, 1).toUpperCase() + versionId.substring(1);
+        }
+    }
+
+    /**
+     * Encode the `+` characters in dependency name.
+     *
+     * @param dependency dependency name
+     */
+    public static String encodePlusCharacters(String dependency) {
+        try {
+            String encodedDependency = URLEncoder.encode(dependency, StandardCharsets.UTF_8.toString());
+            encodedDependency = encodedDependency.replace("+", "%2B");
+            return encodedDependency;
+        } catch (Exception e) {
+            throw ErrorUtil.createCommandException("failed to encode the dependency '" + dependency + "'");
         }
     }
 
