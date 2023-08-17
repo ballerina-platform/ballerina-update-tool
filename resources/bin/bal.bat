@@ -29,7 +29,11 @@ set JAVA_CMD=java
 if "%1" == "dist" set dist=true
 if "%~2" == "dist" set dist=true
 if "%1" == "update" set dist=true
-if "%~2" == "update" set dist=true
+if "%~2" == "update" (
+    if "%1" == "dist" (
+        set dist=true
+    )
+)
 if "%1" == "build" set dist=true
 if "%1" == "update" set update=true
 if "%1" == "build" set build=true
