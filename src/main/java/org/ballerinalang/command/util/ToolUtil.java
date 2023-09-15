@@ -20,6 +20,9 @@ import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
 import org.ballerinalang.command.Main;
 
+import com.moandjiezana.toml.Toml;
+
+import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,7 +33,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -39,7 +46,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +66,7 @@ public class ToolUtil {
     public static final String CLI_HELP_FILE_PREFIX = "dist-";
     private static final String BALLERINA_1_X_VERSIONS = "1.0.";
     private static final String CONNECTION_ERROR_MESSAGE = "connection to the remote server failed";
+    private static final String BALLERINA_SETTINGS_FILE = "Settings.toml";
     public static final boolean BALLERINA_STAGING_UPDATE = Boolean.parseBoolean(
             System.getenv("BALLERINA_STAGING_UPDATE"));
     public static final boolean BALLERINA_DEV_UPDATE = Boolean.parseBoolean(
@@ -193,13 +203,52 @@ public class ToolUtil {
         return dependencyLocation.exists();
     }
 
+    public static HttpsURLConnection getServerUrlWithProxyAuthentication(URL serverURL) throws IOException {
+        Map<String, Object> proxyConfigs = getProxyConfigs();
+        String proxyHost = proxyConfigs.containsKey("host") ? proxyConfigs.get("host").toString() : null;
+        String proxyPort = proxyConfigs.containsKey("port") ? proxyConfigs.get("port").toString() : null;
+        String proxyUser = proxyConfigs.containsKey("user") ? proxyConfigs.get("user").toString() : null;
+        String proxyPassword = proxyConfigs.containsKey("password") ? proxyConfigs.get("password").toString() : null;
+
+        if (proxyHost != null && proxyPort != null && !"".equals(proxyHost) && Integer.parseInt(proxyPort) > 0 &&
+                Integer.parseInt(proxyPort) < 65536) {
+            if (proxyUser != null && proxyPassword != null && !"".equals(proxyUser) && !"".equals(proxyPassword)) {
+                Authenticator authenticator = new Authenticator() {
+                    @Override
+                    public PasswordAuthentication getPasswordAuthentication() {
+                        return (new PasswordAuthentication(proxyUser,
+                                proxyPassword.toCharArray()));
+                    }
+                };
+                Authenticator.setDefault(authenticator);
+            }
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort)));
+            return (HttpsURLConnection) serverURL.openConnection(proxy);
+        } else {
+            return (HttpsURLConnection) serverURL.openConnection();
+        }
+    }
+
+    public static Map<String, Object> getProxyConfigs () {
+        Map<String, Object> proxyConfigs = new HashMap<>();
+        File settingsFile = new File(OSUtils.getBallerinaHomePath() + File.separator +
+                BALLERINA_SETTINGS_FILE );
+        if (settingsFile.exists()) {
+            Toml toml = new Toml().read(settingsFile);
+            if (toml.contains("proxy")) {
+                proxyConfigs = toml.getTable("proxy").toMap();
+            }
+        }
+        return proxyConfigs;
+    }
+
     public static List<Channel> getDistributions(PrintStream printStream) {
-        HttpURLConnection conn = null;
+        HttpsURLConnection conn = null;
         List<Channel> channels = new ArrayList<>();
         List<Distribution> distributions = new ArrayList<>();
         try {
             URL url = new URL(getServerURL() + "/distributions");
-            conn = (HttpURLConnection) url.openConnection();
+            conn = getServerUrlWithProxyAuthentication(url);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
                     OSUtils.getUserAgent(getCurrentBallerinaVersion(),
@@ -263,11 +312,11 @@ public class ToolUtil {
     }
 
     public static String getLatest(String currentVersion, String type) {
-        HttpURLConnection conn = null;
+        HttpsURLConnection conn = null;
         try {
             URL url = new URL(getServerURL()
                     + "/distributions/latest?version=" + currentVersion + "&type=" + type);
-            conn = (HttpURLConnection) url.openConnection();
+            conn = getServerUrlWithProxyAuthentication(url);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
                     OSUtils.getUserAgent(getCurrentBallerinaVersion(),
@@ -299,10 +348,10 @@ public class ToolUtil {
     }
 
     public static Tool getLatestToolVersion() {
-        HttpURLConnection conn = null;
+        HttpsURLConnection conn = null;
         try {
             URL url = new URL(getServerURL() + "/versions/latest");
-            conn = (HttpURLConnection) url.openConnection();
+            conn = getServerUrlWithProxyAuthentication(url);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent", OSUtils.getUserAgent(getCurrentBallerinaVersion(),
                     getCurrentToolsVersion(), "jballerina"));
@@ -434,11 +483,11 @@ public class ToolUtil {
 
     public static boolean downloadDistribution(PrintStream printStream, String distribution, String distributionType,
                                                String distributionVersion, boolean testMode) {
-        HttpURLConnection conn = null;
+        HttpsURLConnection conn = null;
         try {
             if (!ToolUtil.checkDistributionAvailable(distribution)) {
                 URL url = new URL(ToolUtil.getServerURL() + "/distributions/" + distributionVersion);
-                conn = (HttpURLConnection) url.openConnection();
+                conn = getServerUrlWithProxyAuthentication(url);
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("user-agent",
                         OSUtils.getUserAgent(getCurrentBallerinaVersion(), ToolUtil.getCurrentToolsVersion(),
@@ -450,9 +499,9 @@ public class ToolUtil {
                 if (conn.getResponseCode() == 302) {
                     printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
                     String newUrl = conn.getHeaderField("Location");
-                    conn = (HttpURLConnection) new URL(newUrl).openConnection();
-                    conn.setRequestProperty("content-type", "binary/data");
-                    ToolUtil.downloadAndSetupDist(printStream, conn, distribution);
+                    HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl));
+                    redirectedConn.setRequestProperty("content-type", "binary/data");
+                    ToolUtil.downloadAndSetupDist(printStream, redirectedConn, distribution);
                     ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
                     return false;
                 } else if (conn.getResponseCode() == 200) {
@@ -511,11 +560,11 @@ public class ToolUtil {
 
     public static void getDependency(PrintStream printStream, String distribution, String distributionType,
                                      String distributionVersion) {
-        HttpURLConnection conn = null;
+        HttpsURLConnection conn = null;
         try {
             printStream.println("\nFetching the dependencies for '" + distribution + "' from the remote server...");
             URL url = new URL(ToolUtil.getServerURL() + "/distributions");
-            conn = (HttpURLConnection) url.openConnection();
+            conn = getServerUrlWithProxyAuthentication(url);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
                     OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
@@ -535,7 +584,7 @@ public class ToolUtil {
                         while (dependencyMatcher.find()) {
                             String dependencyName = dependencyMatcher.group(1);
                             if (!ToolUtil.checkDependencyAvailable(dependencyName)) {
-                                downloadDependency(printStream, conn, dependencyName, distributionType,
+                                downloadDependency(printStream, dependencyName, distributionType,
                                         distributionVersion);
                             } else {
                                 printStream.println("Dependency '" + dependencyName +
@@ -555,13 +604,12 @@ public class ToolUtil {
         }
     }
 
-    private static void downloadDependency(PrintStream printStream, HttpURLConnection conn,
-                                           String dependency, String distributionType,
+    private static void downloadDependency(PrintStream printStream, String dependency, String distributionType,
                                            String distributionVersion) {
         try {
             String encodedDependencyName = encodePlusCharacters(dependency);
             String url = ToolUtil.getServerURL() + "/dependencies/" + encodedDependencyName;
-            conn = (HttpURLConnection) new URL(url).openConnection();
+            HttpsURLConnection conn = getServerUrlWithProxyAuthentication(new URL(url));
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
                     OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
@@ -569,9 +617,9 @@ public class ToolUtil {
             conn.setRequestProperty("Accept", "application/json");
             if (conn.getResponseCode() == 302) {
                 String newUrl = conn.getHeaderField("Location");
-                conn = (HttpURLConnection) new URL(newUrl).openConnection();
-                conn.setRequestProperty("content-type", "binary/data");
-                downloadAndSetupDependency(conn, printStream, dependency);
+                HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl));
+                redirectedConn.setRequestProperty("content-type", "binary/data");
+                downloadAndSetupDependency(redirectedConn, printStream, dependency);
             } else if (conn.getResponseCode() == 200) {
                 downloadAndSetupDependency(conn, printStream, dependency);
             } else {
@@ -601,19 +649,19 @@ public class ToolUtil {
     }
 
     public static void downloadTool(PrintStream printStream, String toolVersion) {
-        HttpURLConnection conn = null;
+        HttpsURLConnection conn = null;
         try {
             URL url = new URL(ToolUtil.getServerURL() + "/versions/" + toolVersion);
-            conn = (HttpURLConnection) url.openConnection();
+            conn = getServerUrlWithProxyAuthentication(url);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent", OSUtils.getUserAgent(getCurrentBallerinaVersion(),
                     getCurrentToolsVersion(), "jballerina"));
             conn.setRequestProperty("Accept", "application/json");
             if (conn.getResponseCode() == 302) {
                 String newUrl = conn.getHeaderField("Location");
-                conn = (HttpURLConnection) new URL(newUrl).openConnection();
-                conn.setRequestProperty("content-type", "binary/data");
-                downloadAndSetupTool(printStream, conn, "ballerina-command-" + toolVersion);
+                HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl));
+                redirectedConn.setRequestProperty("content-type", "binary/data");
+                downloadAndSetupTool(printStream, redirectedConn, "ballerina-command-" + toolVersion);
             } else if (conn.getResponseCode() == 200) {
                 downloadAndSetupTool(printStream, conn, "ballerina-command-" + toolVersion);
             } else {
