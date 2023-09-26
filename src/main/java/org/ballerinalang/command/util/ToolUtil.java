@@ -66,7 +66,9 @@ public class ToolUtil {
     public static final String CLI_HELP_FILE_PREFIX = "dist-";
     private static final String BALLERINA_1_X_VERSIONS = "1.0.";
     private static final String CONNECTION_ERROR_MESSAGE = "connection to the remote server failed";
+    private static final String PROXY_ERROR_MESSAGE = "connection to the remote server through proxy server failed";
     private static final String BALLERINA_SETTINGS_FILE = "Settings.toml";
+    private static final String PROXY = "proxy";
     public static final boolean BALLERINA_STAGING_UPDATE = Boolean.parseBoolean(
             System.getenv("BALLERINA_STAGING_UPDATE"));
     public static final boolean BALLERINA_DEV_UPDATE = Boolean.parseBoolean(
@@ -204,42 +206,54 @@ public class ToolUtil {
     }
 
     public static HttpsURLConnection getServerUrlWithProxyAuthentication(URL serverURL) throws IOException {
-        Map<String, Object> proxyConfigs = getProxyConfigs();
-        String proxyHost = proxyConfigs.containsKey("host") ? proxyConfigs.get("host").toString() : null;
-        String proxyPort = proxyConfigs.containsKey("port") ? proxyConfigs.get("port").toString() : null;
-        String proxyUser = proxyConfigs.containsKey("user") ? proxyConfigs.get("user").toString() : null;
-        String proxyPassword = proxyConfigs.containsKey("password") ? proxyConfigs.get("password").toString() : null;
+        if (checkProxyConfigsDefinition()) {
+            Map<String, Object> proxyConfigs = getProxyConfigs();
+            String proxyHost = proxyConfigs.containsKey("host") ? proxyConfigs.get("host").toString() : null;
+            String proxyPort = proxyConfigs.containsKey("port") ? proxyConfigs.get("port").toString() : null;
+            String proxyUser = proxyConfigs.containsKey("user") ? proxyConfigs.get("user").toString() : null;
+            String proxyPassword = proxyConfigs.containsKey("password") ? proxyConfigs.get("password").toString() : null;
 
-        if (proxyHost != null && proxyPort != null && !"".equals(proxyHost) && Integer.parseInt(proxyPort) > 0 &&
-                Integer.parseInt(proxyPort) < 65536) {
-            if (proxyUser != null && proxyPassword != null && !"".equals(proxyUser) && !"".equals(proxyPassword)) {
-                Authenticator authenticator = new Authenticator() {
-                    @Override
-                    public PasswordAuthentication getPasswordAuthentication() {
-                        return (new PasswordAuthentication(proxyUser,
-                                proxyPassword.toCharArray()));
-                    }
-                };
-                Authenticator.setDefault(authenticator);
+            if (proxyHost != null && proxyPort != null && !"".equals(proxyHost) && Integer.parseInt(proxyPort) > 0 &&
+                    Integer.parseInt(proxyPort) < 65536) {
+                setProxyAuthentication(proxyUser, proxyPassword);
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort)));
+                return (HttpsURLConnection) serverURL.openConnection(proxy);
+            } else {
+                return (HttpsURLConnection) serverURL.openConnection();
             }
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, Integer.parseInt(proxyPort)));
-            return (HttpsURLConnection) serverURL.openConnection(proxy);
         } else {
             return (HttpsURLConnection) serverURL.openConnection();
         }
     }
 
+    private static void setProxyAuthentication(String proxyUser, String proxyPassword) {
+        if (proxyUser != null && proxyPassword != null && !"".equals(proxyUser) && !"".equals(proxyPassword)) {
+            Authenticator authenticator = new Authenticator() {
+                @Override
+                public PasswordAuthentication getPasswordAuthentication() {
+                    return (new PasswordAuthentication(proxyUser,
+                            proxyPassword.toCharArray()));
+                }
+            };
+            Authenticator.setDefault(authenticator);
+        }
+    }
+
     public static Map<String, Object> getProxyConfigs () {
-        Map<String, Object> proxyConfigs = new HashMap<>();
+        File settingsFile = new File(OSUtils.getBallerinaHomePath() + File.separator +
+                BALLERINA_SETTINGS_FILE );
+        Toml toml = new Toml().read(settingsFile);
+        return toml.getTable(PROXY).toMap();
+    }
+
+    private static boolean checkProxyConfigsDefinition() {
         File settingsFile = new File(OSUtils.getBallerinaHomePath() + File.separator +
                 BALLERINA_SETTINGS_FILE );
         if (settingsFile.exists()) {
             Toml toml = new Toml().read(settingsFile);
-            if (toml.contains("proxy")) {
-                proxyConfigs = toml.getTable("proxy").toMap();
-            }
+            return toml.contains(PROXY);
         }
-        return proxyConfigs;
+        return false;
     }
 
     public static List<Channel> getDistributions(PrintStream printStream) {
@@ -302,7 +316,11 @@ public class ToolUtil {
                 }
             }
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            if (checkProxyConfigsDefinition()) {
+                throw ErrorUtil.createCommandException(PROXY_ERROR_MESSAGE);
+            } else {
+                throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            }
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -330,7 +348,11 @@ public class ToolUtil {
             }
             throw ErrorUtil.createCommandException(getServerRequestFailedErrorMessage(conn));
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            if (checkProxyConfigsDefinition()) {
+                throw ErrorUtil.createCommandException(PROXY_ERROR_MESSAGE);
+            } else {
+                throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            }
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -376,7 +398,11 @@ public class ToolUtil {
             }
             throw ErrorUtil.createCommandException(getServerRequestFailedErrorMessage(conn));
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            if (checkProxyConfigsDefinition()) {
+                throw ErrorUtil.createCommandException(PROXY_ERROR_MESSAGE);
+            } else {
+                throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            }
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -517,7 +543,11 @@ public class ToolUtil {
                 return true;
             }
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            if (checkProxyConfigsDefinition()) {
+                throw ErrorUtil.createCommandException(PROXY_ERROR_MESSAGE);
+            } else {
+                throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            }
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -596,7 +626,11 @@ public class ToolUtil {
                 }
             }
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            if (checkProxyConfigsDefinition()) {
+                throw ErrorUtil.createCommandException(PROXY_ERROR_MESSAGE);
+            } else {
+                throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            }
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -626,7 +660,11 @@ public class ToolUtil {
                 throw ErrorUtil.createDependencyNotFoundException(dependency);
             }
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            if (checkProxyConfigsDefinition()) {
+                throw ErrorUtil.createCommandException(PROXY_ERROR_MESSAGE);
+            } else {
+                throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            }
         }
     }
 
@@ -668,7 +706,11 @@ public class ToolUtil {
                 throw ErrorUtil.createCommandException("tool version '" + toolVersion + "' not found ");
             }
         } catch (IOException e) {
-            throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            if (checkProxyConfigsDefinition()) {
+                throw ErrorUtil.createCommandException(PROXY_ERROR_MESSAGE);
+            } else {
+                throw ErrorUtil.createCommandException(CONNECTION_ERROR_MESSAGE);
+            }
         } finally {
             if (conn != null) {
                 conn.disconnect();
