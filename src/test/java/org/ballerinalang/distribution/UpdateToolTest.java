@@ -238,7 +238,7 @@ public class UpdateToolTest {
         args.remove(args.size() - 1);
         args.add("run");
         output = TestUtils.executeCommand(args, projectPath);
-//        Assert.assertTrue(output.contains("Hello, World!"));
+        Assert.assertTrue(output.contains("Hello, World!"));
     }
 
     @Test(description = "Test dist list command.", dependsOnMethods = {"testUseCommand"})
