@@ -55,6 +55,11 @@ then
 \cp $CURRENT_PATH/ballerina-command-@version@/scripts/_bal $CURRENT_PATH/../scripts
 fi
 
+if [ -d "$CURRENT_PATH/../dependencies/jdk-17.0.7+7-jre" ]
+then
+chmod -R 755 $CURRENT_PATH/../dependencies/jdk-17.0.7+7-jre
+fi
+
 if [ $? -ne '0' ]; then
   echo "error occurred while copying completion script files."
 fi
