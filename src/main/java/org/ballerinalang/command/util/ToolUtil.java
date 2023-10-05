@@ -675,12 +675,7 @@ public class ToolUtil {
         zipFile = Paths.get(zipFileLocation).toFile();
         downloadFile(conn, zipFileLocation, dependency, printStream);
         unzip(zipFileLocation, dependencyLocation);
-        if(OSUtils.isMac()) {
-            addExecutablePermissionToDirectory(dependencyLocation + File.separator + dependency);
-        } else {
-            addExecutablePermissionToFile(new File(dependencyLocation + File.separator + dependency
-                    + File.separator + "bin" + File.separator + "java"));
-        }
+        addExecutablePermissionToDirectory(dependencyLocation + File.separator + dependency);
         if (zipFile.exists()) {
             zipFile.delete();
         }
