@@ -527,13 +527,29 @@ public class ToolUtil {
                     String newUrl = conn.getHeaderField("Location");
                     HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl));
                     redirectedConn.setRequestProperty("content-type", "binary/data");
-                    ToolUtil.downloadAndSetupDist(printStream, redirectedConn, distribution);
-                    ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
+                    ToolUtil.downloadDistributionZip(printStream, redirectedConn, distribution);
+                    String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
+                    if (!ToolUtil.checkDependencyAvailable(dependencyForDistribution)) {
+                        downloadDependency(printStream, dependencyForDistribution, distributionType,
+                                distributionVersion);
+                    } else {
+                        printStream.println("Dependency '" + dependencyForDistribution +
+                                "' is already available locally");
+                    }
+                    setupDistribution(distribution, dependencyForDistribution);
                     return false;
                 } else if (conn.getResponseCode() == 200) {
                     printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
-                    ToolUtil.downloadAndSetupDist(printStream, conn, distribution);
-                    ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
+                    ToolUtil.downloadDistributionZip(printStream, conn, distribution);
+                    String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
+                    if (!ToolUtil.checkDependencyAvailable(dependencyForDistribution)) {
+                        downloadDependency(printStream, dependencyForDistribution, distributionType,
+                                distributionVersion);
+                    } else {
+                        printStream.println("Dependency '" + dependencyForDistribution +
+                                "' is already available locally");
+                    }
+                    setupDistribution(distribution, dependencyForDistribution);
                     return false;
                 } else {
                     throw ErrorUtil.createDistributionNotFoundException(distribution);
@@ -555,12 +571,24 @@ public class ToolUtil {
         }
     }
 
-    private static void downloadAndSetupDist(PrintStream printStream, HttpURLConnection conn,
+    private static void downloadDistributionZip(PrintStream printStream, HttpURLConnection conn,
                                              String distribution) {
         try {
-            String distPath = getDistributionsPath();
             String zipFileLocation = getDistributionsPath() + File.separator + distribution + ".zip";
             downloadFile(conn, zipFileLocation, distribution, printStream);
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    public static void setupDistribution (String distribution, String dependency) {
+        String distPath = getDistributionsPath();
+        String zipFileLocation = getDistributionsPath() + File.separator + distribution + ".zip";
+        if (!ToolUtil.checkDependencyAvailable(dependency)) {
+            new File(zipFileLocation).delete();
+            throw ErrorUtil.createCommandException("dependency '" + dependency + "' is not available locally. Please " +
+                    "try reinstalling the distribution");
+        } else {
             unzip(zipFileLocation, distPath);
             addExecutablePermissionToFile(new File(distPath + File.separator + ToolUtil.getType(distribution)
                     + "-" + distribution + File.separator + "bin"
@@ -583,14 +611,13 @@ public class ToolUtil {
             }
 
             new File(zipFileLocation).delete();
-        } finally {
-            conn.disconnect();
         }
     }
 
-    public static void getDependency(PrintStream printStream, String distribution, String distributionType,
+    public static String getDependency(PrintStream printStream, String distribution, String distributionType,
                                      String distributionVersion) {
         HttpsURLConnection conn = null;
+        String dependencyName = "";
         try {
             printStream.println("\nFetching the dependencies for '" + distribution + "' from the remote server...");
             URL url = new URL(ToolUtil.getServerURL() + "/distributions");
@@ -612,14 +639,7 @@ public class ToolUtil {
                         Pattern dependencyPattern = Pattern.compile(dependencyRegex);
                         Matcher dependencyMatcher = dependencyPattern.matcher(distInfo);
                         while (dependencyMatcher.find()) {
-                            String dependencyName = dependencyMatcher.group(1);
-                            if (!ToolUtil.checkDependencyAvailable(dependencyName)) {
-                                downloadDependency(printStream, dependencyName, distributionType,
-                                        distributionVersion);
-                            } else {
-                                printStream.println("Dependency '" + dependencyName +
-                                        "' is already available locally");
-                            }
+                            dependencyName = dependencyMatcher.group(1);
                         }
                         break;
                     }
@@ -636,6 +656,7 @@ public class ToolUtil {
                 conn.disconnect();
             }
         }
+        return dependencyName;
     }
 
     private static void downloadDependency(PrintStream printStream, String dependency, String distributionType,
