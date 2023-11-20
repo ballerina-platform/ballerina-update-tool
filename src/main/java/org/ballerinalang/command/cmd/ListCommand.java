@@ -159,7 +159,7 @@ public class ListCommand extends Command implements BCommand {
                 else {
                     outStream.println("\n" + channel.getName() + "\n");
                     List<Distribution> channelDistList = channel.getDistributions();
-                    if (channel.getName().equals("Swan Lake channel") || channel.getName().equals("1.* channel")) {
+                    if (!channel.getName().contains("pre-release")) {
                         Comparator<Distribution> semverComparator = Comparator
                                 .comparingInt((Distribution distribution) -> Integer.parseInt(distribution.getVersion().split("\\.")[0]))
                                 .thenComparingInt((Distribution distribution) -> Integer.parseInt(distribution.getVersion().split("\\.")[1]))
