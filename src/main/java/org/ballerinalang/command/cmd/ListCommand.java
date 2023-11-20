@@ -123,8 +123,12 @@ public class ListCommand extends Command implements BCommand {
                 JSONObject channelJson = new JSONObject();
                 JSONArray releases = new JSONArray();
                 channelJson.put("name", channel.getName());
+                List<Distribution> channelDistListLocal = channel.getDistributions();
+                if (!channel.getName().contains("pre-release")) {
+                    channelDistListLocal = getSortedDistList(channelDistListLocal);
+                }
                 if (listOfFiles != null) {
-                    for (Distribution distribution : channel.getDistributions()) {
+                    for (Distribution distribution : channelDistListLocal) {
                             Arrays.sort(listOfFiles);
                             for (File file : listOfFiles) {
                                 if (file.isDirectory()) {
@@ -160,13 +164,7 @@ public class ListCommand extends Command implements BCommand {
                     outStream.println("\n" + channel.getName() + "\n");
                     List<Distribution> channelDistList = channel.getDistributions();
                     if (!channel.getName().contains("pre-release")) {
-                        Comparator<Distribution> semverComparator = Comparator
-                                .comparingInt((Distribution distribution) -> Integer.parseInt(distribution.getVersion().split("\\.")[0]))
-                                .thenComparingInt((Distribution distribution) -> Integer.parseInt(distribution.getVersion().split("\\.")[1]))
-                                .thenComparingInt((Distribution distribution) -> Integer.parseInt(distribution.getVersion().split("\\.")[2]));
-
-                        channelDistList.sort(semverComparator);
-                        Collections.reverse(channelDistList);
+                        channelDistList = getSortedDistList(channelDistList);
                     }
                     if (!allFlag){
                         if (channelDistList.size() > maxListingDistributions) {
@@ -308,6 +306,21 @@ public class ListCommand extends Command implements BCommand {
                 outStream.println(markVersion(currentBallerinaVersion, version));
             }
         }
+    }
+
+    /**
+     * Sorts the distributions under a channel according to their semver version.
+     *
+     * @param channelDistList The list of distributions under a channel
+     */
+    private static List<Distribution> getSortedDistList(List<Distribution> channelDistList) {
+        Comparator<Distribution> semverComparator = Comparator
+                .comparingInt((Distribution distribution) -> Integer.parseInt(distribution.getVersion().split("\\.")[0]))
+                .thenComparingInt((Distribution distribution) -> Integer.parseInt(distribution.getVersion().split("\\.")[1]))
+                .thenComparingInt((Distribution distribution) -> Integer.parseInt(distribution.getVersion().split("\\.")[2]));
+        channelDistList.sort(semverComparator);
+        Collections.reverse(channelDistList);
+        return channelDistList;
     }
 
     private static boolean isUpdated(File[] listOfFiles) {
