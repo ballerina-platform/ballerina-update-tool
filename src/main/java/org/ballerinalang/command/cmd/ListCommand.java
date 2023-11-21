@@ -124,7 +124,7 @@ public class ListCommand extends Command implements BCommand {
                 JSONArray releases = new JSONArray();
                 channelJson.put("name", channel.getName());
                 List<Distribution> channelDistListLocal = channel.getDistributions();
-                if (!channel.getName().contains("pre-release")) {
+                if (!channel.getName().contains(ToolUtil.PRE_RELEASE)) {
                     channelDistListLocal = getSortedDistList(channelDistListLocal);
                 }
                 if (listOfFiles != null) {
@@ -157,13 +157,13 @@ public class ListCommand extends Command implements BCommand {
             writeLocalDistsIntoJson(distList);
             outStream.println("\nDistributions available remotely:");
             for (Channel channel : channels) {
-                if (channel.getName().contains("pre-release") && !prFlag) {
+                if (channel.getName().contains(ToolUtil.PRE_RELEASE) && !prFlag) {
                     continue;
                 }
                 else {
                     outStream.println("\n" + channel.getName() + "\n");
                     List<Distribution> channelDistList = channel.getDistributions();
-                    if (!channel.getName().contains("pre-release")) {
+                    if (!channel.getName().contains(ToolUtil.PRE_RELEASE)) {
                         channelDistList = getSortedDistList(channelDistList);
                     }
                     if (!allFlag){
