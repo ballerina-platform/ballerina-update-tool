@@ -111,6 +111,7 @@ public class RemoveCommand extends Command implements BCommand {
                     OSUtils.deleteFiles(directory.toPath());
                     OSUtils.deleteCaches(version, getPrintStream());
                     getPrintStream().println("Distribution '" + version + "' successfully removed");
+                    ToolUtil.removeUnusedDependencies(version, getPrintStream());
                 } else {
                     throw ErrorUtil.createCommandException("distribution '" + version + "' not found");
                 }
@@ -146,6 +147,8 @@ public class RemoveCommand extends Command implements BCommand {
                 }
             }
             getPrintStream().println("All non-active distributions are successfully removed");
+//            String activeDistribution = ToolUtil.getCurrentBallerinaVersion();
+//            String dependencyForActiveDistribution = ToolUtil.getDependency(activeDistribution);
         } catch (IOException | NullPointerException e) {
             throw ErrorUtil.createCommandException("error occurred while removing the distributions" + e);
         }
