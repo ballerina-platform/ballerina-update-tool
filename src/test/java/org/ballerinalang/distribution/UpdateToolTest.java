@@ -34,8 +34,10 @@ public class UpdateToolTest {
     String swanLakeVersion = System.getProperty("swan-lake-version");
     String swanLakeSpecVersion = System.getProperty("swan-lake-spec-version");
     String swanLakeLatestVersion = System.getProperty("swan-lake-latest-version");
+    String swanLakeLatestVersionDependency = System.getProperty("swan-lake-latest-dependency-version");
     String swanLakeLatestSpecVersion = System.getProperty("swan-lake-latest-spec-version");
-    String previouschannelVersion = System.getProperty("1-x-channel-version");
+    String previousChannelVersion = System.getProperty("1-x-channel-version");
+    String previousChannelDependencyVersion = System.getProperty("1-x-channel-dependency-version");
     String previousChannelSpecVersion = System.getProperty("1-x-channel-spec-version");
     String previousChanneLatestVersion = System.getProperty("1-x-channel-latest-version");
 
@@ -61,17 +63,17 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("a distribution must be specified to pull"));
 
         args.add("--test");
-        args.add(previouschannelVersion);
+        args.add(previousChannelVersion);
         output = TestUtils.executeCommand(args);
-        Assert.assertTrue(output.contains("Fetching the '" + previouschannelVersion +
+        Assert.assertTrue(output.contains("Fetching the '" + previousChannelVersion +
                 "' distribution from the remote server"));
-        Assert.assertTrue(output.contains("Fetching the dependencies for '" + previouschannelVersion +
+        Assert.assertTrue(output.contains("Fetching the dependencies for '" + previousChannelVersion +
                 "' from the remote server"));
         Assert.assertTrue(output.contains("successfully set as the active distribution"));
-        Assert.assertTrue(Files.isDirectory(TestUtils.getDistPath(previouschannelVersion)));
+        Assert.assertTrue(Files.isDirectory(TestUtils.getDistPath(previousChannelVersion)));
         output = TestUtils.testInstallation();
-        Assert.assertEquals(output, TestUtils.getVersionOutput(previouschannelVersion, previousChannelSpecVersion,
-                TestUtils.MAVEN_VERSION, previouschannelVersion));
+        Assert.assertEquals(output, TestUtils.getVersionOutput(previousChannelVersion, previousChannelSpecVersion,
+                TestUtils.MAVEN_VERSION, previousChannelVersion));
 
         args.remove(args.size() - 1);
         args.add(swanLakeVersion);
@@ -163,7 +165,7 @@ public class UpdateToolTest {
         List<String> useArgs = TestUtils.addPathArg();
         useArgs.add("dist");
         useArgs.add("use");
-        useArgs.add(previouschannelVersion);
+        useArgs.add(previousChannelVersion);
         output = TestUtils.executeCommand(useArgs);
         Assert.assertTrue(output.contains("successfully set as the active distribution"));
 
@@ -281,10 +283,11 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("The active Ballerina distribution cannot be removed"));
 
         args.remove(args.size() - 1);
-        args.add(previouschannelVersion);
+        args.add(previousChannelVersion);
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("successfully removed"));
-        Assert.assertFalse(Files.exists(TestUtils.getDistPath(previouschannelVersion)));
+        Assert.assertFalse(Files.exists(TestUtils.getDistPath(previousChannelVersion)));
+        Assert.assertFalse(Files.exists(TestUtils.getDependencyPath(previousChannelDependencyVersion)));
 
         args.add("arg1");
         output = TestUtils.executeCommand(args);
@@ -295,9 +298,13 @@ public class UpdateToolTest {
         args.add("-a");
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("All non-active distributions are successfully removed"));
+        Assert.assertTrue(output.contains("Removing unused dependencies"));
         Assert.assertTrue(Files.exists(TestUtils.getDistPath(swanLakeLatestVersion)));
         Assert.assertFalse(Files.exists(TestUtils.getDistPath(swanLakeVersion)));
         Assert.assertFalse(Files.exists(TestUtils.getDistPath(previousChanneLatestVersion)));
+        Assert.assertTrue(Files.exists(TestUtils.getDependencyPath(swanLakeLatestVersionDependency)));
+        Assert.assertEquals(Files.list(TestUtils.getDependencyPath(swanLakeLatestVersionDependency).getParent()).count()
+                , 1);
 
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("There is nothing to remove. Only active distribution is remaining"));

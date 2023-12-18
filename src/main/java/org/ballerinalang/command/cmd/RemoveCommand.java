@@ -147,8 +147,23 @@ public class RemoveCommand extends Command implements BCommand {
                 }
             }
             getPrintStream().println("All non-active distributions are successfully removed");
-//            String activeDistribution = ToolUtil.getCurrentBallerinaVersion();
-//            String dependencyForActiveDistribution = ToolUtil.getDependency(activeDistribution);
+            String activeDistribution = ToolUtil.getCurrentBallerinaVersion();
+            String dependencyForActiveDistribution = ToolUtil.getDependency(getPrintStream(), activeDistribution,
+                    ToolUtil.getType(activeDistribution), activeDistribution);
+            File[] dependencies = new File(ToolUtil.getDependencyPath()).listFiles();
+            if (dependencies != null) {
+                if (dependencies.length > 1) {
+                    getPrintStream().println("Removing unused dependencies");
+                    for (File dependency : dependencies) {
+                        if (dependency.isDirectory() && !dependency.getName().equals(dependencyForActiveDistribution)) {
+                            OSUtils.deleteFiles(dependency.toPath());
+                        }
+                    }
+                }
+            } else {
+                throw ErrorUtil.createCommandException("No dependencies found");
+            }
+
         } catch (IOException | NullPointerException e) {
             throw ErrorUtil.createCommandException("error occurred while removing the distributions" + e);
         }

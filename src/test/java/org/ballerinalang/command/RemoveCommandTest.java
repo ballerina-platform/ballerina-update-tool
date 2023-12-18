@@ -136,5 +136,10 @@ public class RemoveCommandTest extends CommandTest {
         }  catch (CommandException e) {
             Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
         }
+
+        RemoveCommand removeAllCommand = new RemoveCommand(testStream);
+        new CommandLine(removeAllCommand).parse("-a");
+        removeAllCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("Removing unused dependencies"));
     }
 }

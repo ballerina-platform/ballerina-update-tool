@@ -531,7 +531,8 @@ public class ToolUtil {
                     HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl));
                     redirectedConn.setRequestProperty("content-type", "binary/data");
                     ToolUtil.downloadDistributionZip(printStream, redirectedConn, distribution);
-                    String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
+                    String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution,
+                            distributionType, distributionVersion);
                     if (!ToolUtil.checkDependencyAvailable(dependencyForDistribution)) {
                         downloadDependency(printStream, dependencyForDistribution, distributionType,
                                 distributionVersion);
@@ -541,7 +542,8 @@ public class ToolUtil {
                 } else if (conn.getResponseCode() == 200) {
                     printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
                     ToolUtil.downloadDistributionZip(printStream, conn, distribution);
-                    String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
+                    String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution,
+                            distributionType, distributionVersion);
                     if (!ToolUtil.checkDependencyAvailable(dependencyForDistribution)) {
                         downloadDependency(printStream, dependencyForDistribution, distributionType,
                                 distributionVersion);
