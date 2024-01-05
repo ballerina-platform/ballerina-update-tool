@@ -53,6 +53,7 @@ public class TestUtils {
     public static final String PATH_ARG = TEST_DISTRIBUTION_PATH.resolve(DIST_NAME).resolve("bin").resolve("bal").
             toString();
     private static final Path DIST_PATH = TEST_DISTRIBUTION_PATH.resolve(DIST_NAME).resolve("distributions");
+    private static final Path DEPENDENCY_PATH = TEST_DISTRIBUTION_PATH.resolve(DIST_NAME).resolve("dependencies");
     public static final Path TEST_DIR = TEST_DISTRIBUTION_PATH.resolve("test");
 
     /**
@@ -290,6 +291,16 @@ public class TestUtils {
     public static Path getDistPath (String version) {
         String type = version.contains("sl") ? "ballerina" : isSwanLakeGA(version) ? "ballerina" : "jballerina";
         return DIST_PATH.resolve(type + "-" + version);
+    }
+
+    /**
+     * Get dependency path for the version.
+     *
+     * @param version dependency version
+     * @return returns dependency path for available distributions
+     */
+    public static Path getDependencyPath (String version) {
+        return DEPENDENCY_PATH.resolve(version);
     }
 
     /**

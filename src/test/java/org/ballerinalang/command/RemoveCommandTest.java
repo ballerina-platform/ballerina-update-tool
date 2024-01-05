@@ -21,6 +21,7 @@ package org.ballerinalang.command;
 import org.ballerinalang.command.cmd.PullCommand;
 import org.ballerinalang.command.cmd.RemoveCommand;
 import org.ballerinalang.command.cmd.UpdateCommand;
+import org.ballerinalang.command.cmd.UseCommand;
 import org.ballerinalang.command.exceptions.CommandException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -88,9 +89,19 @@ public class RemoveCommandTest extends CommandTest {
         new CommandLine(updateCommand).parse();
         updateCommand.execute();
 
+        PullCommand pullCmd1 = new PullCommand(testStream);
+        new CommandLine(pullCmd1).parse("2201.8.0");
+        pullCmd1.execute();
+
         PullCommand pullCmd = new PullCommand(testStream);
         new CommandLine(pullCmd).parse("2201.4.2");
         pullCmd.execute();
+
+        RemoveCommand removeCommand1 = new RemoveCommand(testStream);
+        new CommandLine(removeCommand1).parse("2201.8.0");
+        removeCommand1.execute();
+        Assert.assertTrue(outContent.toString().contains("successfully removed"));
+        Assert.assertTrue(outContent.toString().contains("Deleting the dependency"));
 
         RemoveCommand removeCommand2 = new RemoveCommand(testStream);
         new CommandLine(removeCommand2).parse("2201.5.0");
@@ -125,5 +136,10 @@ public class RemoveCommandTest extends CommandTest {
         }  catch (CommandException e) {
             Assert.assertTrue(e.getMessages().get(0).contains("too many arguments"));
         }
+
+        RemoveCommand removeAllCommand = new RemoveCommand(testStream);
+        new CommandLine(removeAllCommand).parse("-a");
+        removeAllCommand.execute();
+        Assert.assertTrue(outContent.toString().contains("Removing unused dependencies"));
     }
 }

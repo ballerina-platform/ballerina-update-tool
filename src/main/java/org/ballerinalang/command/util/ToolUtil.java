@@ -46,7 +46,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -297,6 +297,8 @@ public class ToolUtil {
                 while (matcher.find()) {
                     if (count++ % 2 == 0) {
                         distributions.get(i++).setName(matcher.group(1));
+                    } else {
+                        distributions.get(i++).setDependency(matcher.group(1));
                     }
                 }
 
@@ -529,7 +531,8 @@ public class ToolUtil {
                     HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl));
                     redirectedConn.setRequestProperty("content-type", "binary/data");
                     ToolUtil.downloadDistributionZip(printStream, redirectedConn, distribution);
-                    String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
+                    String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution,
+                            distributionType, distributionVersion);
                     if (!ToolUtil.checkDependencyAvailable(dependencyForDistribution)) {
                         downloadDependency(printStream, dependencyForDistribution, distributionType,
                                 distributionVersion);
@@ -539,7 +542,8 @@ public class ToolUtil {
                 } else if (conn.getResponseCode() == 200) {
                     printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
                     ToolUtil.downloadDistributionZip(printStream, conn, distribution);
-                    String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution, distributionType, distributionVersion);
+                    String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution,
+                            distributionType, distributionVersion);
                     if (!ToolUtil.checkDependencyAvailable(dependencyForDistribution)) {
                         downloadDependency(printStream, dependencyForDistribution, distributionType,
                                 distributionVersion);
@@ -695,6 +699,67 @@ public class ToolUtil {
         if (zipFile.exists()) {
             zipFile.delete();
         }
+    }
+    
+    public static void removeUnusedDependencies(String distributionVersion, PrintStream printStream) {
+        String dependencyForDistribution = "";
+        String channelForDistribution = "";
+        List<String> distributionsWithDependency = new ArrayList<>();
+        List<Channel> channels = getDistributions(printStream);
+        for (Channel channel : channels) {
+            for (Distribution distribution : channel.getDistributions()) {
+                if (distribution.getVersion().equals(distributionVersion)) {
+                    dependencyForDistribution = distribution.getDependency();
+                    channelForDistribution = channel.getName();
+                    break;
+                }
+            }
+        }
+        if (dependencyForDistribution.equals("")) {
+            printStream.println("No dependency found for the given distribution version");
+            return;
+        }
+        for (Channel channel : channels) {
+            if (channel.getName().equals(channelForDistribution)) {
+                for (Distribution distribution : channel.getDistributions()) {
+                    if (distribution.getDependency().equals(dependencyForDistribution)) {
+                        distributionsWithDependency.add(distribution.getVersion());
+                    }
+                }
+            }
+        }
+        List<String> localDistributions = getLocalDistributions();
+        localDistributions.retainAll(distributionsWithDependency);
+        if (localDistributions.size() == 0) {
+            printStream.println("No local distributions found for the dependency '" + dependencyForDistribution + "'\n" +
+                    "Deleting the dependency '" + dependencyForDistribution + "'");
+            File dependencyToDelete = new File(getDependencyPath() + File.separator + dependencyForDistribution);
+            if (dependencyToDelete.exists()) {
+                try {
+                    OSUtils.deleteFiles(dependencyToDelete.toPath());
+                } catch (IOException e) {
+                    printStream.println("Error occurred while deleting the dependency '" + dependencyForDistribution + "'");
+                }
+            }
+        }
+    }
+
+    private static List<String> getLocalDistributions() {
+        List<String> localDistributions = new ArrayList<>();
+        File folder = new File(ToolUtil.getDistributionsPath());
+        File[] listOfFiles = folder.listFiles();
+        if (listOfFiles != null) {
+            Arrays.sort(listOfFiles);
+            for (File file : listOfFiles) {
+                if (file.isDirectory()) {
+                    String[] parts =  file.getName().split("-");
+                    if (parts.length == 2) {
+                        localDistributions.add(parts[1]);
+                    }
+                }
+            }
+        }
+        return localDistributions;
     }
 
     public static void downloadTool(PrintStream printStream, String toolVersion) {

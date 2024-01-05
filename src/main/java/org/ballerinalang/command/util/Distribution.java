@@ -24,12 +24,14 @@ public class Distribution {
     private String version;
     private String type;
     private String channel;
+    private String dependency;
 
     public Distribution() {
         this.name = "";
         this.version = "";
         this.type = "";
         this.channel = "";
+        this.dependency = "";
     }
 
     public Distribution(String version) {
@@ -37,13 +39,15 @@ public class Distribution {
         this.version = version;
         this.type = "";
         this.channel = "";
+        this.dependency = "";
     }
 
-    public Distribution(String name, String version, String type, String channel) {
+    public Distribution(String name, String version, String type, String channel, String dependency) {
         this.name = name;
         this.version = version;
         this.type = type;
         this.channel = channel;
+        this.dependency = dependency;
     }
 
     public String getName() {
@@ -76,5 +80,13 @@ public class Distribution {
 
     public void setChannel(String channel) {
         this.channel = channel;
+    }
+
+    public String getDependency() {
+        return dependency;
+    }
+
+    public void setDependency(String dependency) {
+        this.dependency = dependency;
     }
 }
