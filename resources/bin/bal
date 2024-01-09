@@ -66,7 +66,7 @@
   RUN_COMMAND=false
   RUN_BALLERINA=true
 
-  if [ "$1" == "dist" ] || [ "$2" == "dist" ] || [ "$1" == "update" ] || ( [ "$1" == "dist" ] && [ "$2" == "update" ] )
+  if [ "$1" == "dist" ] || [ "$1" == "update" ] || ( [ "$1" == "dist" ] && [ "$2" == "update" ] )
   then
       RUN_COMMAND=true
       RUN_BALLERINA=false
