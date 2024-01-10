@@ -287,13 +287,12 @@ public class OSUtils {
         return OS.contains("sunos");
     }
 
-    private static boolean  isArmArchitecture() {
+    private static boolean isArmArchitecture() {
         try {
-            Process process = Runtime.getRuntime().exec("uname -m");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String architecture = reader.readLine();
-            return architecture.contains("arm");
-        } catch (IOException e) {
+            String macArchitecture = System.getenv("BALLERINA_MAC_ARCHITECTURE");
+
+            return macArchitecture != null && macArchitecture.equals("arm64");
+        } catch (SecurityException e) {
             return false;
         }
     }
