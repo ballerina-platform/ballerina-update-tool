@@ -86,7 +86,7 @@
           if [ "$(uname)" == "Darwin" ]
           then
               # If it's macOS, set an environmental variable for architecture
-              export MAC_ARCHITECTURE=$(uname -m)
+              export BALLERINA_MAC_ARCHITECTURE=$(uname -m)
           fi
           $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar "$@"
           EXIT_CODE=$?

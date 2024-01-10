@@ -289,7 +289,7 @@ public class OSUtils {
 
     private static boolean isArmArchitecture() {
         try {
-            String macArchitecture = System.getenv("MAC_ARCHITECTURE");
+            String macArchitecture = System.getenv("BALLERINA_MAC_ARCHITECTURE");
 
             return macArchitecture != null && macArchitecture.equals("arm64");
         } catch (SecurityException e) {
