@@ -292,13 +292,14 @@ public class ToolUtil {
                 }
 
                 matcher = Pattern.compile("\"name\":\"(.*?)\"").matcher(json);
-                i = 0;
+                int distIndex = 0;
                 int count = 0;
                 while (matcher.find()) {
                     if (count++ % 2 == 0) {
-                        distributions.get(i++).setName(matcher.group(1));
+                        distributions.get(distIndex).setName(matcher.group(1));
                     } else {
-                        distributions.get(i++).setDependency(matcher.group(1));
+                        distributions.get(distIndex).setDependency(matcher.group(1));
+                        distIndex++;
                     }
                 }
 
