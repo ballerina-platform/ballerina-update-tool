@@ -33,6 +33,7 @@ import picocli.CommandLine;
  * @since 2.0.0
  */
 public class RemoveCommandTest extends CommandTest {
+    String swanLakeLatestVersion = System.getProperty("swan-lake-latest-version");
 
     @Test
     public void removeCommandwithoutArgsTest() {
@@ -101,11 +102,15 @@ public class RemoveCommandTest extends CommandTest {
         new CommandLine(removeCommand1).parse("2201.8.0");
         removeCommand1.execute();
         Assert.assertTrue(outContent.toString().contains("successfully removed"));
-        Assert.assertTrue(outContent.toString().contains("Deleting the dependency"));
 
         RemoveCommand removeCommand2 = new RemoveCommand(testStream);
-        new CommandLine(removeCommand2).parse("2201.5.0");
+        new CommandLine(removeCommand2).parse(swanLakeLatestVersion);
         removeCommand2.execute();
+        Assert.assertTrue(outContent.toString().contains("Deleting the dependency"));
+
+        RemoveCommand removeCommand3 = new RemoveCommand(testStream);
+        new CommandLine(removeCommand3).parse("2201.5.0");
+        removeCommand3.execute();
         Assert.assertTrue(outContent.toString().contains("successfully removed"));
 
         try {
@@ -116,14 +121,14 @@ public class RemoveCommandTest extends CommandTest {
             Assert.assertTrue(e.getMessages().get(0).contains("distribution '2201.3.5' not found"));
         }
 
-        RemoveCommand removeCommand3 = new RemoveCommand(testStream);
-        new CommandLine(removeCommand3).parse("-a");
-        removeCommand3.execute();
-        Assert.assertTrue(outContent.toString().contains("All non-active distributions are successfully removed"));
-
         RemoveCommand removeCommand4 = new RemoveCommand(testStream);
         new CommandLine(removeCommand4).parse("-a");
         removeCommand4.execute();
+        Assert.assertTrue(outContent.toString().contains("All non-active distributions are successfully removed"));
+
+        RemoveCommand removeCommand5 = new RemoveCommand(testStream);
+        new CommandLine(removeCommand5).parse("-a");
+        removeCommand5.execute();
         Assert.assertTrue(outContent.toString().contains("There is nothing to remove. Only active distribution is remaining"));
     }
 
