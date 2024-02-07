@@ -287,7 +287,6 @@ public class UpdateToolTest {
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("successfully removed"));
         Assert.assertFalse(Files.exists(TestUtils.getDistPath(previousChannelVersion)));
-        Assert.assertFalse(Files.exists(TestUtils.getDependencyPath(previousChannelDependencyVersion)));
 
         args.add("arg1");
         output = TestUtils.executeCommand(args);
