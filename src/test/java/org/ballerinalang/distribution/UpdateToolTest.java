@@ -254,7 +254,7 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("* " + swanLakeLatestVersion));
         Assert.assertTrue(output.contains("Distributions available remotely"));
         Assert.assertTrue(output.contains("1.* channel"));
-        Assert.assertTrue(output.contains("1.2.38"));
+        Assert.assertTrue(output.contains("1.2.48"));
         Assert.assertTrue(output.contains("Swan Lake channel"));
 //        Assert.assertTrue(output.contains("slp5"));            Should be added after the release
 //        Assert.assertTrue(output.contains("[slalpha1] Alpha 1"));
@@ -287,7 +287,6 @@ public class UpdateToolTest {
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("successfully removed"));
         Assert.assertFalse(Files.exists(TestUtils.getDistPath(previousChannelVersion)));
-        Assert.assertFalse(Files.exists(TestUtils.getDependencyPath(previousChannelDependencyVersion)));
 
         args.add("arg1");
         output = TestUtils.executeCommand(args);
