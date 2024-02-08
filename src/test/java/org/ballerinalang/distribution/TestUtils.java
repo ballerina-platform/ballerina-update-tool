@@ -300,7 +300,11 @@ public class TestUtils {
      * @return returns dependency path for available distributions
      */
     public static Path getDependencyPath (String version) {
-        return DEPENDENCY_PATH.resolve(version);
+        try {
+            return DEPENDENCY_PATH.resolve(version);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
