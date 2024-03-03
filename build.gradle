@@ -275,9 +275,11 @@ test {
     systemProperty "swan-lake-latest-version", project.properties['swan-lake-latest-version']
     systemProperty "swan-lake-spec-version", project.properties['swan-lake-spec-version']
     systemProperty "swan-lake-latest-spec-version", project.properties['swan-lake-latest-spec-version']
+    systemProperty "swan-lake-latest-dependency-version", project.properties['swan-lake-latest-dependency-version']
     systemProperty "1-x-channel-version", project.properties['1-x-channel-version']
     systemProperty "1-x-channel-spec-version", project.properties['1-x-channel-spec-version']
     systemProperty "1-x-channel-latest-version", project.properties['1-x-channel-latest-version']
+    systemProperty "1-x-channel-dependency-version", project.properties['1-x-channel-dependency-version']
 
     useTestNG() {
         suites 'src/test/resources/testng.xml'

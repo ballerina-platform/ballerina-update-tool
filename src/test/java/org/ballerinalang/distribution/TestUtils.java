@@ -189,6 +189,7 @@ public class TestUtils {
         try {
             Files.createDirectory(TEST_DIR);
             Files.createDirectory(DIST_PATH);
+            Files.createDirectory(DEPENDENCY_PATH);
             Files.copy(RESOURCES_DIR.resolve("ballerina-version"), DIST_PATH.resolve("ballerina-version"));
             Files.copy(RESOURCES_DIR.resolve("installer-version"), DIST_PATH.resolve("installer-version"));
         } catch (IOException e) {
@@ -300,11 +301,7 @@ public class TestUtils {
      * @return returns dependency path for available distributions
      */
     public static Path getDependencyPath (String version) {
-        try {
-            return DEPENDENCY_PATH.resolve(version);
-        } catch (Exception e) {
-            return null;
-        }
+        return DEPENDENCY_PATH.resolve(version);
     }
 
     /**
