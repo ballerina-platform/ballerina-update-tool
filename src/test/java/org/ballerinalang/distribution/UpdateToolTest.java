@@ -287,7 +287,7 @@ public class UpdateToolTest {
         output = TestUtils.executeCommand(args);
         Assert.assertTrue(output.contains("successfully removed"));
         Assert.assertFalse(Files.exists(TestUtils.getDistPath(previousChannelVersion)));
-        Assert.assertNull(TestUtils.getDependencyPath(previousChannelDependencyVersion));
+        Assert.assertFalse(Files.exists(TestUtils.getDependencyPath(previousChannelDependencyVersion)));
 
         args.add("arg1");
         output = TestUtils.executeCommand(args);
@@ -302,7 +302,7 @@ public class UpdateToolTest {
         Assert.assertTrue(Files.exists(TestUtils.getDistPath(swanLakeLatestVersion)));
         Assert.assertFalse(Files.exists(TestUtils.getDistPath(swanLakeVersion)));
         Assert.assertFalse(Files.exists(TestUtils.getDistPath(previousChanneLatestVersion)));
-        Assert.assertNull(TestUtils.getDependencyPath(swanLakeLatestVersionDependency));
+        Assert.assertTrue(Files.exists(TestUtils.getDependencyPath(swanLakeLatestVersionDependency)));
         Assert.assertEquals(Files.list(TestUtils.getDependencyPath(swanLakeLatestVersionDependency).getParent()).count()
                 , 1);
 
