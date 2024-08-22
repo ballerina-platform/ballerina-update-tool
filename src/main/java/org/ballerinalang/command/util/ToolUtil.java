@@ -77,6 +77,7 @@ public class ToolUtil {
     public static final String LATEST_PULL_INPUT = "latest";
     public static final boolean TEST_MODE = Boolean.parseBoolean(
             System.getenv("TEST_MODE_ACTIVE"));
+    public static final String DEFAULT_BALLERINA_VERSION = "0.0.0";
 
     /**
      * Provides used Ballerina version.
@@ -93,7 +94,13 @@ public class ToolUtil {
                     setInstallerVersion(installerVersionFilePath);
                 }
             }
-            String userVersion = getVersion(OSUtils.getBallerinaVersionFilePath());
+            String ballerinaVersionFilePath = OSUtils.getBallerinaVersionFilePath();
+            if (!new File(ballerinaVersionFilePath).exists()) {
+                String defaultBallerinaVersion = DEFAULT_BALLERINA_VERSION;
+                setCurrentBallerinaVersion(defaultBallerinaVersion);
+                setInstallerVersion(installerVersionFilePath);
+            }
+            String userVersion = getVersion(ballerinaVersionFilePath);
             if (checkDistributionAvailable(userVersion)) {
                 return userVersion;
             }
@@ -113,7 +120,7 @@ public class ToolUtil {
             return getVersion(OSUtils.getInstalledConfigPath());
         } catch (IOException e) {
             //If we files does not exist it will be empty and update tool continues without a distribution
-            return "";
+            return DEFAULT_BALLERINA_VERSION;
         }
     }
 
@@ -701,7 +708,7 @@ public class ToolUtil {
             zipFile.delete();
         }
     }
-    
+
     public static void removeUnusedDependencies(String distributionVersion, PrintStream printStream) {
         String dependencyForDistribution = "";
         String channelForDistribution = "";
