@@ -252,7 +252,7 @@ public class UpdateToolTest {
         Assert.assertTrue(output.contains("* " + swanLakeLatestVersion));
         Assert.assertTrue(output.contains("Distributions available remotely"));
         Assert.assertTrue(output.contains("1.* channel"));
-        Assert.assertTrue(output.contains("1.2.38"));
+        Assert.assertTrue(output.contains("1.2.54"));
         Assert.assertTrue(output.contains("Swan Lake channel"));
 //        Assert.assertTrue(output.contains("slp5"));            Should be added after the release
 //        Assert.assertTrue(output.contains("[slalpha1] Alpha 1"));
