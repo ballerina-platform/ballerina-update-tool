@@ -63,6 +63,7 @@ public class ToolUtil {
     private static final String PRODUCTION_URL = "https://api.central.ballerina.io/2.0/update-tool";
     private static final String STAGING_URL = "https://api.staging-central.ballerina.io/2.0/update-tool/";
     private static final String DEV_URL = "https://api.dev-central.ballerina.io/2.0/update-tool/";
+    public static final String PRE_RELEASE = "pre-release";
     public static final String CLI_HELP_FILE_PREFIX = "dist-";
     private static final String BALLERINA_1_X_VERSIONS = "1.0.";
     private static final String CONNECTION_ERROR_MESSAGE = "connection to the remote server failed";
