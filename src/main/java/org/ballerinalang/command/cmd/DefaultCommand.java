@@ -20,6 +20,7 @@ import org.ballerinalang.command.BallerinaCliCommands;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
+import java.util.List;
 
 /**
  * This class represents the "default" command required by picocli.
@@ -37,12 +38,15 @@ public class DefaultCommand extends Command implements BCommand {
     @CommandLine.Option(names = { "--version", "-v" }, hidden = true)
     private boolean versionFlag;
 
+    @CommandLine.Parameters(description = "Help command name")
+    private List<String> helpCommands;
+
     public DefaultCommand(PrintStream printStream) {
         super(printStream);
     }
 
     @Override
-    public void execute() {
+    public void execute() { 
         if (versionFlag) {
             printVersionInfo();
             return;
