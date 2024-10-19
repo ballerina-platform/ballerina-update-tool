@@ -125,7 +125,13 @@
       export BALLERINA_HOME
 
       if test -f "$BALLERINA_HOME/bin/./bal"; then
-        $BALLERINA_HOME/bin/./bal "$@"
+        if { [ "$1" == "-v" ] || [ "$1" == "--version" ] || [ "$1" == "version" ]; } && { [ "$2" == "-h" ] || [ "$2" == "--help" ] || [ "$2" == "help" ]; }
+        then
+          $BALLERINA_HOME/bin/./bal version --help
+        else
+          $BALLERINA_HOME/bin/./bal "$@"
+        fi
+
       else
         if test -f "$BALLERINA_HOME/bin/./ballerina"; then
           $BALLERINA_HOME/bin/./ballerina "$@"
@@ -136,12 +142,19 @@
       EXIT_CODE=$?
   fi
 
-  if [ "$1" == "help" ] && [ "$2" == "" ]  || [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] || \
-     [ "$1" == "version" ] || [ "$1" == "-v" ] || [ "$1" == "--version" ]
+  if { [ "$1" == "-v" ] || [ "$1" == "--version" ] || [ "$1" == "version" ]; } && { [ "$2" == "-h" ] || [ "$2" == "--help" ] || [ "$2" == "help" ]; }
   then
-      $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-@version@.jar "$@"
-      exit $?
-  else
-      exit $EXIT_CODE
+    $BALLERINA_HOME/bin/./bal version
+    $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-1.4.5-SNAPSHOT.jar "-v"
+    exit $?
+  else 
+    if [ "$1" == "help" ] && [ "$2" == "" ]  || [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] || \
+      [ "$1" == "version" ] || [ "$1" == "-v" ] || [ "$1" == "--version" ]
+    then 
+        $JAVA_COMMAND -jar $CURRENT_PATH/../lib/ballerina-command-1.4.5-SNAPSHOT.jar "$@"
+        exit $?
+    else
+        exit $EXIT_CODE
+    fi
   fi
 }; exit
