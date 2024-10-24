@@ -46,7 +46,7 @@ public class DefaultCommand extends Command implements BCommand {
     }
 
     @Override
-    public void execute() { 
+    public void execute() {
         if (versionFlag) {
             printVersionInfo();
             return;
