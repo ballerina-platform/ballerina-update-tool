@@ -115,8 +115,13 @@ public class Main {
             cmdParser.setCommandName("ballerina");
             cmdParser.setPosixClusteredShortOptionsAllowed(false);
 
+            CommandLine.ParseResult parseResult = cmdParser.parseArgs(args);
 
             List<CommandLine> parsedCommands = cmdParser.parse(args);
+
+            if (parseResult.hasSubcommand()) {
+                return Optional.of((BCommand) parseResult.subcommand().commandSpec().userObject());
+            }
 
             if (parsedCommands.size() < 1) {
                 return Optional.of(defaultCmd);
