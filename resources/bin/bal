@@ -23,6 +23,8 @@
   fi
 
   JAVA_COMMAND=java
+  if test -d "$CURRENT_PATH/../dependencies/jdk-21.0.5+11-jre"; then
+      JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-21.0.5+11-jre/bin/java"
   if test -d "$CURRENT_PATH/../dependencies/jdk-17.0.7+7-jre"; then
     JAVA_COMMAND="$CURRENT_PATH/../dependencies/jdk-17.0.7+7-jre/bin/java"
   elif test -d "$CURRENT_PATH/../dependencies/jdk-11.0.18+10-jre"; then
