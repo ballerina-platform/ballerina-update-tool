@@ -42,8 +42,8 @@ SetLocal EnableDelayedExpansion
 if exist %CURRENT_PATH%..\dependencies\jdk-21.0.5+11-jre (
    set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk-21.0.5+11-jre\bin\java
 ) else (
-    if exist %CURRENT_PATH%..\dependencies\jdk-11.0.18+10-jre (
-       set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk-11.0.18+10-jre\bin\java
+    if exist %CURRENT_PATH%..\dependencies\jdk-17.0.7+7-jre (
+       set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk-17.0.7+7-jre\bin\java
     ) else (
         if exist %CURRENT_PATH%..\dependencies\jdk-11.0.18+10-jre (
            set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk-11.0.18+10-jre\bin\java
