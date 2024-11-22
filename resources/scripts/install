@@ -55,9 +55,9 @@ then
 \cp $CURRENT_PATH/ballerina-command-@version@/scripts/_bal $CURRENT_PATH/../scripts
 fi
 
-if [ -d "$CURRENT_PATH/../dependencies/jdk-17.0.7+7-jre" ]
+if [ -d "$CURRENT_PATH/../dependencies/jdk-21.0.5+11-jre" ]
 then
-chmod -R 755 $CURRENT_PATH/../dependencies/jdk-17.0.7+7-jre
+chmod -R 755 $CURRENT_PATH/../dependencies/jdk-21.0.5+11-jre
 fi
 
 if [ $? -ne '0' ]; then
