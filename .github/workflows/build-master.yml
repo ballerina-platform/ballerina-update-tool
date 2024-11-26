@@ -22,6 +22,6 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.PUBLISH_PAT }}
       run: |
-        ./gradlew build jacocoTestReport
+        ./gradlew build jacocoTestReport --scan
     - name: Generate Codecov Report
       uses: codecov/codecov-action@v1
