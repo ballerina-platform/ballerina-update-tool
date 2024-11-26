@@ -35,7 +35,7 @@ jobs:
           packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
           packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
         run: |
-          ./gradlew release -Prelease.useAutomaticVersion=true
+          ./gradlew release -Prelease.useAutomaticVersion=true --scan
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
