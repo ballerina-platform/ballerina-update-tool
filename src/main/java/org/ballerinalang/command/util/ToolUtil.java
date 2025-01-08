@@ -1035,12 +1035,11 @@ public class ToolUtil {
         try {
             if (OSUtils.isWindows()) {
                 process = Runtime.getRuntime().exec("icacls " + filePath + " /grant Everyone:(OI)(CI)RX /T");
-                process.waitFor();
             }
             else {
                 process = Runtime.getRuntime().exec("chmod -R 755 " + filePath);
-                process.waitFor();
             }
+            process.waitFor();
         } catch (InterruptedException | IOException e) {
             throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" + filePath
                     + "'");
