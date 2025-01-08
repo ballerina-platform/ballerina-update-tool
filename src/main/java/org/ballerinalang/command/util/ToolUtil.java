@@ -1033,7 +1033,12 @@ public class ToolUtil {
     private static void addExecutablePermissionToDirectory(String filePath) {
         Process process;
         try {
-            process = Runtime.getRuntime().exec("chmod -R 755 " + filePath);
+            if (OSUtils.isWindows()) {
+                process = Runtime.getRuntime().exec("icacls " + filePath + " /grant Everyone:(OI)(CI)RX /T");
+            }
+            else {
+                process = Runtime.getRuntime().exec("chmod -R 755 " + filePath);
+            }
             process.waitFor();
         } catch (InterruptedException | IOException e) {
             throw ErrorUtil.createCommandException("permission denied: you do not have write access to '" + filePath
