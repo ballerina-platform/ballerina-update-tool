@@ -92,6 +92,8 @@ public class ToolUtil {
     private static final String ENV_TRUSTSTORE_PATH = "BALLERINA_CA_BUNDLE";
     private static final String ENV_TRUSTSTORE_PASSWORD = "BALLERINA_CA_PASSWORD";
     private static final String ENV_CERT_PATH = "BALLERINA_CA_CERT";
+    private static final String CA_CERTS_DEFAULT_PATH = System.getProperty("java.home") + "/lib/security/cacerts";
+    private static final String CA_CERTS_DEFAULT_PASSWORD = "changeit";
 
     private static final String trustStorePath = System.getenv(ENV_TRUSTSTORE_PATH);
     private static final String trustStorePassword = System.getenv(ENV_TRUSTSTORE_PASSWORD);
@@ -143,9 +145,8 @@ public class ToolUtil {
                 }
             } else {
                 truststore = KeyStore.getInstance(KeyStore.getDefaultType());
-                try (InputStream defaultKeys = Files.newInputStream(Paths.get(System.getProperty("java.home") +
-                        "/lib/security/cacerts"))) {
-                    truststore.load(defaultKeys, "changeit".toCharArray()); // Default password for cacerts
+                try (InputStream defaultKeys = Files.newInputStream(Paths.get(CA_CERTS_DEFAULT_PATH))) {
+                    truststore.load(defaultKeys, CA_CERTS_DEFAULT_PASSWORD.toCharArray());
                 }
             }
 
