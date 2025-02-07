@@ -137,14 +137,12 @@ public class ToolUtil {
     public static void setCustomSSLContext() throws IOException {
         // Load custom truststore if provided, otherwise use the default truststore
         try {
-            KeyStore truststore;
+            KeyStore truststore = KeyStore.getInstance(KeyStore.getDefaultType());
             if (trustStorePath != null && trustStorePassword != null) {
-                truststore = KeyStore.getInstance(KeyStore.getDefaultType());
                 try (InputStream keys = Files.newInputStream(Paths.get(trustStorePath))) {
                     truststore.load(keys, trustStorePassword.toCharArray());
                 }
             } else {
-                truststore = KeyStore.getInstance(KeyStore.getDefaultType());
                 try (InputStream defaultKeys = Files.newInputStream(Paths.get(CA_CERTS_DEFAULT_PATH))) {
                     truststore.load(defaultKeys, CA_CERTS_DEFAULT_PASSWORD.toCharArray());
                 }
