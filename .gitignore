@@ -23,6 +23,7 @@ hs_err_pid*
 
 # idea
 .idea
+.DS_Store
 
 # gradle
 .gradle
