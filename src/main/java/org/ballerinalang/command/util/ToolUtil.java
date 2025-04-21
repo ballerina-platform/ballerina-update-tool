@@ -23,6 +23,8 @@ import org.ballerinalang.command.Main;
 import com.moandjiezana.toml.Toml;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,6 +47,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -79,6 +89,17 @@ public class ToolUtil {
             System.getenv("TEST_MODE_ACTIVE"));
     public static final String DEFAULT_BALLERINA_VERSION = "0.0.0";
 
+    private static final String ENV_TRUSTSTORE_PATH = "BALLERINA_CA_BUNDLE";
+    private static final String ENV_TRUSTSTORE_PASSWORD = "BALLERINA_CA_PASSWORD";
+    private static final String ENV_CERT_PATH = "BALLERINA_CA_CERT";
+    private static final String CA_CERTS_DEFAULT_PATH = System.getProperty("java.home") + "/lib/security/cacerts";
+    private static final String CA_CERTS_DEFAULT_PASSWORD = "changeit";
+
+    private static final String trustStorePath = System.getenv(ENV_TRUSTSTORE_PATH);
+    private static final String trustStorePassword = System.getenv(ENV_TRUSTSTORE_PASSWORD);
+    private static final String singleCertPath = System.getenv(ENV_CERT_PATH);
+
+
     /**
      * Provides used Ballerina version.
      *
@@ -107,6 +128,46 @@ public class ToolUtil {
             return getCurrentInstalledBallerinaVersion();
         } catch (IOException e) {
             throw ErrorUtil.createCommandException("current Ballerina version not found: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sets custom SSL context for update tool.
+     */
+    public static void setCustomSSLContext(PrintStream printStream) throws IOException {
+        // Load custom truststore if provided, otherwise use the default truststore
+        try {
+            KeyStore truststore = KeyStore.getInstance(KeyStore.getDefaultType());
+            if (trustStorePath != null && trustStorePassword != null) {
+                try (InputStream keys = Files.newInputStream(Paths.get(trustStorePath))) {
+                    truststore.load(keys, trustStorePassword.toCharArray());
+                }
+            } else {
+                try (InputStream defaultKeys = Files.newInputStream(Paths.get(CA_CERTS_DEFAULT_PATH))) {
+                    truststore.load(defaultKeys, CA_CERTS_DEFAULT_PASSWORD.toCharArray());
+                }
+            }
+
+            // If there's a single certificate to add
+            if (singleCertPath != null) {
+                CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                try (InputStream certInputStream = Files.newInputStream(Paths.get(singleCertPath))) {
+                    Certificate certificate = certificateFactory.generateCertificate(certInputStream);
+                    truststore.setCertificateEntry("bal-cert", certificate);
+                }
+            }
+
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(truststore);
+
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustManagerFactory.getTrustManagers(), new SecureRandom());
+            SSLContext.setDefault(sslContext);
+        } catch (CertificateException | KeyStoreException | IOException | NoSuchAlgorithmException |
+                 KeyManagementException e) {
+            printStream.println("Error occurred while loading the custom truststore: " + e.getMessage());
+            throw new IOException(e.getMessage());
         }
     }
 
@@ -213,8 +274,10 @@ public class ToolUtil {
         return dependencyLocation.exists();
     }
 
-    public static HttpsURLConnection getServerUrlWithProxyAuthentication(URL serverURL) throws IOException {
+    public static HttpsURLConnection getServerUrlWithProxyAuthentication(URL serverURL, PrintStream printStream) throws IOException {
         if (checkProxyConfigsDefinition()) {
+            setCustomSSLContext(printStream);
+
             Map<String, Object> proxyConfigs = getProxyConfigs();
             String proxyHost = proxyConfigs.containsKey("host") ? proxyConfigs.get("host").toString() : null;
             String proxyPort = proxyConfigs.containsKey("port") ? proxyConfigs.get("port").toString() : null;
@@ -270,7 +333,7 @@ public class ToolUtil {
         List<Distribution> distributions = new ArrayList<>();
         try {
             URL url = new URL(getServerURL() + "/distributions");
-            conn = getServerUrlWithProxyAuthentication(url);
+            conn = getServerUrlWithProxyAuthentication(url, printStream);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
                     OSUtils.getUserAgent(getCurrentBallerinaVersion(),
@@ -340,12 +403,12 @@ public class ToolUtil {
         return channels;
     }
 
-    public static String getLatest(String currentVersion, String type) {
+    public static String getLatest(String currentVersion, String type, PrintStream printStream) {
         HttpsURLConnection conn = null;
         try {
             URL url = new URL(getServerURL()
                     + "/distributions/latest?version=" + currentVersion + "&type=" + type);
-            conn = getServerUrlWithProxyAuthentication(url);
+            conn = getServerUrlWithProxyAuthentication(url, printStream);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
                     OSUtils.getUserAgent(getCurrentBallerinaVersion(),
@@ -380,11 +443,11 @@ public class ToolUtil {
         return null;
     }
 
-    public static Tool getLatestToolVersion() {
+    public static Tool getLatestToolVersion(PrintStream printStream) {
         HttpsURLConnection conn = null;
         try {
             URL url = new URL(getServerURL() + "/versions/latest");
-            conn = getServerUrlWithProxyAuthentication(url);
+            conn = getServerUrlWithProxyAuthentication(url, printStream);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent", OSUtils.getUserAgent(getCurrentBallerinaVersion(),
                     getCurrentToolsVersion(), "jballerina"));
@@ -500,7 +563,7 @@ public class ToolUtil {
         try {
             String version = getCurrentBallerinaVersion();
             if (OSUtils.updateNotice()) {
-                String latestVersion = ToolUtil.getLatest(version, "patch");
+                String latestVersion = ToolUtil.getLatest(version, "patch", printStream);
                 // For 1.0.x releases we support through jballerina distribution
                 if (latestVersion == null || latestVersion.startsWith(BALLERINA_1_X_VERSIONS)) {
                     return;
@@ -524,7 +587,7 @@ public class ToolUtil {
         try {
             if (!ToolUtil.checkDistributionAvailable(distribution)) {
                 URL url = new URL(ToolUtil.getServerURL() + "/distributions/" + distributionVersion);
-                conn = getServerUrlWithProxyAuthentication(url);
+                conn = getServerUrlWithProxyAuthentication(url, printStream);
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("user-agent",
                         OSUtils.getUserAgent(getCurrentBallerinaVersion(), ToolUtil.getCurrentToolsVersion(),
@@ -536,7 +599,7 @@ public class ToolUtil {
                 if (conn.getResponseCode() == 302) {
                     printStream.println("Fetching the '" + distribution + "' distribution from the remote server...");
                     String newUrl = conn.getHeaderField("Location");
-                    HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl));
+                    HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl), printStream);
                     redirectedConn.setRequestProperty("content-type", "binary/data");
                     ToolUtil.downloadDistributionZip(printStream, redirectedConn, distribution);
                     String dependencyForDistribution = ToolUtil.getDependency(printStream, distribution,
@@ -579,7 +642,7 @@ public class ToolUtil {
     }
 
     private static void downloadDistributionZip(PrintStream printStream, HttpURLConnection conn,
-                                             String distribution) {
+                                                String distribution) {
         try {
             String zipFileLocation = getDistributionsPath() + File.separator + distribution + ".zip";
             downloadFile(conn, zipFileLocation, distribution, printStream);
@@ -622,12 +685,12 @@ public class ToolUtil {
     }
 
     public static String getDependency(PrintStream printStream, String distribution, String distributionType,
-                                     String distributionVersion) {
+                                       String distributionVersion) {
         HttpsURLConnection conn = null;
         String dependencyName = "";
         try {
             URL url = new URL(ToolUtil.getServerURL() + "/distributions");
-            conn = getServerUrlWithProxyAuthentication(url);
+            conn = getServerUrlWithProxyAuthentication(url, printStream);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
                     OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
@@ -671,7 +734,7 @@ public class ToolUtil {
             printStream.println("\nFetching the dependencies for '" + distributionVersion + "' from the remote server...");
             String encodedDependencyName = encodePlusCharacters(dependency);
             String url = ToolUtil.getServerURL() + "/dependencies/" + encodedDependencyName;
-            HttpsURLConnection conn = getServerUrlWithProxyAuthentication(new URL(url));
+            HttpsURLConnection conn = getServerUrlWithProxyAuthentication(new URL(url), printStream);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent",
                     OSUtils.getUserAgent(distributionVersion, ToolUtil.getCurrentToolsVersion(),
@@ -679,7 +742,7 @@ public class ToolUtil {
             conn.setRequestProperty("Accept", "application/json");
             if (conn.getResponseCode() == 302) {
                 String newUrl = conn.getHeaderField("Location");
-                HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl));
+                HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl), printStream);
                 redirectedConn.setRequestProperty("content-type", "binary/data");
                 downloadAndSetupDependency(redirectedConn, printStream, dependency);
             } else if (conn.getResponseCode() == 200) {
@@ -774,14 +837,14 @@ public class ToolUtil {
         HttpsURLConnection conn = null;
         try {
             URL url = new URL(ToolUtil.getServerURL() + "/versions/" + toolVersion);
-            conn = getServerUrlWithProxyAuthentication(url);
+            conn = getServerUrlWithProxyAuthentication(url, printStream);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("user-agent", OSUtils.getUserAgent(getCurrentBallerinaVersion(),
                     getCurrentToolsVersion(), "jballerina"));
             conn.setRequestProperty("Accept", "application/json");
             if (conn.getResponseCode() == 302) {
                 String newUrl = conn.getHeaderField("Location");
-                HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl));
+                HttpsURLConnection redirectedConn = getServerUrlWithProxyAuthentication(new URL(newUrl), printStream);
                 redirectedConn.setRequestProperty("content-type", "binary/data");
                 downloadAndSetupTool(printStream, redirectedConn, "ballerina-command-" + toolVersion);
             } else if (conn.getResponseCode() == 200) {
@@ -1055,7 +1118,7 @@ public class ToolUtil {
         String version = ToolUtil.getCurrentToolsVersion();
         Tool toolDetails = new Tool();
         printStream.println("Checking for newer versions of the update tool...");
-        Tool latestVersionInfo = ToolUtil.getLatestToolVersion();
+        Tool latestVersionInfo = ToolUtil.getLatestToolVersion(printStream);
         String latestVersion = latestVersionInfo == null ? null : latestVersionInfo.getVersion();
         String backwardCompatibility = latestVersionInfo == null ? null : latestVersionInfo.getCompatibility();
         toolDetails.setVersion(latestVersion);

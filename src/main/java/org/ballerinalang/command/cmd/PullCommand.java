@@ -84,7 +84,7 @@ public class PullCommand extends Command implements BCommand {
             List<Distribution> distributions = latestChanel.getDistributions();
             distributions.sort(Comparator.comparing(Distribution::getVersion));
             Collections.reverse(distributions);
-            distribution = ToolUtil.getLatest(distributions.get(0).getVersion(), "patch");
+            distribution = ToolUtil.getLatest(distributions.get(0).getVersion(), "patch", printStream);
         }
 
         // To check whether the distribution is a valid one
