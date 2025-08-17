@@ -87,7 +87,7 @@ public class ToolUtil {
     public static final String LATEST_PULL_INPUT = "latest";
     public static final boolean TEST_MODE = Boolean.parseBoolean(
             System.getenv("TEST_MODE_ACTIVE"));
-    public static final String DEFAULT_BALLERINA_VERSION = "0.0.0";
+    public static final String DEFAULT_BALLERINA_VERSION = "2201.0.0";
 
     private static final String ENV_TRUSTSTORE_PATH = "BALLERINA_CA_BUNDLE";
     private static final String ENV_TRUSTSTORE_PASSWORD = "BALLERINA_CA_PASSWORD";
