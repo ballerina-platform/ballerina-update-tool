@@ -9,16 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set version env variable
-        id: version-set
-        run: |
-          RELEASE_VERSION=$((grep -w 'version' | cut -d= -f2) < gradle.properties | rev | cut --complement -d- -f1 | rev)
-          echo VERSION=$RELEASE_VERSION >> $GITHUB_ENV
-          echo "::set-output name=version::$RELEASE_VERSION"
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - name: Set version env variable
+        id: version-set
+        run: |
+          RELEASE_VERSION=$(./gradlew properties | grep ^version: | cut -d\  -f2 | sed 's@-SNAPSHOT@@')
+          echo "Release version: $RELEASE_VERSION"
+          echo VERSION=$RELEASE_VERSION >> $GITHUB_ENV
+          echo "::set-output name=version::$RELEASE_VERSION"
       - name: Pre release depenency version update
         env:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
