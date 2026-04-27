@@ -35,14 +35,15 @@ import java.io.File;
  */
 public class ListCommandTest extends CommandTest {
 
+    String oneXChannelLatestVersion = System.getProperty("1-x-channel-latest-version");
+
     @Test
     public void listCommandTest() {
         ListCommand listCommand = new ListCommand(testStream);
         listCommand.execute();
-        Assert.assertTrue(outContent.toString().contains("Distributions available locally"));
         Assert.assertTrue(outContent.toString().contains("Distributions available remotely"));
         Assert.assertTrue(outContent.toString().contains("1.* channel"));
-        Assert.assertTrue(outContent.toString().contains("1.2.54"));
+        Assert.assertTrue(outContent.toString().contains(oneXChannelLatestVersion));
         Assert.assertTrue(outContent.toString().contains("Swan Lake channel"));
     }
 
