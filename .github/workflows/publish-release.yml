@@ -39,20 +39,16 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Publish artifact
-        env:
-          GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
-          packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
-          packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
-        run: |
-          ./gradlew release -Prelease.useAutomaticVersion=true --scan
+      # --- Trivy security scan before publishing ---
 
-      # --- Trivy security scan on the release artifact ---
+      - name: Pre-release build for security scan
+        run: ./gradlew clean build -x test
 
-      - name: Extract release distribution for scanning
+      - name: Extract distribution for security scan
         run: |
+          SNAPSHOT_VERSION=$(./gradlew properties -q | grep "^version:" | awk '{print $2}')
           mkdir -p trivy-scan-target
-          unzip -q build/distributions/ballerina-command-${{ steps.version-set.outputs.version }}.zip \
+          unzip -q build/distributions/ballerina-command-${SNAPSHOT_VERSION}.zip \
             -d trivy-scan-target
 
       - name: Run Trivy vulnerability scan (SARIF output)
@@ -67,12 +63,14 @@ jobs:
 
       - name: Run Trivy vulnerability scan (table output)
         uses: aquasecurity/trivy-action@0.28.0
+        env:
+          TRIVY_SKIP_DB_UPDATE: 'true'
         with:
           scan-type: 'fs'
           scan-ref: 'trivy-scan-target'
           format: 'table'
           severity: 'HIGH,CRITICAL'
-          exit-code: '0'
+          exit-code: '1'
 
       - name: Upload Trivy results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
@@ -81,7 +79,15 @@ jobs:
           sarif_file: 'trivy-results.sarif'
           category: 'trivy-release'
 
-      # --- End Trivy scan ---
+      # --- End Trivy scan — release only proceeds if scan passed ---
+
+      - name: Publish artifact
+        env:
+          GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
+          packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
+          packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
+        run: |
+          ./gradlew release -Prelease.useAutomaticVersion=true --scan
 
       - name: Create release
         id: create_release
