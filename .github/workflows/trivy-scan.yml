@@ -1,0 +1,87 @@
+name: Trivy Vulnerability Scan
+
+on:
+  workflow_dispatch:
+    inputs:
+      severity:
+        description: 'Comma-separated severity levels to report (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL)'
+        required: false
+        default: 'HIGH,CRITICAL'
+      fail_on_findings:
+        description: 'Fail the workflow if vulnerabilities are found at the specified severity'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  trivy-scan:
+    name: Trivy Scan
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'zulu'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build distribution
+        run: ./gradlew clean build -x test
+        env:
+          TEST_MODE_ACTIVE: true
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(./gradlew properties -q | grep "^version:" | awk '{print $2}')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract distribution zip
+        run: |
+          mkdir -p trivy-scan-target
+          unzip -q build/distributions/ballerina-command-${{ steps.version.outputs.version }}.zip \
+            -d trivy-scan-target
+
+      - name: Run Trivy scan (SARIF output)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          scan-type: 'fs'
+          scan-ref: 'trivy-scan-target'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: ${{ inputs.severity }}
+          exit-code: '0'
+
+      - name: Run Trivy scan (table output)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        env:
+          TRIVY_SKIP_DB_UPDATE: 'true'
+        with:
+          scan-type: 'fs'
+          scan-ref: 'trivy-scan-target'
+          format: 'table'
+          severity: ${{ inputs.severity }}
+          exit-code: ${{ inputs.fail_on_findings && '1' || '0' }}
+
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: 'trivy-on-demand'
+
+      - name: Upload scan report as artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-results-${{ steps.version.outputs.version }}
+          path: trivy-results.sarif
+          retention-days: 30
