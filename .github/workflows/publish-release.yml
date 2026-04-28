@@ -12,12 +12,13 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v5
         with:
-          java-version: 1.8
+          java-version: '8'
+          distribution: 'zulu'
 
       - name: Set version env variable
         id: version-set
@@ -25,7 +26,7 @@ jobs:
           RELEASE_VERSION=$(./gradlew properties | grep ^version: | cut -d\  -f2 | sed 's@-SNAPSHOT@@')
           echo "Release version: $RELEASE_VERSION"
           echo VERSION=$RELEASE_VERSION >> $GITHUB_ENV
-          echo "::set-output name=version::$RELEASE_VERSION"
+          echo "version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
 
       - name: Pre release dependency version update
         env:
