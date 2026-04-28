@@ -51,7 +51,7 @@ jobs:
             -d trivy-scan-target
 
       - name: Run Trivy scan (SARIF output)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
         with:
           scan-type: 'fs'
           scan-ref: 'trivy-scan-target'
@@ -61,7 +61,7 @@ jobs:
           exit-code: '0'
 
       - name: Run Trivy scan (table output)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
         env:
           TRIVY_SKIP_DB_UPDATE: 'true'
         with:
