@@ -32,3 +32,8 @@ gradle-app.setting
 !gradle-wrapper.jar
 .gradletasknamecache
 out/
+
+# trivy scan artifacts
+.cache/
+trivy-results.sarif
+trivy-scan-target/
