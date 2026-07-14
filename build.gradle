@@ -51,19 +51,26 @@ jar {
 }
 
 task copyBin(type: Copy) {
+    inputs.property("version", { project.version })
     from file("resources/bin")
     into file("build/resources/bin")
     filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
 }
 
 task copyScripts(type: Copy) {
+    inputs.property("version", { project.version })
     from file("resources/scripts")
     into file("build/resources/scripts")
     filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
 }
 
 task copyLib(type: Copy) {
+    dependsOn jar
+    doFirst {
+        delete file("build/resources/lib")
+    }
     from file("build/libs")
+    include "${project.name}-${project.version}.jar"
     into file("build/resources/lib")
 }
 
@@ -247,13 +254,19 @@ task copyInstallerVersionFilesForTests(type: Copy) {
 }
 
 task copyBinForTests(type: Copy) {
+    inputs.property("version", { project.version })
     from file("$buildDir/../resources/bin")
     into file("$buildDir/classes/bin")
     filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": version])
 }
 
 task copyLibForTests(type: Copy) {
+    dependsOn jar
+    doFirst {
+        delete file("$buildDir/classes/lib")
+    }
     from file("$buildDir/libs")
+    include "${project.name}-${project.version}.jar"
     into file("$buildDir/classes/lib")
 }
 
@@ -332,6 +345,7 @@ jacocoTestReport {
 }
 
 processResources {
+    inputs.property("version", { project.version })
     include '**/tool.properties'
     include 'cli-help/*'
     filter { String line -> line.replace('${project.version}', "${project.version}")}
