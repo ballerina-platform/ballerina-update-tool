@@ -39,10 +39,14 @@ if "%1" == "update" set update=true
 if "%1" == "build" set build=true
 SetLocal EnableDelayedExpansion
 
-if exist %CURRENT_PATH%..\dependencies\jdk-25.0.5+8-jre (
+if exist %CURRENT_PATH%..\dependencies\jdk-25.0.5.1+2-jre (
+   set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk-25.0.5.1+2-jre\bin\java
+) else if exist %CURRENT_PATH%..\dependencies\jdk-25.0.5+8-jre (
    set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk-25.0.5+8-jre\bin\java
 ) else if exist %CURRENT_PATH%..\dependencies\jdk-25.0.3+9-jre (
    set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk-25.0.3+9-jre\bin\java
+) else if exist %CURRENT_PATH%..\dependencies\jdk-21.0.13.1+2-jre (
+   set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk-21.0.13.1+2-jre\bin\java
 ) else (
     if exist %CURRENT_PATH%..\dependencies\jdk-21.0.5+11-jre (
        set JAVA_CMD=%CURRENT_PATH%..\dependencies\jdk-21.0.5+11-jre\bin\java
